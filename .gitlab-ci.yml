@@ -10,5 +10,4 @@ variables:
 all_tests:
   script:
     - npm install
-    - npm run build
-    - npm test
+    - node ./test/selenium/test.js
