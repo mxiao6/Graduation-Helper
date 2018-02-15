@@ -1,7 +1,8 @@
-image: node:4.2.2
+image: node:latest
 
 services:
-        - postgres:9.5.0
+        - name: mysql:latest
+          alias: localhost
 
 all_tests:
         script:
