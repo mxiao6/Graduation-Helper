@@ -1,0 +1,23 @@
+username: myadmin
+password: Cs428grh!
+
+DB SCHEMA:
+* = PRIMARY_KEY
+
+Users Table:
+user_id* (INT)
+username (VARCHAR(16))
+email (VARCHAR(16))
+password (VARCHAR(32))
+
+Schedule Table:
+schedule_id* (UNSIGNED INT)
+semester (VARCHAR(8))
+user_id (UNSIGNED INT)
+
+Course Table:
+course_id* (INT)
+subject (VARCHAR(4))
+course_number (INT)
+crn (INT)
+schedule_id (INT)
