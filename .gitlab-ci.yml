@@ -1,8 +1,7 @@
 image: node:latest
 
 services:
-        - name: mysql:latest
-          alias: localhost
+        - mysql:latest
 
 all_tests:
         script:
