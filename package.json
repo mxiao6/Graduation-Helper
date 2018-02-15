@@ -5,10 +5,13 @@
     "client": "cd client && npm start",
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
+    "test": "mocha"
   },
   "dependencies": {
     "express": "^4.16.2",
-    "nodemon": "^1.14.12"
+    "nodemon": "^1.14.12",
+    "mocha": "^5.0.1",
+    "selenium-webdriver": "^4.0.0-alpha.1"
   },
   "devDependencies": {
     "concurrently": "^3.5.1"
