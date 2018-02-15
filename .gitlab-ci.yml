@@ -1,9 +1,14 @@
 image: node:latest
 
 services:
-        - mysql:latest
+  - mysql:latest
+
+variables:
+  MYSQL_USER: myadmin
+  MYSQL_PASSWORD: Cs428grh!
 
 all_tests:
-        script:
-                - npm install
-                - node ./specs/start.js
+  script:
+    - npm install
+    - npm run build
+    - npm test
