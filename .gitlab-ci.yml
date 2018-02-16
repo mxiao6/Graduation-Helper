@@ -8,21 +8,8 @@ variables:
   MYSQL_PASSWORD: Cs428grh!
 
 stages:
-  - client
-  - server
   - dev
   - test
-
-client:
-  stage: client
-  script:
-    - npm install
-    - cd client && npm start
-
-server:
-  stage: server
-  script:
-    - nodemon server.js
 
 dev:
   stage: dev
