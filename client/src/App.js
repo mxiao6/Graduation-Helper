@@ -30,8 +30,8 @@ class App extends Component {
         </header>
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
-          <h2>{this.state.response}</h2>
         </p>
+        <h2>{this.state.response}</h2>
       </div>
     );
   }
