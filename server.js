@@ -1,13 +1,12 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
+const api = require('./api.js');
+
+app.use('/api', api);
 
 app.get('/hello', function(req, res){
   res.send("Hello World");
-});
-
-app.get('/api/hello', function(req, res){
-  res.send({express: 'Hello from express'});
 });
 
 app.get('*', function(req, res){
