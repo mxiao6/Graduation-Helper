@@ -11,7 +11,7 @@ stages:
 server:
   stage: server
   script:
-    - nodemon server.js
+    - node server.js
 
 client:
   stage: client
