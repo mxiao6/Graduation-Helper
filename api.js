@@ -16,6 +16,7 @@ router.get('/schedule', function(req, res){
       });
     }else{
       console.log(error);
+      res.send([]);
     }
   });
 });
@@ -30,6 +31,7 @@ router.get('/schedule/:year([0-9]{4})', function(req, res){
       });
     }else{
       console.log(error);
+      res.send([]);
     }
   });
 });
@@ -44,6 +46,7 @@ router.get('/schedule/:year([0-9]{4})/:semester(summer|fall|spring|winter)', fun
       });
     }else{
       console.log(error);
+      res.send([]);
     }
   });
 });
@@ -58,6 +61,7 @@ router.get('/schedule/:year([0-9]{4})/:semester(summer|fall|spring|winter)/:subj
       });
     }else{
       console.log(error);
+      res.send([]);
     }
   });
 });
@@ -72,6 +76,7 @@ router.get('/schedule/:year([0-9]{4})/:semester(summer|fall|spring|winter)/:subj
       });
     }else{
       console.log(error);
+      res.send([]);
     }
   });
 });
