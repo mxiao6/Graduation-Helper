@@ -62,13 +62,13 @@ router.get('/schedule/:year([0-9]{4})/:semester(summer|fall|spring|winter)/:subj
   });
 });
 
-router.get('/schedule/:year([0-9]{4})/:semester(summer|fall|spring|winter)/:subject([A-Z]{2,4})/:id([1-9]{3})', function(req, res){
+router.get('/schedule/:year([0-9]{4})/:semester(summer|fall|spring|winter)/:subject([A-Z]{2,4})/:id([0-9]{3})', function(req, res){
   let query = req.params.year+'/'+req.params.semester+'/'+req.params.subject+'/'+req.params.id+'.xml';
   request('https://courses.illinois.edu/cisapp/explorer/schedule/'+query, function(error, response, body){
     if (!error && response.statusCode == 200){
       parseString(body, function(err, result){
-        courses = result['ns2:subject']['courses'][0]['course'];
-        res.send(courses);
+        sections = result['ns2:course']['sections'][0]['section'];
+        res.send(sections);
       });
     }else{
       console.log(error);
