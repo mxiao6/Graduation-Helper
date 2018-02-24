@@ -2,24 +2,14 @@ image: node:latest
 
 before_script:
   - npm install
+  - npm install -g mocha
+  - npm install -g selenium-webdriver
+  - npm install chromedriver
 
 stages:
-  - server
-  - client
   - test
-
-server:
-  stage: server
-  script:
-    - node server.js
-
-client:
-  stage: client
-  script:
-    - cd client
-    - npm start
     
 test:
   stage: test
   script:
-    - mocha
+    - mocha test/selenium
