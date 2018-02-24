@@ -1,6 +1,6 @@
 # Test against the latest version of this Node.js version
 environment:
-  nodejs_version: "6"
+  nodejs_version: "8.9.4"
 
 # Install scripts. (runs after repo cloning)
 install:
@@ -14,13 +14,10 @@ test_script:
   # Output useful info for debugging.
   - node --version
   - npm --version
-  # start server
-  - node server.js
-  # start client
-  - cd client
-  - npm start
-  - cd ..
   # run tests
+  - npm install -g mocha
+  - npm install -g selenium-webdriver
+  - npm install chromedriver
   - mocha test/selenium
 
 # Don't actually build.
