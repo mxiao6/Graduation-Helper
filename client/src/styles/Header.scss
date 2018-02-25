@@ -1,0 +1,46 @@
+@import "Variables.scss";
+
+.nav {
+  z-index: 999;
+
+  position: relative;
+
+  height: $nav-height * $ratio;
+  padding: 0 $nav-height / 2 * $ratio;
+  background: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  &.transparentNav {
+    background: none;
+  }
+
+  a {
+    text-decoration: none;
+    color: $ui-blue;
+  }
+
+  .menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    a {
+      margin: 0 80px / 2 * $ratio;
+      letter-spacing: .3em;
+      color: #fff;
+
+      font-weight: 100;
+
+      text-transform: uppercase;
+
+      &.linkActive {
+        font-weight: 600;
+        color: $ui-orange;
+      }
+    }
+  }
+}
