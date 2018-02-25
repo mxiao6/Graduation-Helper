@@ -12,7 +12,7 @@ node_modules
 build
 
 # compiled css
-src/**/*.css
+**/src/**/*.css
 
 # misc
 .DS_Store
