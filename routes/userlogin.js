@@ -1,14 +1,15 @@
 var mysql = require('mysql');
 var connection = mysql.createConnection({
-	host:'localhost',
-	user:'root',
-	password:'your-password',
-	database:'sfsgg'
+	host:'graduationhelper.mysql.database.azure.com',
+	user:'myadmin@graduationhelper',
+	password:'Cs428grh!',
+	database:'graduation_helper'
 });
 connection.connect(function(err){
 if(!err) {
     console.log("sucessfully connected to database");
 } else {
+    console.log(err);
     console.log("Database error");
 }
 });
@@ -46,7 +47,7 @@ exports.login = function(req,res){
     })
   }else{
     if(results.length >0){
-      if([result[0].password == password){
+      if(result[0].password === password){
         res.send({
           "code":200,
           "success":"login sucessfull"

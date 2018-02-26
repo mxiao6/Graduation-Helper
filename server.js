@@ -2,11 +2,11 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
 const api = require('./routes/api.js');
-const userlogin = require('./routes/userlogin.js')
+const userlogin = require('./routes/userlogin.js');
 
 app.use('/api', api);
-app.use('/register',login.register);
-app.use('/login',login.login);
+app.use('/register',userlogin.register);
+app.use('/login',userlogin.login);
 app.get('/hello', function(req, res){
   res.send("Hello World");
 });
