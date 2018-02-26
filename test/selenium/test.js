@@ -11,7 +11,7 @@ describe( 'Test Suite' , function(){
 
     before(function(){
 
-        driver.get( 'http://www.google.com/' );
+        driver.get( 'http://localhost:5000/' );
     });
 
     after(function(){

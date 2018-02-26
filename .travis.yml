@@ -13,5 +13,9 @@ addons:
       - google-chrome-stable
 
 script:
+  - node server.js &
+  - cd client
+  - npm start
+  - cd ..
   - mocha test/selenium
   - mocha test/backend
