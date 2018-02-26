@@ -15,7 +15,7 @@ if(!err) {
 
 exports.register = function(req,res){
   var users={
-    "first_name":req.body.username,
+    "username":req.body.username,
     "email":req.body.email,
     "password":req.body.password,
   }
@@ -62,7 +62,7 @@ exports.login = function(req,res){
     else{
       res.send({
         "code":204,
-        "success":"Email does not exits"
+        "success":"Email does not exist"
           });
     }
   }
