@@ -19,7 +19,7 @@ describe( 'Test Suite' , function(){
     });
 
     it( 'App Title' , function(done){
-        this.timeout(30000)
+        this.timeout(5000)
         driver.get( 'http://localhost:3000/' )
             .then(() => driver.getTitle())
             .then(title =>
