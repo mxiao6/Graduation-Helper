@@ -2,6 +2,8 @@ language: node_js
 node_js:
  - "stable"
  
+sudo: required
+ 
 before_script:
   - npm install
   - npm install -g mocha
@@ -12,6 +14,8 @@ before_script:
   
 addons:
   apt:
+    sources:
+      - google-chrome
     packages:
       - google-chrome-stable
 
