@@ -1,9 +1,9 @@
 var mysql = require('mysql');
 var connection = mysql.createConnection({
-	host:'localhost',
-	user:'root',
-	password:'your-password',
-	database:'sfsgg'
+  host:'graduationhelper.mysql.database.azure.com',
+  user:'myadmin@graduationhelper',
+  password:'Cs428grh!',
+  database:'graduation_helper'
 });
 connection.connect(function(err){
 if(!err) {
