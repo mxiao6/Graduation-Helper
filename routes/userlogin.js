@@ -46,7 +46,7 @@ exports.login = function(req,res){
     })
   }else{
     if(results.length >0){
-      if([0].password == password){
+      if([result[0].password == password){
         res.send({
           "code":200,
           "success":"login sucessfull"
