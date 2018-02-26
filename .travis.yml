@@ -6,10 +6,12 @@ before_script:
   - npm install
   - npm install -g mocha
   - npm install -g selenium-webdriver
-  - mocha test/backend
   
 addons:
-    chrome: stable
+  apt:
+    packages:
+      - google-chrome-stable
 
 script:
   - mocha test/selenium
+  - mocha test/backend
