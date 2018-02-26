@@ -11,7 +11,7 @@ describe( 'Test Suite' , function(){
 
     before(function(){
 
-        driver.get( 'http://localhost:5000/' );
+        driver.get( 'http://localhost:3000/' );
     });
 
     after(function(){

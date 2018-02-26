@@ -4,7 +4,6 @@ node_js:
  
 before_script:
   - npm install
-  - npm install -g npm-run-all
   - npm install -g mocha
   - npm install -g selenium-webdriver
   - cd client
@@ -18,8 +17,10 @@ addons:
 
 script:
   - node server.js &
+  - sleep 10
   - cd client
-  - npm start
+  - npm start &
+  - sleep 30
   - cd ..
   - mocha test/selenium
   - mocha test/backend
