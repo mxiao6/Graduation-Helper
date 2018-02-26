@@ -7,6 +7,9 @@ before_script:
   - npm install -g npm-run-all
   - npm install -g mocha
   - npm install -g selenium-webdriver
+  - cd client
+  - npm install
+  - cd ..
   
 addons:
   apt:
