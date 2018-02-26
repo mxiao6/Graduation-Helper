@@ -9,7 +9,7 @@ describe( 'Test Suite' , function(){
 
     var chromeCapabilities = webdriver.Capabilities.chrome();
     var chromeOptions = {
-        'args': ['--no-sandbox']
+        'args': ['--no-sandbox', '--headless']
     };
     chromeCapabilities.set('chromeOptions', chromeOptions);
     var driver = new webdriver.Builder().withCapabilities(chromeCapabilities).build();
