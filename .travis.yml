@@ -6,7 +6,7 @@ before_script:
   - npm install
   - npm install -g mocha
   - npm install -g selenium-webdriver
-  - npm install -g chai
+  - mocha test/backend
   
 addons:
     chrome: stable
