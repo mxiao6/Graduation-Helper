@@ -1,6 +1,18 @@
 # CS 428 Spring 18 Team GRH
 https://wiki.illinois.edu/wiki/display/cs428sp18/Graduation+Helper
 
+## Instruction
+
+* Install
+  ```bash
+  npm install && cd client && npm install
+  ```
+
+* Run
+  ```bash
+  npm dev
+  ```
+
 ## Team Members
 <table>
 	<tr>
