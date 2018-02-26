@@ -6,7 +6,7 @@ before_script:
   - npm install
   - npm install -g mocha
   - npm install -g selenium-webdriver
-  - npm install chromedriver
+  - npm install -g chai
   
 addons:
     chrome: stable

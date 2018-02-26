@@ -1,7 +1,9 @@
 var webdriver = require('selenium-webdriver')
 var By = webdriver.By
 var until = webdriver.until
-var chrome = require('chromedriver')
+require('chromedriver')
+var chai = require('chai')
+var should = chai.should();
 
 describe( 'Test Suite' , function(){
 
@@ -9,18 +11,23 @@ describe( 'Test Suite' , function(){
 
     before(function(){
 
-        driver.get( 'https://www.google.com/' );
+        driver.get( 'http://www.google.com/' );
     });
 
     after(function(){
         driver.quit();
     });
 
-    it( 'bad login' , function(){
+    it( 'App Title' , function(done){
+        this.timeout(10000)
+        driver.get( 'http://www.google.com/' )
+            .then(() => driver.getTitle())
 
-        driver.getTitle().then(function (title) {
-            console.log(title)
-        })
+            .then(title =>
+            title.should.equal('Google')
+        )
+            .then(() => done())
+            .catch(error => done(error))
 
     });
 
