@@ -4,7 +4,7 @@ node_js:
  
 before_script:
   - npm install
-  - npm install npm-run-all
+  - npm install -g npm-run-all
   - npm install -g mocha
   - npm install -g selenium-webdriver
   
