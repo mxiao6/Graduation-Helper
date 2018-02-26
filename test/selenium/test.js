@@ -19,13 +19,12 @@ describe( 'Test Suite' , function(){
     });
 
     it( 'App Title' , function(done){
-        this.timeout(10000)
+        this.timeout(30000)
         driver.get( 'http://localhost:3000/' )
             .then(() => driver.getTitle())
-
             .then(title =>
             title.should.equal('React App')
-        )
+            )
             .then(() => done())
             .catch(error => done(error))
 
