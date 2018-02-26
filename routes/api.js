@@ -2,23 +2,31 @@ const express = require('express');
 const router = express.Router();
 const request = require('request');
 const parseString = require('xml2js').parseString;
+var getElements = require('./utilities.js').getElements;
 
 router.get('/hello', function(req, res){
   res.send({express: 'Hello from express api'});
 });
 
+// function getElements(query, callbackTest) {
+//     request('https://courses.illinois.edu/cisapp/explorer/' + query + '.xml', function (error, response, body) {
+//         if (!error && response.statusCode == 200){
+//             parseString(body, function(err, result){
+//                 callbackTest(result);
+//             });
+//         }else{
+//             console.log(error);
+//             return null;
+//         }
+//     });
+// }
+
 router.get('/schedule', function(req, res){
-  request('https://courses.illinois.edu/cisapp/explorer/schedule.xml', function(error, response, body){
-    if (!error && response.statusCode == 200){
-      parseString(body, function(err, result){
+    result = getElements('schedule', function (result) {
+        console.log(result);
         calendarYears = result['ns2:schedule']['calendarYears'][0]['calendarYear']
-        res.send(calendarYears);
-      });
-    }else{
-      console.log(error);
-      res.send([]);
-    }
-  });
+        res.json(calendarYears);
+    });
 });
 
 router.get('/schedule/:year([0-9]{4})', function(req, res){
