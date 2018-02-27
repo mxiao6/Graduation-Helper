@@ -1,4 +1,8 @@
 var mysql = require('mysql');
+
+//var nodemailer = require('nodemailer');
+//var randomstring = require('randomstring');
+
 var connection = mysql.createConnection({
   //information for connecting to Azure database
   /*
@@ -52,8 +56,9 @@ exports.register = function(req,res){
   });
 
 }
+
 exports.login = function(req,res){
-  var email= req.body.email;
+  var email = req.body.email;
   var password = req.body.password;
   connection.query('SELECT * FROM users WHERE email = ?',[email], function (error, results, fields) {
   if (error) {
@@ -71,5 +76,63 @@ exports.login = function(req,res){
       res.send("Email does not exist");
     }
   }
+  });
+}
+//for password reset:
+
+/*
+Need test
+exports.sendemail = function(req,res){
+//first check if email exist and send authentication code to that email and to response
+  var email = req.body.email;
+  connection.query('SELECT * FROM users WHERE email = ?',[email], function (error, results, fields) {
+  if (error) {
+    res.send("error ocurred");
+  }else{
+    if(results.length >0){
+      var aucode = randomstring.generate(10);
+      var transporter = nodemailer.createTransport({
+        service: 'gmail??',
+        auth: {
+        user: 'sender@email.com',
+        pass: 'emailpassword'
+        }
+      });
+
+      var themail = {
+      from: 'sender@email.com', // sender address
+      to: email, // receiver
+      subject: 'Reset information from GRH', // Subject line
+      text: "Your are receiving this because you try to reset password for your account on Graduation Helper. \n" +
+      "The reset authentication code is "+aucode+"\n" +
+      "If you didn't request this, please ignore and nothing will be changed in your account."
+      };
+
+      transporter.sendMail(themail, function (err, info) {
+        if(err)
+          console.log(err)
+        else
+          console.log(info);
+      });
+
+      res.send(aucode);
+    }
+    else{
+      res.send("Email does not exist");
+    }
+  }
+  });
+}
+*/
+exports.resetpassword = function(req,res){
+  //called when user is authorized to reset password
+  var email = req.body.email;
+  var password = req.body.password;
+  connection.query('UPDATE users SET password = ? WHERE email = ?',[password, email],function (error,results, fields) {
+    if (error) {
+      res.send("error ocurred");
+    }else{
+      res.send("Reset successfully!");
+    }
   });
 }
