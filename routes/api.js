@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const request = require('request');
-const api = require('./api');
 const getElements = require('./utilities.js').getElements;
 
 router.get('/years',function(req,res) {
