@@ -1,5 +1,18 @@
-# CS 428 Spring 18 Team GRH
+# CS 428 Spring 18 Team GRH [![Build Status](https://travis-ci.com/mxiao6/cs428grh.svg?token=29NdwAZchaFq7Q2StmqM&branch=master)](https://travis-ci.com/mxiao6/cs428grh)
+
 https://wiki.illinois.edu/wiki/display/cs428sp18/Graduation+Helper
+
+## Instruction
+
+* Install
+  ```bash
+  npm install && cd client && npm install
+  ```
+
+* Run
+  ```bash
+  npm run dev
+  ```
 
 ## Team Members
 <table>

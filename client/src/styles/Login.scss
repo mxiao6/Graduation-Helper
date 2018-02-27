@@ -1,0 +1,27 @@
+@import "Shared.scss";
+
+.formContainer {
+  .cardStyle {
+    width: 300px;
+    border-radius: 20px;
+    overflow: hidden;
+
+    .ant-card-head-title {
+      text-align: center;
+    }
+  }
+}
+
+// Login form
+.login-form {
+  max-width: 300px;
+
+  .login-form-forgot {
+    float: right;
+  }
+
+  .login-form-button {
+    width: 100%;
+  }
+
+}

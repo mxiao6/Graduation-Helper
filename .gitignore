@@ -2,13 +2,17 @@
 
 # dependencies
 /node_modules
-/client/node_modules
+node_modules
 
 # testing
 /coverage
 
 # production
 /build
+build
+
+# compiled css
+**/src/**/*.css
 
 # misc
 .DS_Store
@@ -22,6 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # intellij
+.idea
 **/*.iml
 # User-specific stuff:
 .idea/**/workspace.xml
