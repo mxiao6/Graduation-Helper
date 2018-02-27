@@ -1,10 +1,20 @@
 var mysql = require('mysql');
 var connection = mysql.createConnection({
+  //information for connecting to Azure database
+  /*
   host:'graduationhelper.mysql.database.azure.com',
   user:'myadmin@graduationhelper',
   password:'Cs428grh!',
   database:'graduation_helper'
+  */
+  //Please try to use local database to test!!!
+  host:'localhost',
+  user:'xxx',
+  password:'xxx',
+  database:'xxx'
 });
+
+
 connection.connect(function(err){
 if(!err) {
     console.log("sucessfully connected to database");
@@ -19,15 +29,28 @@ exports.register = function(req,res){
     "email":req.body.email,
     "password":req.body.password,
   }
-  connection.query('INSERT INTO users SET ?',users, function (error, results, fields) {
+  connection.query('SELECT * FROM users WHERE email = ?', [req.body.email], function (error, results, fields) {
+  //check for duplicate register
   if (error) {
-    //console.log("error ocurred",error);
     res.send("error ocurred");
   }else{
-    //console.log('The solution is: ', results);
-    res.send("user registered sucessfully");
+    if(results.length >0){
+      res.send("Email already registered!")
+    }
+    else{
+        connection.query('INSERT INTO users SET ?',users, function (error, results, fields) {
+        if (error) {
+        //console.log("error ocurred",error);
+        res.send("error ocurred");
+        }else{
+        //console.log('The solution is: ', results);
+        res.send("user registered sucessfully");
+        }
+      });
+    }
   }
   });
+
 }
 exports.login = function(req,res){
   var email= req.body.email;
