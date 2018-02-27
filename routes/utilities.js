@@ -12,7 +12,7 @@ getElements = (query, callbackTest) => {
             return null;
 
         }
-    });
+    }).end();
 };
 
 

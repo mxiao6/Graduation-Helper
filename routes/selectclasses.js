@@ -6,7 +6,6 @@ const getElements = require('./utilities.js').getElements;
 
 router.get('/years',function(req,res) {
     getElements('schedule', function (result) {
-        console.log(result);
         calendarYears = result['ns2:schedule']['calendarYears'][0]['calendarYear'];
         let years = [];
         for(i = 0; i < calendarYears.length; i++) {
@@ -18,9 +17,7 @@ router.get('/years',function(req,res) {
 
 router.get('/semester',function(req,res) {
     let year = req.query.year;
-    console.log(year);
     getElements('schedule/' + year, function (result) {
-        console.log(year);
         calendarSemester = result['ns2:calendarYear']['terms'][0]['term'];
         let semester = [];
         for(i = 0; i < calendarSemester.length; i++) {
@@ -78,7 +75,5 @@ router.get('/sections',function(req,res) {
         res.json(courseList);
     });
 });
-
-
 
 module.exports = router;
