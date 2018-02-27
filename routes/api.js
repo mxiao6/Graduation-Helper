@@ -1,92 +1,79 @@
 const express = require('express');
 const router = express.Router();
 const request = require('request');
-const parseString = require('xml2js').parseString;
-var getElements = require('./utilities.js').getElements;
+const api = require('./api');
+const getElements = require('./utilities.js').getElements;
 
-router.get('/hello', function(req, res){
-  res.send({express: 'Hello from express api'});
-});
-
-// function getElements(query, callbackTest) {
-//     request('https://courses.illinois.edu/cisapp/explorer/' + query + '.xml', function (error, response, body) {
-//         if (!error && response.statusCode == 200){
-//             parseString(body, function(err, result){
-//                 callbackTest(result);
-//             });
-//         }else{
-//             console.log(error);
-//             return null;
-//         }
-//     });
-// }
-
-router.get('/schedule', function(req, res){
-    result = getElements('schedule', function (result) {
-        console.log(result);
-        calendarYears = result['ns2:schedule']['calendarYears'][0]['calendarYear']
-        res.json(calendarYears);
+router.get('/years',function(req,res) {
+    getElements('schedule', function (result) {
+        calendarYears = result['ns2:schedule']['calendarYears'][0]['calendarYear'];
+        let years = [];
+        for(i = 0; i < calendarYears.length; i++) {
+            years.push(calendarYears[i]['_']);
+        }
+        res.json(years);
     });
 });
 
-router.get('/schedule/:year([0-9]{4})', function(req, res){
-  let query = req.params.year+'.xml';
-  request('https://courses.illinois.edu/cisapp/explorer/schedule/'+query, function(error, response, body){
-    if (!error && response.statusCode == 200){
-      parseString(body, function(err, result){
-        terms = result['ns2:calendarYear']['terms'][0]['term'];
-        res.send(terms);
-      });
-    }else{
-      console.log(error);
-      res.send([]);
-    }
-  });
+router.get('/semester',function(req,res) {
+    let year = req.query.year;
+    getElements('schedule/' + year, function (result) {
+        calendarSemester = result['ns2:calendarYear']['terms'][0]['term'];
+        let semester = [];
+        for(i = 0; i < calendarSemester.length; i++) {
+            semester.push(calendarSemester[i]['_']);
+        }
+        res.json(semester);
+    });
 });
 
-router.get('/schedule/:year([0-9]{4})/:semester(summer|fall|spring|winter)', function(req, res){
-  let query = req.params.year+'/'+req.params.semester+'.xml';
-  request('https://courses.illinois.edu/cisapp/explorer/schedule/'+query, function(error, response, body){
-    if (!error && response.statusCode == 200){
-      parseString(body, function(err, result){
-        subjects = result['ns2:term']['subjects'][0]['subject'];
-        res.send(subjects);
-      });
-    }else{
-      console.log(error);
-      res.send([]);
-    }
-  });
+router.get('/major',function(req,res) {
+    let year = req.query.year;
+    let semester = req.query.semester;
+    getElements('schedule/' + year + '/' + semester, function (result) {
+        major = result['ns2:term']['subjects'][0]['subject'];
+        let majorList = [];
+        for(i = 0; i < major.length; i++) {
+            let course = major[i]['_'];
+            let id = major[i]['$']['id'];
+            majorList.push({[course]:id});
+        }
+        res.json(majorList);
+    });
 });
 
-router.get('/schedule/:year([0-9]{4})/:semester(summer|fall|spring|winter)/:subject([A-Z]{2,4})', function(req, res){
-  let query = req.params.year+'/'+req.params.semester+'/'+req.params.subject+'.xml';
-  request('https://courses.illinois.edu/cisapp/explorer/schedule/'+query, function(error, response, body){
-    if (!error && response.statusCode == 200){
-      parseString(body, function(err, result){
+router.get('/course',function(req,res) {
+    let year = req.query.year;
+    let semester = req.query.semester;
+    let course = req.query.course;
+    getElements('schedule/' + year + '/' + semester + '/' + course, function (result) {
         courses = result['ns2:subject']['courses'][0]['course'];
-        res.send(courses);
-      });
-    }else{
-      console.log(error);
-      res.send([]);
-    }
-  });
+        let courseList = [];
+        for(i = 0; i < courses.length; i++) {
+            let name = courses[i]['_'];
+            let id = courses[i]['$']['id'];
+            courseList.push({[name]:id});
+        }
+        res.json(courseList);
+    });
 });
 
-router.get('/schedule/:year([0-9]{4})/:semester(summer|fall|spring|winter)/:subject([A-Z]{2,4})/:id([0-9]{3})', function(req, res){
-  let query = req.params.year+'/'+req.params.semester+'/'+req.params.subject+'/'+req.params.id+'.xml';
-  request('https://courses.illinois.edu/cisapp/explorer/schedule/'+query, function(error, response, body){
-    if (!error && response.statusCode == 200){
-      parseString(body, function(err, result){
-        sections = result['ns2:course']['sections'][0]['section'];
-        res.send(sections);
-      });
-    }else{
-      console.log(error);
-      res.send([]);
-    }
-  });
+//TODO:
+router.get('/sections',function(req,res) {
+    let year = req.query.year;
+    let semester = req.query.semester;
+    let course = req.query.course;
+
+    getElements('schedule/' + year + '/' + semester + '/' + course, function (result) {
+        courses = result['ns2:subject']['courses'][0]['course'];
+        let courseList = [];
+        for(i = 0; i < courses.length; i++) {
+            let name = courses[i]['_'];
+            let id = courses[i]['$']['id'];
+            courseList.push({[name]:id});
+        }
+        res.json(courseList);
+    });
 });
 
 module.exports = router;

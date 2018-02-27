@@ -10,7 +10,6 @@ getElements = (query, callbackTest) => {
         }else{
             console.log("ERROR:" + error);
             return null;
-
         }
     }).end();
 };
