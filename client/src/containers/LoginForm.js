@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 
 import '../styles/Login.css';
 
@@ -11,6 +12,20 @@ class NormalLoginForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+
+        axios.get('/hello', {
+          params: {
+            email: values.email,
+            password: values.password
+          }
+        })
+        .then(function (res) {
+          alert(res.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
       }
     });
   }
@@ -19,10 +34,10 @@ class NormalLoginForm extends React.Component {
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
         <FormItem>
-          {getFieldDecorator('userName', {
-            rules: [{ required: true, message: 'Please input your username!' }],
+          {getFieldDecorator('email', {
+            rules: [{ required: true, message: 'Please input your Email!' }],
           })(
-            <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
+            <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Email" />
           )}
         </FormItem>
         <FormItem>
