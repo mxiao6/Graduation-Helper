@@ -1,4 +1,4 @@
-var mysql = require('mysql')
+var mysql = require('mysql');
 
 // var nodemailer = require('nodemailer');
 // var randomstring = require('randomstring');
@@ -16,75 +16,75 @@ var pool = mysql.createPool({
   // user:'xxx',
   // password:'xxx',
   // database:'xxx'
-})
+});
 
 exports.register = function (req, res) {
   var users = {
     'username': req.body.username,
     'email': req.body.email,
     'password': req.body.password
-  }
+  };
   pool.getConnection(function (err, connection) {
     if (err) {
-      res.send('Get pool connection error')
+      res.send('Get pool connection error');
     }
 
     connection.query('SELECT * FROM users WHERE email = ?', [req.body.email], function (error, results, fields) {
       // Done with connection
-      connection.release()
+      connection.release();
 
       // check for duplicate register
       if (error) {
-        res.send('error ocurred')
+        res.send('error ocurred');
       } else {
         if (results.length > 0) {
-          res.send('Email already registered!')
+          res.send('Email already registered!');
         } else {
           connection.query('INSERT INTO users SET ?', users, function (error, results, fields) {
             if (error) {
               // console.log("error ocurred",error);
-              res.send('error ocurred')
+              res.send('error ocurred');
             } else {
               // console.log('The solution is: ', results);
-              res.send('user registered sucessfully')
+              res.send('user registered sucessfully');
             }
-          })
+          });
         }
       }
-    })
-  })
-}
+    });
+  });
+};
 
 exports.login = function (req, res) {
-  var email = req.body.email
-  var password = req.body.password
+  var email = req.body.email;
+  var password = req.body.password;
 
   // Use the connection
   pool.getConnection(function (err, connection) {
     if (err) {
-      res.send('Get pool connection error')
+      res.send('Get pool connection error');
     }
 
     connection.query('SELECT * FROM users WHERE email = ?', [email], function (error, results, fields) {
       // Done with the connection
-      connection.release()
+      connection.release();
 
       if (error) {
-        res.send('error ocurred')
+        res.send('error ocurred');
       } else {
         if (results.length > 0) {
           if (results[0].password === password) {
-            res.send('login sucessfull')
+            res.send('login sucessfull');
           } else {
-            res.send('Email and password does not match')
+            res.send('Email and password does not match');
           }
         } else {
-          res.send('Email does not exist')
+          res.send('Email does not exist');
         }
       }
-    })
-  })
-}
+    });
+  });
+};
 // for password reset:
 
 /*
@@ -134,24 +134,24 @@ exports.sendemail = function(req,res){
 
 exports.resetpassword = function (req, res) {
   // called when user is authorized to reset password
-  var email = req.body.email
-  var password = req.body.password
+  var email = req.body.email;
+  var password = req.body.password;
 
   pool.getConnection(function (err, connection) {
     if (err) {
-      res.send('Get pool connection error')
+      res.send('Get pool connection error');
     }
 
     connection.query('UPDATE users SET password = ? WHERE email = ?', [
       password, email
     ], function (error, results, fields) {
-      connection.release()
+      connection.release();
 
       if (error) {
-        res.send('error ocurred')
+        res.send('error ocurred');
       } else {
-        res.send('Reset successfully!')
+        res.send('Reset successfully!');
       }
-    })
-  })
-}
+    });
+  });
+};
