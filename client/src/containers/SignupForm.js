@@ -1,20 +1,20 @@
 import React from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 
 import '../styles/Login.css';
 
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button } from 'antd';
 const FormItem = Form.Item;
 
-class NormalLoginForm extends React.Component {
+class NormalSignupForm extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
 
-        axios.post('/login', {
+        axios.post('/register', {
+          username: values.username,
           email: values.email,
           password: values.password
         })
@@ -31,12 +31,19 @@ class NormalLoginForm extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form onSubmit={this.handleSubmit} className="login-form">
+      <Form onSubmit={this.handleSubmit} className="signup-form">
         <FormItem>
           {getFieldDecorator('email', {
             rules: [{ required: true, message: 'Please input your Email!' }],
           })(
             <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Email" />
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator('username', {
+            rules: [{ required: true, message: 'Please input your Username!' }],
+          })(
+            <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
           )}
         </FormItem>
         <FormItem>
@@ -47,23 +54,15 @@ class NormalLoginForm extends React.Component {
           )}
         </FormItem>
         <FormItem>
-          {getFieldDecorator('remember', {
-            valuePropName: 'checked',
-            initialValue: true,
-          })(
-            <Checkbox>Remember me</Checkbox>
-          )}
-          <a className="login-form-forgot" href="">Forgot password</a>
           <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
+            Sign up
           </Button>
-          Or <Link to={'/Signup'}>register now!</Link>
         </FormItem>
       </Form>
     );
   }
 }
 
-const WrappedNormalLoginForm = Form.create()(NormalLoginForm);
+const WrappedNormalSignupForm = Form.create()(NormalSignupForm);
 
-export default WrappedNormalLoginForm;
+export default WrappedNormalSignupForm;
