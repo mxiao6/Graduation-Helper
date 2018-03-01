@@ -1,8 +1,8 @@
 var webdriver = require('selenium-webdriver')
-var By = webdriver.By
-var until = webdriver.until
-require('chromedriver')
-var chai = require('chai')
+var By = webdriver.By;
+var until = webdriver.until;
+require('chromedriver');
+var chai = require('chai');
 var should = chai.should();
 
 describe( 'Test Suite' , function(){
@@ -28,6 +28,8 @@ describe( 'Test Suite' , function(){
             .then(() => done())
             .catch(error => done(error))
 
+        var temp = driver.findElement(By.className("ant-btn loginButton ant-btn-primary"));
+        temp.click();
     });
 
 });
