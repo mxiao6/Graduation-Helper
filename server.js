@@ -1,16 +1,21 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
+const api = require('./routes/api');
+//const userlogin = require('./routes/userlogin');
+const bodyParser = require('body-parser');
 var path = require('path');
 
-// app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
-app.get('/hello', function(req, res){
-  res.send("Hello World");
-});
+app.use('/api', api);
+//app.post('/register',userlogin.register);
+//app.post('/login',userlogin.login);
 
-app.get('/api/hello', function(req, res){
-  res.send({express: 'Hello from express'});
+process.on('uncaughtException', (err) => {
+  console.log("uncaughtException " + err);
+
 });
 
 app.get('/*', function (req, res) {
