@@ -2,6 +2,7 @@
   "name": "cs428grh",
   "version": "0.1.0",
   "scripts": {
+    "ins": "npm install && cd client && npm install && cd ..",
     "client": "cd client && npm start",
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
