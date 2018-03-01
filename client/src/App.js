@@ -9,6 +9,7 @@ import './styles/App.css';
 import Header from './containers/Header';
 import Home from './containers/Home';
 import Login from './containers/Login';
+import Signup from './containers/Signup';
 
 class App extends Component {
   // state = {
@@ -36,6 +37,7 @@ class App extends Component {
           <Header></Header>
           <Route exact path="/" component={Home}/>
           <Route path="/Login" component={Login}/>
+          <Route path="/Signup" component={Signup}/>
         </div>
       </Router>
     );
