@@ -56,25 +56,24 @@ router.get('/course', function (req, res) {
   });
 });
 
-
-router.get('/section',function(req,res) {
-    let year = req.query.year;
-    let semester = req.query.semester;
-    let course = req.query.course;
-    let courseNum = req.query.courseNumber;
-    getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseNum, function (result) {
-        section = result['ns2:course']['sections'][0]['section'];
-        let sectionList = [];
-        for(i = 0; i < section.length; i++) {
-            let sectionName = section[i]['_'];
-            let sectionId = section[i]['$']['id'];
-            sectionList.push({[sectionName]:sectionId});
-        }
-        res.json(sectionList);
-    });
+router.get('/section', function (req, res) {
+  let year = req.query.year;
+  let semester = req.query.semester;
+  let course = req.query.course;
+  let courseNum = req.query.courseNumber;
+  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseNum, function (result) {
+    let section = result['ns2:course']['sections'][0]['section'];
+    let sectionList = [];
+    for (let i = 0; i < section.length; i++) {
+      let sectionName = section[i]['_'];
+      let sectionId = section[i]['$']['id'];
+      sectionList.push({[sectionName]: sectionId});
+    }
+    res.json(sectionList);
+  });
 });
 
-//section returns dictionary:
+// section returns dictionary:
 // sectionName,
 // sectionId,
 // sectionNumber,
@@ -83,7 +82,7 @@ router.get('/section',function(req,res) {
 // startTime,
 // endTime,
 // daysOfWeek
-/*getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseNum + '/' + sectionId, function (result) {
+/* getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseNum + '/' + sectionId, function (result) {
     let sectionNumber = result['ns2:section']['sectionNumber'];
     let enrollmentStatus = result['ns2:section']['enrollmentStatus'];
     let type = result['ns2:section']['meetings'][0]['type'];
@@ -101,6 +100,6 @@ router.get('/section',function(req,res) {
         daysOfWeek:daysOfWeek,
     });
     sectionList.push("TEST");
-});*/
+}); */
 
 module.exports = router;
