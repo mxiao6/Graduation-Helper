@@ -29,8 +29,8 @@ script:
   - mocha test/selenium
   - mocha test/backend
   - cd client
-  - npm build
+  - npm run build
   - cp -R build ..
   - cd ..
   - mv build public
-  - git push https://gh428:GH428429@grhfree.scm.azurewebsites.net:443/grhfree.git master
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then git push https://gh428:GH428429@grhfree.scm.azurewebsites.net:443/grhfree.git master; fi
