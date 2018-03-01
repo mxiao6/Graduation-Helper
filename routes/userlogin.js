@@ -18,14 +18,6 @@ var pool = mysql.createPool({
   // database:'xxx'
 });
 
-// connection.connect(function(err) {
-//   if (!err) {
-//     console.log("sucessfully connected to database");
-//   } else {
-//     console.log("Database error");
-//   }
-// });
-
 exports.register = function(req, res) {
   var users = {
     "username": req.body.username,
@@ -139,6 +131,8 @@ exports.sendemail = function(req,res){
   });
 }
 */
+
+
 exports.resetpassword = function(req, res) {
   //called when user is authorized to reset password
   var email = req.body.email;
