@@ -2,8 +2,7 @@ var webdriver = require('selenium-webdriver');
 var By = webdriver.By;
 var until = webdriver.until;
 require('chromedriver');
-var chai = require('chai');
-var should = chai.should();
+require('chai').should();
 
 describe('Test Suite', function () {
   var chromeCapabilities = webdriver.Capabilities.chrome();
