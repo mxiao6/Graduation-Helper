@@ -28,9 +28,19 @@ describe( 'Test Suite' , function(){
             .then(() => done())
             .catch(error => done(error))
 
-        var temp = driver.findElement(By.className("ant-btn loginButton ant-btn-primary"));
-        temp.click();
-        driver.wait(until.elemen)
+        var elem = driver.findElement(By.css("a=[href=#/Login]"));
+        elem.click();
+
+        driver.wait(until.urlContains('Login'), 20000)
+
+        driver.wait(until.elementLocated(By.className("ant-form-item-control")), 2000);
+        driver.wait(until.elementLocated(By.css("input[type=text][id=email]")));
+        var email = driver.findElement(By.css("input[type=text][id=email]"));
+        email.sendKeys("zuyichen@hotmail.com");
+        driver.wait(until.elementLocated(By.css("input[type=password]")))
+        var password = driver.findElement(By.css("input[type=password"));
+        password.sendKeys("pass");
+
     });
 
 });

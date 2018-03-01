@@ -10,8 +10,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.use('/api', api);
+
 app.post('/register',userlogin.register);
+
 app.post('/login',userlogin.login);
+
 
 process.on('uncaughtException', (err) => {
   console.log("uncaughtException " + err);
