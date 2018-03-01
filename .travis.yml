@@ -28,11 +28,12 @@ script:
   - cd ..
   - mocha test/selenium
   - mocha test/backend
-  - cd client
-  - npm run build
-  - cp -R build ..
-  - cd ..
-  - mv build public
-  - git add public
-  - git commit -m "Deploy to Azure"
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then cd client; fi
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then npm run build; fi
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then cp -R build ..; fi
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then cd ..; fi
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then mv build public; fi
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then git add public; fi
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then git checkout -b azure-deploy; fi
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then git commit -m "Deploy to Azure"; fi
   - if [ "$TRAVIS_BRANCH" = "master" ]; then git push --force https://gh428:GH428429@grhfree.scm.azurewebsites.net:443/grhfree.git master; fi
