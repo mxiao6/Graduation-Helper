@@ -61,21 +61,21 @@ exports.login = function(req,res){
   var email = req.body.email;
   var password = req.body.password;
   connection.query('SELECT * FROM users WHERE email = ?',[email], function (error, results, fields) {
-  if (error) {
-    res.send("error ocurred");
-  }else{
-    if(results.length >0){
-      if(result[0].password === password){
-        res.send("login sucessfull");
+    if (error) {
+      res.send("error ocurred");
+    }else{
+      if(results.length > 0){
+        if(results[0].password === password){
+          res.send("login sucessfull");
+        }
+        else{
+          res.send("Email and password does not match");
+        }
       }
       else{
-        res.send("Email and password does not match");
+        res.send("Email does not exist");
       }
     }
-    else{
-      res.send("Email does not exist");
-    }
-  }
   });
 }
 //for password reset:
