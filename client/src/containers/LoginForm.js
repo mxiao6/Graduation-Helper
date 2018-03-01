@@ -13,14 +13,12 @@ class NormalLoginForm extends React.Component {
       if (!err) {
         console.log('Received values of form: ', values);
 
-        axios.get('/hello', {
-          params: {
-            email: values.email,
-            password: values.password
-          }
+        axios.post('/login', {
+          email: values.email,
+          password: values.password
         })
         .then(function (res) {
-          alert(res.data);
+          console.log(res);
         })
         .catch(function (error) {
           console.log(error);
