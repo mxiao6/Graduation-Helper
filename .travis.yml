@@ -37,4 +37,4 @@ script:
   - if [ "$TRAVIS_BRANCH" = "master" ]; then git checkout -b azure-deploy; fi
   - if [ "$TRAVIS_BRANCH" = "master" ]; then git add public; fi
   - if [ "$TRAVIS_BRANCH" = "master" ]; then git commit -m "Deploy to Azure"; fi
-  - if [ "$TRAVIS_BRANCH" = "master" ]; then git push --force https://gh428:GH428429@grhfree.scm.azurewebsites.net:443/grhfree.git head:master; fi
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then git push --force https://gh428:GH428429@grhfree.scm.azurewebsites.net:443/grhfree.git HEAD:master; fi
