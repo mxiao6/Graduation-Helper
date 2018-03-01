@@ -5,17 +5,17 @@ var mysql = require('mysql');
 
 var connection = mysql.createConnection({
   //information for connecting to Azure database
-  /*
+  
   host:'graduationhelper.mysql.database.azure.com',
   user:'myadmin@graduationhelper',
   password:'Cs428grh!',
   database:'graduation_helper'
-  */
+  
   //Please try to use local database to test!!!
-  host:'localhost',
-  user:'xxx',
-  password:'xxx',
-  database:'xxx'
+  // host:'localhost',
+  // user:'xxx',
+  // password:'xxx',
+  // database:'xxx'
 });
 
 
