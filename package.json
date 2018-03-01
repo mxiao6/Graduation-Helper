@@ -20,6 +20,7 @@
     "chai": "*"
   },
   "devDependencies": {
-    "concurrently": "^3.5.1"
+    "concurrently": "^3.5.1",
+    "standard": "^11.0.0"
   }
 }
