@@ -13,12 +13,14 @@ app.use('/api', api);
 //app.post('/register',userlogin.register);
 //app.post('/login',userlogin.login);
 
+process.on('uncaughtException', (err) => {
+  console.log("uncaughtException " + err);
+
+});
+
 app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-process.on('uncaughtException', (err) => {
-  console.log("uncaughtException " + err);
-});
 
 app.listen(port, () => console.log(`Listening on ${port}`));
