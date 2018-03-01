@@ -30,6 +30,7 @@ describe( 'Test Suite' , function(){
 
         var temp = driver.findElement(By.className("ant-btn loginButton ant-btn-primary"));
         temp.click();
+        driver.wait(until.elemen)
     });
 
 });
