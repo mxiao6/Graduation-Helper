@@ -150,7 +150,7 @@ exports.resetpassword = function (req, res) {
       if (error) {
         res.send('error ocurred');
       } else {
-        res.send('Reset successfully!');
+        res.status(300).send('Reset successfully!');
       }
     });
   });

@@ -35,4 +35,17 @@ describe('API tests', function() {
                 console.log('hey')
             });
     });
+
+    it('resetpass', function (done) {
+        request(server)
+            .post('/login')
+            .send({ "email" : "zuyi@gmail.com", "password": "pass"})
+            .end(function (err, res) {
+                expect(res.statusCode).to.be.equal(250);
+                done();
+                require('../../server.js').close()
+                console.log('hey')
+            });
+    });
+
 });
