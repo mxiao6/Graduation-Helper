@@ -13,6 +13,12 @@ https://wiki.illinois.edu/wiki/display/cs428sp18/Graduation+Helper
   ```bash
   npm run dev
   ```
+  
+* Fix style
+  ```bash
+  semistandard --fix "routes/**/*.js" "*.js"
+  semistandard --fix --env mocha "test/**/*.js"
+  ```
 
 ## Team Members
 <table>
