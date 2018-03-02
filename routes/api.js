@@ -8,7 +8,7 @@ router.get('/years', function (req, res) {
     let years = [];
     for (let i = 0; i < calendarYears.length; i++) {
       years.push(calendarYears[i]['_']);
-    } 
+    }
     res.json(years);
   });
 });
