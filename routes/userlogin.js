@@ -74,7 +74,7 @@ exports.login = function (req, res) {
       } else {
         if (results.length > 0) {
           if (results[0].password === password) {
-            res.send('login sucessfull');
+            res.status(250).send('login sucessfull');
           } else {
             res.status(422).send('Email and password does not match');
           }
@@ -150,7 +150,7 @@ exports.resetpassword = function (req, res) {
       if (error) {
         res.send('error ocurred');
       } else {
-        res.send('Reset successfully!');
+        res.status(300).send('Reset successfully!');
       }
     });
   });
