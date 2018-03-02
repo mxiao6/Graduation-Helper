@@ -31,9 +31,8 @@ class NormalLoginForm extends React.Component {
           this.props.history.push("/");
           console.log(res);
         })
-        .catch((error) => {
-          message.error(error);
-          console.log(error);
+        .catch((e) => {
+          console.log(e);
         });
       }
     });
