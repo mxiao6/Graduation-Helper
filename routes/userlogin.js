@@ -76,7 +76,8 @@ exports.login = function (req, res) {
           if (results[0].password === password) {
             res.send('login sucessfull');
           } else {
-            res.send(200,{error:'Email and password does not match'});
+            res.status(400).send('Email and password does not match');
+            // res.send(200,{error:'Email and password does not match'});
           }
         } else {
           res.send(200,{error:'Email does not exist'});
