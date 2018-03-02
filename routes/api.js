@@ -56,22 +56,50 @@ router.get('/course', function (req, res) {
   });
 });
 
-// TODO:
-router.get('/sections', function (req, res) {
+router.get('/section', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
   let course = req.query.course;
-
-  getElements('schedule/' + year + '/' + semester + '/' + course, function (result) {
-    let courses = result['ns2:subject']['courses'][0]['course'];
-    let courseList = [];
-    for (let i = 0; i < courses.length; i++) {
-      let name = courses[i]['_'];
-      let id = courses[i]['$']['id'];
-      courseList.push({[name]: id});
+  let courseNum = req.query.courseNumber;
+  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseNum, function (result) {
+    let section = result['ns2:course']['sections'][0]['section'];
+    let sectionList = [];
+    for (let i = 0; i < section.length; i++) {
+      let sectionName = section[i]['_'];
+      let sectionId = section[i]['$']['id'];
+      sectionList.push({[sectionName]: sectionId});
     }
-    res.json(courseList);
+    res.json(sectionList);
   });
 });
+
+// section returns dictionary:
+// sectionName,
+// sectionId,
+// sectionNumber,
+// enrollmentStatus,
+// type,
+// startTime,
+// endTime,
+// daysOfWeek
+/* getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseNum + '/' + sectionId, function (result) {
+    let sectionNumber = result['ns2:section']['sectionNumber'];
+    let enrollmentStatus = result['ns2:section']['enrollmentStatus'];
+    let type = result['ns2:section']['meetings'][0]['type'];
+    let startTime = result['ns2:section']['meetings'][0]['start'];
+    let endTime = result['ns2:section']['meetings'][0]['end'];
+    let daysOfWeek = result['ns2:section']['meetings'][0]['daysOfTheWeek'];
+    sectionList.push({
+        sectionName:sectionName,
+        sectionId:sectionId,
+        sectionNumber:sectionNumber,
+        enrollmentStatus:enrollmentStatus,
+        type:type,
+        startTime:startTime,
+        endTime:endTime,
+        daysOfWeek:daysOfWeek,
+    });
+    sectionList.push("TEST");
+}); */
 
 module.exports = router;
