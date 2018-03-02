@@ -26,7 +26,7 @@ exports.register = function (req, res) {
   };
   pool.getConnection(function (err, connection) {
     if (err) {
-      res.send('Get pool connection error');
+      res.send(500,{error:'Database pool connection error'});
     }
 
     connection.query('SELECT * FROM users WHERE email = ?', [req.body.email], function (error, results, fields) {
@@ -35,15 +35,15 @@ exports.register = function (req, res) {
 
       // check for duplicate register
       if (error) {
-        res.send('error ocurred');
+        res.send(500,{error:'Database query error ocurred'});
       } else {
         if (results.length > 0) {
-          res.send('Email already registered!');
+          res.send(200,{error:'Email already registered!'});
         } else {
           connection.query('INSERT INTO users SET ?', users, function (error, results, fields) {
             if (error) {
-              // console.log("error ocurred",error);
-              res.send('error ocurred');
+              //console.log("error ocurred",error);
+              res.send(500,{error:'Database query error ocurred'});
             } else {
               // console.log('The solution is: ', results);
               res.send('user registered sucessfully');
@@ -62,7 +62,7 @@ exports.login = function (req, res) {
   // Use the connection
   pool.getConnection(function (err, connection) {
     if (err) {
-      res.send('Get pool connection error');
+      res.send(500,{error:'Database pool connection error'});
     }
 
     connection.query('SELECT * FROM users WHERE email = ?', [email], function (error, results, fields) {
@@ -70,16 +70,16 @@ exports.login = function (req, res) {
       connection.release();
 
       if (error) {
-        res.send('error ocurred');
+        res.send(500,{error:'Database query error ocurred'});
       } else {
         if (results.length > 0) {
           if (results[0].password === password) {
             res.send('login sucessfull');
           } else {
-            res.send('Email and password does not match');
+            res.send(200,{error:'Email and password does not match'});
           }
         } else {
-          res.send('Email does not exist');
+          res.send(200,{error:'Email does not exist'});
         }
       }
     });
