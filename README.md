@@ -17,6 +17,7 @@ https://wiki.illinois.edu/wiki/display/cs428sp18/Graduation+Helper
 * Fix style
   ```bash
   semistandard --fix "routes/**/*.js" "*.js"
+  semistandard --fix --env mocha "test/**/*.js"
   ```
 
 ## Team Members
