@@ -23,8 +23,11 @@ app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.post('/hello', userlogin.hello);
+var server = app.listen(port, () => console.log(`Listening on ${port}`));
 
-app.listen(port, () => console.log(`Listening on ${port}`));
+function close(){
+  server.close();
+}
 
-module.exports = app;
+module.exports = server;
+module.exports.close = close;

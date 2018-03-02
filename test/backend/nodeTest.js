@@ -1,4 +1,3 @@
-var app = require('../../server.js');
 var chai = require('chai');
 var request = require('supertest');
 
@@ -6,13 +5,34 @@ var expect = chai.expect;
 
 describe('API tests', function() {
 
-    it('should have return version number', function (done) {
-        request(app)
+    var server;
+    beforeEach(function () {
+        server = require('../../server.js');;
+    });
+
+    afterEach(function () {
+        server.close();
+    });
+
+    it('register', function (done) {
+        request(server)
             .post('/register')
             .send({"username": "zuyi", "email" : "zuyi@gmail.com", "password": "pass"})
             .end(function (err, res) {
-                console.log(res.statusCode);
+                expect(res.statusCode).to.be.equal(422);
                 done();
+            });
+    });
+
+    it('login', function (done) {
+        request(server)
+            .post('/login')
+            .send({ "email" : "zuyi@gmail.com", "password": "pass"})
+            .end(function (err, res) {
+                expect(res.statusCode).to.be.equal(250);
+                done();
+                require('../../server.js').close()
+                console.log('hey')
             });
     });
 });

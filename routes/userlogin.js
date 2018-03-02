@@ -155,7 +155,3 @@ exports.resetpassword = function (req, res) {
     });
   });
 };
-
-exports.hello = function(req, res){
-  res.status(200).send("hello this is zuyi")
-}

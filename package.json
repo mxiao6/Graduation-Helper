@@ -6,7 +6,7 @@
     "client": "cd client && npm start",
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-    "test": "mocha"
+    "test": "mocha --exit"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
