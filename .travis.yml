@@ -27,7 +27,7 @@ script:
   - sleep 30
   - cd ..
   - mocha test/selenium
-  - mocha test/backend
+  - mocha --exit test/backend
   - semistandard "routes/**/*.js" "*.js"
   - semistandard --env mocha "test/**/*.js"
   - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then cd client; fi
