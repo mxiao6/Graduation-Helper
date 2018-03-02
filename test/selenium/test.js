@@ -20,6 +20,12 @@ describe('Test Suite', function () {
     });
   }
 
+    function findRegisterButton () {
+        return driver.findElements(webdriver.By.linkText("register now!")).then(function (result) {
+            return result[0];
+        });
+    }
+
   it('Page Title', function (done) {
     this.timeout(10000);
     driver.get('http://localhost:3000/')
@@ -41,4 +47,15 @@ describe('Test Suite', function () {
       .then(() => done())
       .catch(error => done(error));
   });
+
+    it('Register Button', function (done) {
+        this.timeout(10000);
+        driver.get('http://localhost:3000/#/Login')
+            .then(() => driver.wait(findRegisterButton, 2000))
+        .then(button => button.click())
+        .then(() => driver.getCurrentUrl())
+        .then(curUrl => curUrl.should.include('Signup'))
+        .then(() => done())
+        .catch(error => done(error));
+    });
 });
