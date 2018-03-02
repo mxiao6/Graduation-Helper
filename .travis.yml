@@ -38,5 +38,5 @@ script:
   - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then mv build public; fi
   - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then git checkout -b azure-deploy; fi
   - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then git add public; fi
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then git commit -m "Deploy to Azure"; fi
+  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then git commit -m "$TRAVIS_COMMIT"; fi
   - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then git push --force https://gh428:GH428429@grhfree.scm.azurewebsites.net:443/grhfree.git HEAD:master; fi
