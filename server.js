@@ -23,4 +23,8 @@ app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.post('/hello', userlogin.hello);
+
 app.listen(port, () => console.log(`Listening on ${port}`));
+
+module.exports = app;
