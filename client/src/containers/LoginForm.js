@@ -32,7 +32,8 @@ class NormalLoginForm extends React.Component {
           console.log(res);
         })
         .catch((e) => {
-          console.log(e);
+          message.error(e.response.data);
+          console.log(e.response);
         });
       }
     });
