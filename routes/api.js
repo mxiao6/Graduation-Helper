@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const getElements = require('./utilities.js').getElements;
 
+//TODO: DOCUMENTATION FOR EACH API CALL
+//APIDOCSJS
+//ADD status
+//moment js for time parsing
+
 router.get('/years', function (req, res) {
   getElements('schedule', function (result) {
     let calendarYears = result['ns2:schedule']['calendarYears'][0]['calendarYear'];
@@ -9,7 +14,7 @@ router.get('/years', function (req, res) {
     for (let i = 0; i < calendarYears.length; i++) {
       years.push(calendarYears[i]['_']);
     }
-    res.json(years);
+    res.status(200).json(years);
   });
 });
 
