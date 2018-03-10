@@ -8,7 +8,9 @@ const getElements = require('./utilities.js').getElements;
 // moment js for time parsing
 
 router.get('/years', function (req, res) {
-  getElements('schedule', function (result) {
+  getElements('schedule', function (error, result) {
+    if (error) res.status(500).json(result);
+
     let calendarYears = result['ns2:schedule']['calendarYears'][0]['calendarYear'];
     let years = [];
     for (let i = 0; i < calendarYears.length; i++) {
@@ -20,20 +22,24 @@ router.get('/years', function (req, res) {
 
 router.get('/semester', function (req, res) {
   let year = req.query.year;
-  getElements('schedule/' + year, function (result) {
+  getElements('schedule/' + year, function (error, result) {
+    if (error) res.status(500).json(result);
+
     let calendarSemester = result['ns2:calendarYear']['terms'][0]['term'];
     let semester = [];
     for (let i = 0; i < calendarSemester.length; i++) {
       semester.push(calendarSemester[i]['_']);
     }
-    res.json(semester);
+    res.status(200).json(semester);
   });
 });
 
 router.get('/major', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
-  getElements('schedule/' + year + '/' + semester, function (result) {
+  getElements('schedule/' + year + '/' + semester, function (error, result) {
+    if (error) res.status(500).json(result);
+
     let major = result['ns2:term']['subjects'][0]['subject'];
     let majorList = [];
     for (let i = 0; i < major.length; i++) {
@@ -41,7 +47,7 @@ router.get('/major', function (req, res) {
       let id = major[i]['$']['id'];
       majorList.push({subject: subject, id: id});
     }
-    res.json(majorList);
+    res.status(200).json(majorList);
   });
 });
 
@@ -49,7 +55,9 @@ router.get('/course', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
   let course = req.query.course;
-  getElements('schedule/' + year + '/' + semester + '/' + course, function (result) {
+  getElements('schedule/' + year + '/' + semester + '/' + course, function (error, result) {
+    if (error) res.status(500).json(result);
+
     let courses = result['ns2:subject']['courses'][0]['course'];
     let courseList = [];
     for (let i = 0; i < courses.length; i++) {
@@ -57,7 +65,7 @@ router.get('/course', function (req, res) {
       let id = courses[i]['$']['id'];
       courseList.push({course: course, id: id});
     }
-    res.json(courseList);
+    res.status(200).json(courseList);
   });
 });
 
@@ -65,8 +73,10 @@ router.get('/section', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
   let course = req.query.course;
-  let courseNum = req.query.courseNumber;
-  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseNum, function (result) {
+  let courseId = req.query.courseId;
+  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseId, function (error, result) {
+    if (error) res.status(500).json(result);
+
     let section = result['ns2:course']['sections'][0]['section'];
     let sectionList = [];
     for (let i = 0; i < section.length; i++) {
@@ -74,7 +84,7 @@ router.get('/section', function (req, res) {
       let sectionId = section[i]['$']['id'];
       sectionList.push({[sectionName]: sectionId});
     }
-    res.json(sectionList);
+    res.status(200).json(sectionList);
   });
 });
 
@@ -90,12 +100,13 @@ router.get('/sectionDetails', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
   let course = req.query.course;
-  let courseNum = req.query.courseNumber;
+  let courseId = req.query.courseId;
   let sectionId = req.query.sectionId;
-  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseNum + '/' + sectionId, function (result) {
-    let sectionDetails = [];
-    let sectionNumber = result['ns2:section']['sectionNumber'];
-    let enrollmentStatus = result['ns2:section']['enrollmentStatus'];
+  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '/' + sectionId, function (error, result) {
+    if (error) res.status(500).json(result);
+
+    let sectionNumber = result['ns2:section']['sectionNumber'][0];
+    let enrollmentStatus = result['ns2:section']['enrollmentStatus'][0];
     let type = result['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
 
     let startTime = result['ns2:section']['meetings'][0]['meeting'][0]['start'];
@@ -110,7 +121,7 @@ router.get('/sectionDetails', function (req, res) {
     if (daysOfWeek != null) {
       daysOfWeek = daysOfWeek[0];
     }
-    sectionDetails.push({
+    let sectionDetails = {
       sectionId: sectionId,
       sectionNumber: sectionNumber,
       enrollmentStatus: enrollmentStatus,
@@ -118,8 +129,8 @@ router.get('/sectionDetails', function (req, res) {
       startTime: startTime,
       endTime: endTime,
       daysOfWeek: daysOfWeek
-    });
-    res.json(sectionDetails);
+    };
+    res.status(200).json(sectionDetails);
   });
 });
 

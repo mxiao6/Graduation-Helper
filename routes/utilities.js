@@ -3,18 +3,18 @@ const parseString = require('xml2js').parseString;
 const async = require('async');
 
 // Helper function to make request to course xml data
-let getElements = (query, callbackTest) => {
+let getElements = (query, callback) => {
   request('https://courses.illinois.edu/cisapp/explorer/' + query + '.xml', function (error, response, body) {
     if (!error && response.statusCode === 200) {
       parseString(body, function (err, result) {
         if (err) {
-          console.log('ERROR:' + err);
+          callback(err, {'error': err});
+        } else {
+          callback(null, result);
         }
-        callbackTest(result);
       });
     } else {
-      console.log('ERROR: ' + error + ' ' + query);
-      return null;
+      callback(error, {'error': error});
     }
   }).end();
 };
@@ -23,7 +23,12 @@ let getElements = (query, callbackTest) => {
 let getListOfsectionsFromCourseNum = (context, course, doneCallBack) => {
   let params = course.split(/(\d+)/);
   let url = context.partialURL + params[0] + '/' + params[1];
-  getElements(url, function (result) {
+  getElements(url, function (error, result) {
+    if (error) {
+      console.log(error);
+      return doneCallBack(null, {});
+    }
+
     let section = result['ns2:course']['sections'][0]['section'];
     let sectionList = [];
     for (let i = 0; i < section.length; i++) {
@@ -45,9 +50,14 @@ let getListOfsectionsFromCourseNum = (context, course, doneCallBack) => {
 // TODO: Extract function to remove duplicate code later
 let getSectionDetails = (context, sectionId, doneCallBack) => {
   let url = context.partialURL + sectionId;
-  getElements(url, function (result) {
-    let sectionNumber = result['ns2:section']['sectionNumber'];
-    let enrollmentStatus = result['ns2:section']['enrollmentStatus'];
+  getElements(url, function (error, result) {
+    if (error) {
+      console.log(error);
+      return doneCallBack(null, {});
+    }
+
+    let sectionNumber = result['ns2:section']['sectionNumber'][0];
+    let enrollmentStatus = result['ns2:section']['enrollmentStatus'][0];
     let type = result['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
 
     let startTime = result['ns2:section']['meetings'][0]['meeting'][0]['start'];

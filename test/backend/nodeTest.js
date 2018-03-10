@@ -165,7 +165,7 @@ describe('API tests', () => {
         year: '2018',
         semester: 'spring',
         course: 'AAS',
-        courseNumber: '100'
+        courseId: '100'
       })
       .end((err, res) => {
         res.body.should.be.a('array');
