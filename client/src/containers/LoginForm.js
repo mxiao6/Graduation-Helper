@@ -2,9 +2,17 @@ import React from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
+import {
+  Form,
+  Icon,
+  Input,
+  Button,
+  Checkbox,
+  message
+} from 'antd';
+
 import '../styles/Login.css';
 
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
 const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
@@ -18,13 +26,15 @@ class NormalLoginForm extends React.Component {
           email: values.email,
           password: values.password
         })
-        .then(function (res) {
+        .then((res) => {
+          message.success(res.data);
+          this.props.history.push("/");
           console.log(res);
         })
-        .catch(function (error) {
-          console.log(error);
+        .catch((e) => {
+          message.error(e.response.data);
+          console.log(e.response);
         });
-
       }
     });
   }

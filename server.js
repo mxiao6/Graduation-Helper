@@ -14,6 +14,7 @@ app.use('/api', api);
 app.use('/schedule', generateSchedule);
 app.post('/register', userlogin.register);
 app.post('/login', userlogin.login);
+app.post('/resetpassword', userlogin.resetpassword);
 
 process.on('uncaughtException', (err) => {
   console.log('uncaughtException ' + err);
@@ -25,4 +26,8 @@ app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(port, () => console.log(`Listening on ${port}`));
+if (!module.parent) {
+  app.listen(port, () => console.log(`Listening on ${port}`));
+}
+
+module.exports = app;
