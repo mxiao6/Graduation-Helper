@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const getElements = require('./utilities.js').getElements;
 
-//TODO: DOCUMENTATION FOR EACH API CALL
-//APIDOCSJS
-//ADD status
-//moment js for time parsing
+// TODO: DOCUMENTATION FOR EACH API CALL
+// APIDOCSJS
+// ADD status
+// moment js for time parsing
 
 router.get('/years', function (req, res) {
   getElements('schedule', function (result) {
@@ -78,7 +78,7 @@ router.get('/section', function (req, res) {
   });
 });
 
-//section returns dictionary:
+// section returns dictionary:
 // sectionId,
 // sectionNumber,
 // enrollmentStatus,
@@ -86,31 +86,31 @@ router.get('/section', function (req, res) {
 // startTime,
 // endTime,
 // daysOfWeek
-router.get('/sectionDetails',function(req,res){
-    let year = req.query.year;
-    let semester = req.query.semester;
-    let course = req.query.course;
-    let courseNum = req.query.courseNumber;
-    let sectionId = req.query.sectionId;
-    getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseNum + '/' + sectionId, function (result) {
-        sectionDetails = [];
-        let sectionNumber = result['ns2:section']['sectionNumber'];
-        let enrollmentStatus = result['ns2:section']['enrollmentStatus'];
-        let type = result['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
-        let startTime = result['ns2:section']['meetings'][0]['meeting'][0]['start'][0]
-        let endTime = result['ns2:section']['meetings'][0]['meeting'][0]['end'][0]
-        let daysOfWeek = result['ns2:section']['meetings'][0]['meeting'][0]['daysOfTheWeek'][0];
-        sectionDetails.push({
-            sectionId:sectionId,
-            sectionNumber:sectionNumber,
-            enrollmentStatus:enrollmentStatus,
-            type:type,
-            startTime:startTime,
-            endTime:endTime,
-            daysOfWeek:daysOfWeek
-        });
-        res.json(sectionDetails);
+router.get('/sectionDetails', function (req, res) {
+  let year = req.query.year;
+  let semester = req.query.semester;
+  let course = req.query.course;
+  let courseNum = req.query.courseNumber;
+  let sectionId = req.query.sectionId;
+  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseNum + '/' + sectionId, function (result) {
+    let sectionDetails = [];
+    let sectionNumber = result['ns2:section']['sectionNumber'];
+    let enrollmentStatus = result['ns2:section']['enrollmentStatus'];
+    let type = result['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
+    let startTime = result['ns2:section']['meetings'][0]['meeting'][0]['start'][0];
+    let endTime = result['ns2:section']['meetings'][0]['meeting'][0]['end'][0];
+    let daysOfWeek = result['ns2:section']['meetings'][0]['meeting'][0]['daysOfTheWeek'][0];
+    sectionDetails.push({
+      sectionId: sectionId,
+      sectionNumber: sectionNumber,
+      enrollmentStatus: enrollmentStatus,
+      type: type,
+      startTime: startTime,
+      endTime: endTime,
+      daysOfWeek: daysOfWeek
     });
+    res.json(sectionDetails);
+  });
 });
 
 module.exports = router;
