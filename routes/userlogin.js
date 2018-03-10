@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+var user_id = null;
 
 // var nodemailer = require('nodemailer');
 // var randomstring = require('randomstring');
@@ -74,7 +75,8 @@ exports.login = function (req, res) {
       } else {
         if (results.length > 0) {
           if (results[0].password === password) {
-            res.status(250).send('login sucessfull');
+              user_id = results[0].user_id;
+              res.status(250).send('login sucessfull');
           } else {
             res.status(422).send('Email and password does not match');
           }
