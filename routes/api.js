@@ -97,9 +97,19 @@ router.get('/sectionDetails', function (req, res) {
     let sectionNumber = result['ns2:section']['sectionNumber'];
     let enrollmentStatus = result['ns2:section']['enrollmentStatus'];
     let type = result['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
-    let startTime = result['ns2:section']['meetings'][0]['meeting'][0]['start'][0];
-    let endTime = result['ns2:section']['meetings'][0]['meeting'][0]['end'][0];
-    let daysOfWeek = result['ns2:section']['meetings'][0]['meeting'][0]['daysOfTheWeek'][0];
+
+    let startTime = result['ns2:section']['meetings'][0]['meeting'][0]['start'];
+    if (startTime != null) {
+      startTime = startTime[0];
+    }
+    let endTime = result['ns2:section']['meetings'][0]['meeting'][0]['end'];
+    if (endTime != null) {
+      endTime = endTime[0];
+    }
+    let daysOfWeek = result['ns2:section']['meetings'][0]['meeting'][0]['daysOfTheWeek'];
+    if (daysOfWeek != null) {
+      daysOfWeek = daysOfWeek[0];
+    }
     sectionDetails.push({
       sectionId: sectionId,
       sectionNumber: sectionNumber,
