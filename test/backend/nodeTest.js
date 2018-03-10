@@ -125,7 +125,7 @@ describe('API tests', () => {
 
   it('it should get all major for given year and semester', function (done) {
     chai.request(server)
-      .get('/api/major')
+      .get('/api/subject')
       .query({
         year: '2018',
         semester: 'spring'
