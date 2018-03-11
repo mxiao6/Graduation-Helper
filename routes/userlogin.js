@@ -16,9 +16,9 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
 } else {
   pool = mysql.createPool({
     host: 'localhost',
-    user: 'xxx',
-    password: 'xxx',
-    database: 'xxx'
+    user: 'root',
+    password: '',
+    database: 'testDatabase'
   });
 }
 
