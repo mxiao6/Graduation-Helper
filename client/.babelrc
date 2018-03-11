@@ -1,0 +1,14 @@
+{
+  "presets": ["react"],
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["./src/containers"],
+        "alias": {
+          "styles": "./src/styles"
+        }
+      }
+    ]
+  ]
+}

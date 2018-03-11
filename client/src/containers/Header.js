@@ -1,14 +1,9 @@
-import React, { Component } from 'react';
-import {
-  NavLink,
-  withRouter
-} from 'react-router-dom';
-import '../styles/Header.css';
+import React, { Component } from "react";
+import { NavLink, withRouter } from "react-router-dom";
+import "styles/Header.css";
 
 class Header extends Component {
-  routes = [
-    { link: '/', title: 'Home' }
-  ]
+  routes = [{ link: "/", title: "Home" }];
 
   componentDidMount() {
     console.log(this.props);
@@ -22,15 +17,13 @@ class Header extends Component {
     return (
       <div>
         <div className="nav">
-          <NavLink to="/"><h1>Graduation Helper</h1></NavLink>
+          <NavLink to="/">
+            <h1>Graduation Helper</h1>
+          </NavLink>
 
           <div className="menu">
             {this.routes.map(({ link, title }) => (
-              <NavLink
-                exact
-                activeClassName="linkActive"
-                key={link}
-                to={link}>
+              <NavLink exact activeClassName="linkActive" key={link} to={link}>
                 {title}
               </NavLink>
             ))}
@@ -39,6 +32,6 @@ class Header extends Component {
       </div>
     );
   }
-};
+}
 
-export default withRouter(props => <Header {...props}/>);
+export default withRouter(props => <Header {...props} />);

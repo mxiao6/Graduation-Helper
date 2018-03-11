@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import WindowSizeListener from 'react-window-size-listener';
-import '../styles/Login.css';
+import React, { Component } from "react";
+import WindowSizeListener from "react-window-size-listener";
+import "styles/Login.css";
 
-import { Card } from 'antd';
+import { Card } from "antd";
 
-import LoginForm from './LoginForm';
+import LoginForm from "LoginForm";
 
 class Login extends Component {
   constructor(props) {
@@ -15,11 +15,15 @@ class Login extends Component {
   render() {
     return (
       <div>
-        <WindowSizeListener onResize={windowSize => {
-          this.setState({ height: windowSize.windowHeight });
-        }} />
+        <WindowSizeListener
+          onResize={windowSize => {
+            this.setState({ height: windowSize.windowHeight });
+          }}
+        />
         <div className="bodyContainer">
-          <div className="formContainer" /*style={{ marginTop: this.state.height/10 }}*/>
+          <div
+            className="formContainer" /*style={{ marginTop: this.state.height/10 }}*/
+          >
             <Card title="Login" bordered={true} className="cardStyle">
               <LoginForm history={this.props.history} />
             </Card>
