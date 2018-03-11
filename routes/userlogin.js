@@ -3,20 +3,24 @@ var mysql = require('mysql');
 // var nodemailer = require('nodemailer');
 // var randomstring = require('randomstring');
 
-var pool = mysql.createPool({
+var pool;
+
+if (process.argv.length > 2 && process.argv[2] === 'test') {
+  pool = mysql.createPool({
   // information for connecting to Azure database
-
-  host: 'graduationhelper.mysql.database.azure.com',
-  user: 'myadmin@graduationhelper',
-  password: 'Cs428grh!',
-  database: 'graduation_helper'
-
-  // Please try to use local database to test!!!
-  // host:'localhost',
-  // user:'xxx',
-  // password:'xxx',
-  // database:'xxx'
-});
+    host: 'graduationhelper.mysql.database.azure.com',
+    user: 'myadmin@graduationhelper',
+    password: 'Cs428grh!',
+    database: 'graduation_helper'
+  });
+} else {
+  pool = mysql.createPool({
+    host: 'localhost',
+    user: 'xxx',
+    password: 'xxx',
+    database: 'xxx'
+  });
+}
 
 exports.register = function (req, res) {
   var users = {
