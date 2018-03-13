@@ -8,13 +8,16 @@ let getElements = (query, callback) => {
     if (!error && response.statusCode === 200) {
       parseString(body, function (err, result) {
         if (err) {
-          callback(err, {'error': err});
+          callback(500, {'error': 'Could not parse xml data ' + err});
         } else {
           callback(null, result);
         }
       });
-    } else {
-      callback(error, {'error': error});
+    }else if (response.statusCode !== 200){
+      callback(response.statusCode, {'error': 'Could not retrieve data from course website. ' + response.body});
+      console.log(response)
+    }else {
+      callback(500, {'error': "Could not make request to the course website"});
     }
   }).end();
 };

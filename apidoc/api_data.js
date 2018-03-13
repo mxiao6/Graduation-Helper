@@ -64,7 +64,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"InternalServerError\"\n}",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
           "type": "json"
         }
       ]
@@ -186,7 +186,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"InternalServerError\"\n}",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
           "type": "json"
         }
       ]
@@ -266,7 +266,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"InternalServerError\"\n}",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
           "type": "json"
         }
       ]
@@ -307,7 +307,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"InternalServerError\"\n}",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
           "type": "json"
         }
       ]
@@ -373,7 +373,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"InternalServerError\"\n}",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
           "type": "json"
         }
       ]
@@ -401,7 +401,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"InternalServerError\"\n}",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
           "type": "json"
         }
       ]

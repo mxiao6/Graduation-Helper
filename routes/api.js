@@ -26,19 +26,23 @@ const getElements = require('./utilities.js').getElements;
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 500 Internal Server Error
 *   {
-*     "error": "InternalServerError"
+*     "error": "Could not make request to the course website"
 *   }
 */
 router.get('/years', function (req, res) {
-  getElements('schedule', function (error, result) {
-    if (error) res.status(500).json(result);
+  getElements('schedule', function (errorStatus, result) {
+    if (errorStatus) return res.status(errorStatus).json(result);
 
     let calendarYears = result['ns2:schedule']['calendarYears'][0]['calendarYear'];
-    let years = [];
-    for (let i = 0; i < calendarYears.length; i++) {
-      years.push(calendarYears[i]['_']);
+    if (calendarYears == null){
+      res.status(404).json({"error": "Could not get years"});
+    }else{
+      let years = [];
+      for (let i = 0; i < calendarYears.length; i++) {
+        years.push(calendarYears[i]['_']);
+      }
+      res.status(200).json(years);
     }
-    res.status(200).json(years);
   });
 });
 
@@ -62,20 +66,24 @@ router.get('/years', function (req, res) {
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 500 Internal Server Error
 *   {
-*     "error": "InternalServerError"
+*     "error": "Could not make request to the course website"
 *   }
 */
 router.get('/semester', function (req, res) {
   let year = req.query.year;
-  getElements('schedule/' + year, function (error, result) {
-    if (error) res.status(500).json(result);
+  getElements('schedule/' + year, function (errorStatus, result) {
+    if (errorStatus) return res.status(errorStatus).json(result);
 
     let calendarSemester = result['ns2:calendarYear']['terms'][0]['term'];
-    let semester = [];
-    for (let i = 0; i < calendarSemester.length; i++) {
-      semester.push(calendarSemester[i]['_'].split(' ')[0]);
+    if (calendarSemester == null){
+      res.status(404).json({"error": "No Semesters Found for year"});
+    }else {
+      let semester = [];
+      for (let i = 0; i < calendarSemester.length; i++) {
+        semester.push(calendarSemester[i]['_'].split(' ')[0]);
+      }
+      res.status(200).json(semester);
     }
-    res.status(200).json(semester);
   });
 });
 
@@ -110,23 +118,27 @@ router.get('/semester', function (req, res) {
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 500 Internal Server Error
 *   {
-*     "error": "InternalServerError"
+*     "error": "Could not make request to the course website"
 *   }
 */
 router.get('/subject', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
-  getElements('schedule/' + year + '/' + semester, function (error, result) {
-    if (error) res.status(500).json(result);
+  getElements('schedule/' + year + '/' + semester, function (errorStatus, result) {
+    if (errorStatus) return res.status(errorStatus).json(result);
 
     let major = result['ns2:term']['subjects'][0]['subject'];
-    let majorList = [];
-    for (let i = 0; i < major.length; i++) {
-      let subject = major[i]['_'];
-      let id = major[i]['$']['id'];
-      majorList.push({subject: subject, id: id});
+    if (major == null){
+      res.status(404).json({"error": "No majors found"});
+    }else{
+      let majorList = [];
+      for (let i = 0; i < major.length; i++) {
+        let subject = major[i]['_'];
+        let id = major[i]['$']['id'];
+        majorList.push({subject: subject, id: id});
+      }
+      res.status(200).json(majorList);
     }
-    res.status(200).json(majorList);
   });
 });
 
@@ -162,24 +174,28 @@ router.get('/subject', function (req, res) {
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 500 Internal Server Error
 *   {
-*     "error": "InternalServerError"
+*     "error": "Could not make request to the course website"
 *   }
 */
 router.get('/course', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
   let course = req.query.course;
-  getElements('schedule/' + year + '/' + semester + '/' + course, function (error, result) {
-    if (error) res.status(500).json(result);
+  getElements('schedule/' + year + '/' + semester + '/' + course, function (errorStatus, result) {
+    if (errorStatus) return res.status(errorStatus).json(result);
 
     let courses = result['ns2:subject']['courses'][0]['course'];
-    let courseList = [];
-    for (let i = 0; i < courses.length; i++) {
-      let course = courses[i]['_'];
-      let id = courses[i]['$']['id'];
-      courseList.push({course: course, id: id});
+    if (courses == null){
+      res.status(404).json({"error": "No courses found"});
+    }else{
+      let courseList = [];
+      for (let i = 0; i < courses.length; i++) {
+        let course = courses[i]['_'];
+        let id = courses[i]['$']['id'];
+        courseList.push({course: course, id: id});
+      }
+      res.status(200).json(courseList);
     }
-    res.status(200).json(courseList);
   });
 });
 
@@ -220,7 +236,7 @@ router.get('/course', function (req, res) {
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 500 Internal Server Error
 *   {
-*     "error": "InternalServerError"
+*     "error": "Could not make request to the course website"
 *   }
 */
 router.get('/section', function (req, res) {
@@ -228,17 +244,21 @@ router.get('/section', function (req, res) {
   let semester = req.query.semester;
   let course = req.query.course;
   let courseId = req.query.courseId;
-  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseId, function (error, result) {
-    if (error) res.status(500).json(result);
+  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseId, function (errorStatus, result) {
+    if (errorStatus) return res.status(errorStatus).json(result);
 
     let section = result['ns2:course']['sections'][0]['section'];
-    let sectionList = [];
-    for (let i = 0; i < section.length; i++) {
-      let sectionName = section[i]['_'];
-      let sectionId = section[i]['$']['id'];
-      sectionList.push({section: sectionName, id: sectionId});
+    if(section == null){
+      res.status(404).json({"error": "No sections found"});
+    }else{
+      let sectionList = [];
+      for (let i = 0; i < section.length; i++) {
+        let sectionName = section[i]['_'];
+        let sectionId = section[i]['$']['id'];
+        sectionList.push({section: sectionName, id: sectionId});
+      }
+      res.status(200).json(sectionList);
     }
-    res.status(200).json(sectionList);
   });
 });
 
@@ -276,7 +296,7 @@ router.get('/section', function (req, res) {
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 500 Internal Server Error
 *   {
-*     "error": "InternalServerError"
+*     "error": "Could not make request to the course website"
 *   }
 */
 router.get('/sectionDetails', function (req, res) {
@@ -285,8 +305,8 @@ router.get('/sectionDetails', function (req, res) {
   let course = req.query.course;
   let courseId = req.query.courseId;
   let sectionId = req.query.sectionId;
-  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '/' + sectionId, function (error, result) {
-    if (error) res.status(500).json(result);
+  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '/' + sectionId, function (errorStatus, result) {
+    if (errorStatus) return res.status(errorStatus).json(result);
 
     let sectionNumber = result['ns2:section']['sectionNumber'][0];
     let enrollmentStatus = result['ns2:section']['enrollmentStatus'][0];
