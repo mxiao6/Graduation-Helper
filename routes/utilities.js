@@ -3,21 +3,21 @@ const parseString = require('xml2js').parseString;
 const async = require('async');
 
 // Helper function to make request to course xml data
-let getElements = (query, callback) => {
+let getElements = (query, myCallback) => {
   request('https://courses.illinois.edu/cisapp/explorer/' + query + '.xml', function (error, response, body) {
     if (!error && response.statusCode === 200) {
       parseString(body, function (err, result) {
         if (err) {
-          callback(500, {'error': 'Could not parse xml data ' + err});
+          myCallback(500, {'error': 'Could not parse xml data ' + err});
         } else {
-          callback(null, result);
+          myCallback(null, result);
         }
       });
-    }else if (response.statusCode !== 200){
-      callback(response.statusCode, {'error': 'Could not retrieve data from course website. ' + response.body});
-      console.log(response)
-    }else {
-      callback(500, {'error': "Could not make request to the course website"});
+    } else if (response.statusCode !== 200) {
+      myCallback(response.statusCode, {'error': 'Could not retrieve data from course website. ' + response.body});
+      console.log(response);
+    } else {
+      myCallback(500, {'error': 'Could not make request to the course website'});
     }
   }).end();
 };

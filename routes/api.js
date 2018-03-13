@@ -34,9 +34,9 @@ router.get('/years', function (req, res) {
     if (errorStatus) return res.status(errorStatus).json(result);
 
     let calendarYears = result['ns2:schedule']['calendarYears'][0]['calendarYear'];
-    if (calendarYears == null){
-      res.status(404).json({"error": "Could not get years"});
-    }else{
+    if (calendarYears == null) {
+      res.status(404).json({'error': 'Could not get years'});
+    } else {
       let years = [];
       for (let i = 0; i < calendarYears.length; i++) {
         years.push(calendarYears[i]['_']);
@@ -75,9 +75,9 @@ router.get('/semester', function (req, res) {
     if (errorStatus) return res.status(errorStatus).json(result);
 
     let calendarSemester = result['ns2:calendarYear']['terms'][0]['term'];
-    if (calendarSemester == null){
-      res.status(404).json({"error": "No Semesters Found for year"});
-    }else {
+    if (calendarSemester == null) {
+      res.status(404).json({'error': 'No Semesters Found for year'});
+    } else {
       let semester = [];
       for (let i = 0; i < calendarSemester.length; i++) {
         semester.push(calendarSemester[i]['_'].split(' ')[0]);
@@ -128,9 +128,9 @@ router.get('/subject', function (req, res) {
     if (errorStatus) return res.status(errorStatus).json(result);
 
     let major = result['ns2:term']['subjects'][0]['subject'];
-    if (major == null){
-      res.status(404).json({"error": "No majors found"});
-    }else{
+    if (major == null) {
+      res.status(404).json({'error': 'No majors found'});
+    } else {
       let majorList = [];
       for (let i = 0; i < major.length; i++) {
         let subject = major[i]['_'];
@@ -185,9 +185,9 @@ router.get('/course', function (req, res) {
     if (errorStatus) return res.status(errorStatus).json(result);
 
     let courses = result['ns2:subject']['courses'][0]['course'];
-    if (courses == null){
-      res.status(404).json({"error": "No courses found"});
-    }else{
+    if (courses == null) {
+      res.status(404).json({'error': 'No courses found'});
+    } else {
       let courseList = [];
       for (let i = 0; i < courses.length; i++) {
         let course = courses[i]['_'];
@@ -248,9 +248,9 @@ router.get('/section', function (req, res) {
     if (errorStatus) return res.status(errorStatus).json(result);
 
     let section = result['ns2:course']['sections'][0]['section'];
-    if(section == null){
-      res.status(404).json({"error": "No sections found"});
-    }else{
+    if (section == null) {
+      res.status(404).json({'error': 'No sections found'});
+    } else {
       let sectionList = [];
       for (let i = 0; i < section.length; i++) {
         let sectionName = section[i]['_'];
