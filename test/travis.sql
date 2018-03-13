@@ -19,4 +19,4 @@ CREATE TABLE testDatabase.schedules(
   schedule_id int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
   semester varchar(8) NOT NULL,
   user_id int(11) NOT NULL
-)
+);
