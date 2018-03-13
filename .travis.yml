@@ -3,6 +3,11 @@ node_js:
  - "stable"
  
 sudo: required
+
+services:
+  - mysql
+before_install:
+  - mysql -u root --password="" < test/travis.sql
  
 before_script:
   - npm install -g mocha
