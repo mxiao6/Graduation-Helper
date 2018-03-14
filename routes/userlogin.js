@@ -1,22 +1,28 @@
 var mysql = require('mysql');
+// var user_id = null;
 
 // var nodemailer = require('nodemailer');
 // var randomstring = require('randomstring');
 
-var pool = mysql.createPool({
-  // information for connecting to Azure database
+var pool;
 
-  host: 'graduationhelper.mysql.database.azure.com',
-  user: 'myadmin@graduationhelper',
-  password: 'Cs428grh!',
-  database: 'graduation_helper'
+if (process.argv.length > 2 && process.argv[2] === 'test') {
+  pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'testDatabase'
 
-  // Please try to use local database to test!!!
-  // host:'localhost',
-  // user:'xxx',
-  // password:'xxx',
-  // database:'xxx'
-});
+  });
+} else {
+  pool = mysql.createPool({
+    // information for connecting to Azure database
+    host: 'graduationhelper.mysql.database.azure.com',
+    user: 'myadmin@graduationhelper',
+    password: 'Cs428grh!',
+    database: 'graduation_helper'
+  });
+}
 
 exports.register = function (req, res) {
   var users = {
@@ -74,6 +80,7 @@ exports.login = function (req, res) {
       } else {
         if (results.length > 0) {
           if (results[0].password === password) {
+            // user_id = results[0].user_id;
             res.status(250).send('login sucessfull');
           } else {
             res.status(422).send('Email and password does not match');
