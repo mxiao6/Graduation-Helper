@@ -2,9 +2,7 @@ const express = require('express');
 const router = express.Router();
 const getElements = require('./utilities.js').getElements;
 
-// TODO: DOCUMENTATION FOR EACH API CALL
-// APIDOCSJS
-// ADD status
+// TODO: write api call to retrieve section details from crn
 // moment js for time parsing
 
 /**
