@@ -7,11 +7,11 @@ DB SCHEMA:
 Users Table:
 user_id* (INT)
 username (VARCHAR(16))
-email (VARCHAR(16))
+email (VARCHAR(32))
 password (VARCHAR(32))
 
 Schedule Table:
-schedule_id* (UNSIGNED INT)
+schedule_id* (INT)
 semester (VARCHAR(8))
 user_id (UNSIGNED INT)
 
@@ -21,3 +21,5 @@ subject (VARCHAR(4))
 course_number (INT)
 crn (INT)
 schedule_id (INT)
+semester (VARCHAR(6))
+year (YEAR(4))
