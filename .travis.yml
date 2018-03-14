@@ -21,6 +21,8 @@ deploy:
   username: gh428
   password: GH428429
   site: grhfree.scm.azurewebsites.net
+  on:
+    branch: master
 
 addons:
   apt:
