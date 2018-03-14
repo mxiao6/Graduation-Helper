@@ -7,19 +7,19 @@ var pool;
 
 if (process.argv.length > 2 && process.argv[2] === 'test') {
   pool = mysql.createPool({
-      host: 'localhost',
-      user: 'root',
-      password: '',
-      database: 'testDatabase'
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'testDatabase'
 
   });
 } else {
   pool = mysql.createPool({
-      // information for connecting to Azure database
-      host: 'graduationhelper.mysql.database.azure.com',
-      user: 'myadmin@graduationhelper',
-      password: 'Cs428grh!',
-      database: 'graduation_helper'
+    // information for connecting to Azure database
+    host: 'graduationhelper.mysql.database.azure.com',
+    user: 'myadmin@graduationhelper',
+    password: 'Cs428grh!',
+    database: 'graduation_helper'
   });
 }
 
