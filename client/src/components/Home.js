@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import WindowSizeListener from "react-window-size-listener";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 
 import "styles/Home.css";
-
-import { Button } from "antd";
 
 class Home extends Component {
   constructor(props) {

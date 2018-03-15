@@ -1,5 +1,9 @@
 import React from "react";
 import axios from "axios";
+import { POST_SIGNUP } from "api";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as loginActions from "containers/Login";
 
 import { Form, Icon, Input, Button, message } from "antd";
 
@@ -15,15 +19,19 @@ class NormalSignupForm extends React.Component {
         console.log("Received values of form: ", values);
 
         axios
-          .post("/register", {
+          .post(POST_SIGNUP, {
             username: values.username,
             email: values.email,
             password: values.password
           })
           .then(res => {
-            message.success(res.data);
-            this.props.history.push("/");
             console.log(res);
+            message.success(res.data);
+            this.props.actions.login({
+              email: values.email,
+              password: values.password
+            });
+            this.props.history.push("/");
           })
           .catch(e => {
             message.error(e.response.data);
@@ -82,6 +90,20 @@ class NormalSignupForm extends React.Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  return {
+    loggedIn: state.auth.user !== undefined
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(loginActions, dispatch)
+  };
+}
+
 const WrappedNormalSignupForm = Form.create()(NormalSignupForm);
 
-export default WrappedNormalSignupForm;
+export default connect(mapStateToProps, mapDispatchToProps)(
+  WrappedNormalSignupForm
+);
