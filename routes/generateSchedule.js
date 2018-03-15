@@ -32,39 +32,50 @@ function preProcessSections (sectionList) {
 }
 
 function occursOnSameDays (currSection, newSection) {
-  let daysOfTheWeek = newSection.daysOfWeek.trim();
+  if (currSection.startTime === 'ARRANGED' || newSection.startTime === 'ARRANGED')
+    return false;
+
+  let daysOfTheWeek = newSection.daysOfWeek;
   for (let i = 0; i < daysOfTheWeek.length; i++) {
-    if (currSection.daysOfWeek.trim().indexOf(daysOfTheWeek.charAt(i)) > -1) {
+    if (currSection.daysOfWeek.indexOf(daysOfTheWeek.charAt(i)) > -1) {
       return true;
     }
   }
   return false;
 }
 
-function insertAndSortIfNotOverlapped (currSections, newSection) {
+function insertAndSortIfNotOverlapped (currSections, newSections) {
   if (currSections.length === 0) {
-    currSections.push(newSection);
+    currSections.push(...newSections);
     return false;
   }
 
-  for (let i = 0; i < currSections.length; i++) {
-    if (occursOnSameDays(currSections[i], newSection)) {
-      let startA = new Date('January 1, 2000 ' + currSections[i].startTime);
-      let endA = new Date('January 1, 2000 ' + currSections[i].endTime);
-      let startB = new Date('January 1, 2000 ' + newSection.startTime);
-      let endB = new Date('January 1, 2000 ' + newSection.endTime);
+  for (let j = 0; j < newSections.length; j++) {
+    let newSection = newSections[j];
+    let happensLatest = true;
 
-      if (startA <= endB && endA >= startB) return true;
+    for (let i = 0; i < currSections.length; i++){
+      if (occursOnSameDays(currSections[i], newSection)) {
+        let startA = new Date('January 1, 2000 ' + currSections[i].startTime);
+        let endA = new Date('January 1, 2000 ' + currSections[i].endTime);
+        let startB = new Date('January 1, 2000 ' + newSection.startTime);
+        let endB = new Date('January 1, 2000 ' + newSection.endTime);
 
-      // New section happens before current Section
-      if (startB < startA) {
-        currSections.splice(i, 0, newSection);
-        return false;
+        if (startA <= endB && endA >= startB){
+          return true;
+        }
+        // New section happens before current Section
+        if (startB < startA) {
+          currSections.splice(i, 0, newSection);
+          happensLatest = false;
+          break;
+        }
       }
     }
+    if (happensLatest){
+      currSections.push(newSection);
+    }
   }
-
-  currSections.push(newSection);
   return false;
 }
 
@@ -78,16 +89,15 @@ function cartesianProduct (data) {
       var baseArray = current[c];
       for (var a = 0; a < arr.length; a++) {
         var clone = baseArray.slice();
-        // clone.push(arr[a]);
-        // newCurrent.push(clone);
-        var isOverlapped = insertAndSortIfNotOverlapped(clone, arr[a]);
-        console.log(isOverlapped);
+        var isOverlapped = insertAndSortIfNotOverlapped(clone, [arr[a]]);
+        // console.log("Overlaps: " + isOverlapped);
         if (!isOverlapped) {
           newCurrent.push(clone);
         } else {
-          console.log('TRUE PRINT');
-          console.log(clone);
-          console.log(arr[a]);
+          // console.log('TRUE PRINT');
+          // console.log(clone);
+          // console.log(arr[a]);
+          // console.log(current);
         }
       }
     }
@@ -98,10 +108,9 @@ function cartesianProduct (data) {
 }
 
 function flattenSectionLetters (sectionList) {
-  let vals = Object.values(sectionList);
   let flatten = {};
-  for (let i = 0; i < vals.length; i++) {
-    flatten = Object.assign(flatten, vals[i]);
+  for (let letter in sectionList){
+    flatten[letter] = Object.values(sectionList[letter])[0];
   }
   return flatten;
 }
@@ -109,12 +118,16 @@ function flattenSectionLetters (sectionList) {
 // Very very simple bandage for certain classes where theres only 1 section
 // And you have to pick one of each like physc 211
 function shouldFlatten (processedDict) {
+  let sectionAExists = false;
   for (let sectionLetter in processedDict) {
+    if(sectionLetter === 'A'){
+      sectionAExists = true;
+    }
     if (Object.keys(processedDict[sectionLetter]).length >= 2) {
       return false;
     }
   }
-  return true;
+  return sectionAExists;
 }
 
 // Get All section permutations for a given class course
@@ -122,10 +135,11 @@ function getCourseSectionPermutations (classSectionList) {
   let processedDict = preProcessSections(classSectionList);
   let allPermutations = [];
 
-  console.log(shouldFlatten(processedDict));
+  // console.log(shouldFlatten(processedDict));
+  // console.log(processedDict);
+
   if (shouldFlatten(processedDict)) {
     let flattened = flattenSectionLetters(processedDict);
-    console.log(flattened);
     allPermutations = cartesianProduct(flattened);
   } else {
     for (let sectionLetter in processedDict) {
@@ -141,28 +155,63 @@ function isConflictingWithSchedule (sections, schedule) {
   return false;
 }
 
-let gen3 = (currSchedule, classes, index) => {
-  if (index >= classes.length) {
-    return [currSchedule];
-  }
-  let sectionList = classes[index].sectionList;
-  let newSchedules = [];
-  for (let i = 0; i < sectionList.length; i++) {
-    let section = sectionList[i];
+// function generateRecursive (currSchedule, listOfPermutationsForEveryClass, index) {
+//   if (index >= listOfPermutationsForEveryClass.length) {
+//     return [currSchedule];
+//   }
+//   let newSchedules = [];
+//   let permuationsForClass = listOfPermutationsForEveryClass[index];
+//   for (let i = 0; i < permuationsForClass.length; i++) {
+//     let newSections = permuationsForClass[i];
+//     let newSchedule = currSchedule.slice();
+//     let isOverlapping = insertAndSortIfNotOverlapped(newSchedule, newSections);
+//     if (!isOverlapping) {
+//       let generatedSchedule = generateRecursive(newSchedule, listOfPermutationsForEveryClass, index + 1);
+//       newSchedules = newSchedules.concat(generatedSchedule);
+//     }
+//   }
+//   return newSchedules;
+// };
 
-    if (!isConflictingWithSchedule(section, currSchedule)) {
-      let nextSchedule = [...currSchedule, section];
-      let generatedSchedule = gen3(nextSchedule, classes, index + 1);
-      newSchedules = newSchedules.concat(generatedSchedule);
+function generateIterative(listOfPermutationsForEveryClass){
+  console.log("Generating Schedules");
+  let count = 0;
+  let newSchedules = [[]];
+  for (let i = 0; i < listOfPermutationsForEveryClass.length; i++){
+    let classPermutations = listOfPermutationsForEveryClass[i];
+    let newCurrent = [];
+    for (let j = 0; j < newSchedules.length; j++){
+      let base = newSchedules[j];
+      for (let k = 0; k < classPermutations.length; k++){
+        let clone = base.slice();
+        let isOverlapped = insertAndSortIfNotOverlapped(clone, classPermutations[k]);
+        if (!isOverlapped){
+          newCurrent.push(clone);
+        }
+      }
     }
+    newSchedules = newCurrent;
   }
   return newSchedules;
-};
+}
 
-// let genPrototype = (classes) => {
-//   let schedules = gen3([], classes, 0);
-//   return schedules;
-// };
+function getPermutationsForAllClasses(classes){
+  console.log("Calculating permuations for every class");
+  let permutationResult = [];
+  for (let i = 0; i < classes.length; i++){
+    permutationResult.push(getCourseSectionPermutations(classes[i].sectionList));
+  }
+  console.log("Finished finding all permutations");
+  return permutationResult;
+}
+
+let genPrototype = (classes) => {
+  let allPermutations = getPermutationsForAllClasses(classes);
+
+  // let schedules = generateRecursive([], allPermutations, 0);
+  let schedules = generateIterative(allPermutations);
+  return schedules;
+};
 
 router.get('/generate/:year([0-9]{4})/:semester(summer|fall|spring|winter)', function (req, res) {
   /*
@@ -171,17 +220,18 @@ router.get('/generate/:year([0-9]{4})/:semester(summer|fall|spring|winter)', fun
   Assuming selected classes are given as ['AAS100','CS428','CS225', etc]
   */
   let url = 'schedule/' + req.params.year + '/' + req.params.semester + '/';
-  // let selectedClasses = ['CS461', 'THEA101', 'CS125','PHYS211','CS173'];
-  let selectedClasses = ['CS173', 'CS125', 'PHYS211'];
+  let selectedClasses = ['CS173', 'CS125','CS225'];
+  // let selectedClasses = ['CS173','CS125','CS225','CHEM236','CHEM237','CHEM312'];
   getAllDetails(url, selectedClasses, function (result) {
-    // res.json(result[3]);
-    // let p = preProcessSections(result[4].sectionList)
-    // res.json(p);
-    // res.json(cartesianProduct(flattenSectionLetters(p)));
-    let test = result[2].sectionList;
-    let perm = getCourseSectionPermutations(test);
-    // let perm = preProcessSections(test);
-    res.json(perm);
+    let generatedSchedules = [];
+    for (let i = 0; i < 1; i++){
+      console.time("Generate Schedules");
+      generatedSchedules = genPrototype(result);
+      console.timeEnd("Generate Schedules");
+    }
+    console.log("NUMBER OF SCHEDULES: " + generatedSchedules.length);
+    res.json(generatedSchedules);
+    // res.json([]);
   });
 });
 

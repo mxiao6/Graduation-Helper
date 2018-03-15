@@ -73,10 +73,12 @@ let getSectionDetails = (context, sectionId, doneCallBack) => {
     }
     let daysOfWeek = result['ns2:section']['meetings'][0]['meeting'][0]['daysOfTheWeek'];
     if (daysOfWeek != null) {
-      daysOfWeek = daysOfWeek[0];
+      daysOfWeek = daysOfWeek[0].trim();
     }
 
     let sectionDetails = {
+      subjectId: context.subjectId,
+      courseId: context.courseId,
       sectionId: sectionId,
       sectionNumber: sectionNumber,
       enrollmentStatus: enrollmentStatus,
@@ -95,7 +97,7 @@ let getAllClassesSectionDetails = (context, listOfSectionsForClass, doneCallBack
   // console.log("Getting details now ");
   // console.log(listOfSectionsForClass);
   let partialURL = context.partialURL + listOfSectionsForClass.subjectId + '/' + listOfSectionsForClass.courseId + '/';
-  async.map(sectionList, getSectionDetails.bind(null, {partialURL: partialURL}), function (err, results) {
+  async.map(sectionList, getSectionDetails.bind(null, {partialURL: partialURL, subjectId: listOfSectionsForClass.subjectId, courseId: listOfSectionsForClass.courseId}), function (err, results) {
     if (err) {
       console.log('ERROR: ' + err);
     }
@@ -107,9 +109,8 @@ let getAllClassesSectionDetails = (context, listOfSectionsForClass, doneCallBack
 // Gets all data from list of classes.
 // For now assuming input of form ['CS428','CS421','CS412','CS225']
 let getAllDetails = (partialURL, selectedClasses, callback) => {
-  console.log('Getting all the classes details');
+  console.log('Getting all selected classes information');
   async.map(selectedClasses, getListOfsectionsFromCourseNum.bind(null, {partialURL: partialURL}), function (err, allClassesSectionList) {
-    // console.log(allClassesSectionList);
     if (err) {
       console.log('ERROR: ' + err);
     }
