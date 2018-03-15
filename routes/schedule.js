@@ -35,6 +35,12 @@ exports.save = function(req,res) {
             let scheduleId = res[0].schedule_id;
             //console.log("SCHEDULEID: " + scheduleId);
 
+            if(crns.length != subjects.length || crns.length != courseNumbers.length || subjects.length != courseNumbers.length)
+                throw {
+                    name: "Inconsistent course lengths",
+                    message: "Course count is not uniform across inputs"
+                };
+
             //start adding the courses
             for(let i = 0; i < crns.length; i++) {
                 connection.query('INSERT INTO Courses (subject,course_number,crn,schedule_id,semester,year) VALUES (?,?,?,?,?,?);',[subjects[i],courseNumbers[i],crns[i],scheduleId,semester,year],function(err,res){
