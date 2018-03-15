@@ -4,7 +4,7 @@ import "styles/Login.css";
 
 import { Card } from "antd";
 
-import SignupForm from "SignupForm";
+import SignupForm from "components/SignupForm";
 
 class Login extends Component {
   constructor(props) {

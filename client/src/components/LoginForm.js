@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import * as loginActions from "containers/Login";
 
 import { Form, Icon, Input, Button, Checkbox, message } from "antd";
 
@@ -79,6 +80,20 @@ class NormalLoginForm extends React.Component {
   }
 }
 
-const WrappedNormalLoginForm = Form.create()(NormalLoginForm);
+function mapStateToProps(state, ownProps) {
+  return {
+    loginError: state.status.loginFailed,
+    loggedIn: state.auth.user !== undefined
+  };
+}
 
-export default WrappedNormalLoginForm;
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(loginActions, dispatch)
+  };
+}
+
+const WrappedNormalLoginForm = Form.create()(NormalLoginForm);
+export default connect(mapStateToProps, mapDispatchToProps)(
+  WrappedNormalLoginForm
+);

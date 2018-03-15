@@ -4,9 +4,10 @@
     [
       "module-resolver",
       {
-        "root": ["./src/containers"],
+        "root": ["./src"],
         "alias": {
-          "styles": "./src/styles"
+          "api": "./src/constants/api",
+          "actionTypes": "./src/redux/actionTypes"
         }
       }
     ]
