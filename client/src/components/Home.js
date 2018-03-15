@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import WindowSizeListener from "react-window-size-listener";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
 import "styles/Home.css";
@@ -14,6 +15,7 @@ class Home extends Component {
   }
 
   render() {
+    const { user } = this.props;
     return (
       <div>
         <WindowSizeListener
@@ -35,9 +37,11 @@ class Home extends Component {
                 and see at a glance what your friends are up to.
               </p>
             </div>
-            <Button type="primary" className="loginButton">
+            { user ? <div>Hello, {user.username}!</div>
+            :<Button type="primary" className="loginButton">
               <Link to={"/Login"}>Login</Link>
             </Button>
+            }
           </div>
         </div>
       </div>
@@ -45,4 +49,10 @@ class Home extends Component {
   }
 }
 
-export default Home;
+function mapStateToProps(state, ownProps) {
+  return {
+    user: state.auth.user
+  };
+}
+
+export default connect(mapStateToProps)(Home);
