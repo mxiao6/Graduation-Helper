@@ -24,9 +24,15 @@ class Home extends Component {
         <div className="bodyContainer">
           <div className="loginContainer">
             <div className="intro">
-              <h1>
-                The calendar <br /> reinvented for students.
-              </h1>
+              {user ? (
+                <h1>
+                  Hello, <br /> {user.username}!
+                </h1>
+              ) : (
+                <h1>
+                  The calendar <br /> reinvented for students.
+                </h1>
+              )}
               <p>
                 Graduation Helper is a calendar app designed for the modern
                 college student. Using Graduation Helper, you can add your class
@@ -34,7 +40,6 @@ class Home extends Component {
                 and see at a glance what your friends are up to.
               </p>
             </div>
-            {user && <div>Hello, {user.username}!</div>}
           </div>
         </div>
       </div>
