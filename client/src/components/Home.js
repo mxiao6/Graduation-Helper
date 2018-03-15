@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import WindowSizeListener from "react-window-size-listener";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 
+import { Button } from "antd";
 import "styles/Home.css";
 
 class Home extends Component {
@@ -22,7 +24,7 @@ class Home extends Component {
         />
 
         <div className="bodyContainer">
-          <div className="loginContainer">
+          <div className="mainContainer">
             <div className="intro">
               {user ? (
                 <h1>
@@ -39,6 +41,11 @@ class Home extends Component {
                 schedule in seconds, discover interesting events around campus,
                 and see at a glance what your friends are up to.
               </p>
+              {user && (
+                <Button type="primary" className="tempButton">
+                  <Link to={"/ClassSelection"}>Select Class</Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>

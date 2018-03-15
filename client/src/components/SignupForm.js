@@ -35,7 +35,7 @@ class NormalSignupForm extends React.Component {
           })
           .catch(e => {
             message.error(e.response.data);
-            console.log(e);
+            console.log(e.response);
           });
       }
     });

@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import _ from "lodash";
 import {
   GET_YEAR,
   GET_SEMESTER,
@@ -8,26 +9,34 @@ import {
   GET_SECTION
 } from "api";
 
-import { Cascader } from "antd";
+import { Cascader, Spin, message } from "antd";
 import "styles/ClassSelection.css";
-
-const options = [
-  {
-    value: "zhejiang",
-    label: "Zhejiang",
-    isLeaf: false
-  },
-  {
-    value: "jiangsu",
-    label: "Jiangsu",
-    isLeaf: false
-  }
-];
 
 class ClassSelection extends React.Component {
   state = {
-    options
+    yearList: undefined
   };
+
+  componentWillMount() {
+    axios
+      .get(GET_YEAR)
+      .then(res => {
+        this.setState({
+          yearList: _.map(res.data, year => {
+            return {
+              value: year,
+              label: year,
+              isLeaf: false
+            };
+          })
+        });
+      })
+      .catch(e => {
+        message.error(e.response.data);
+        console.log(e.response);
+      });
+  }
+
   onChange = (value, selectedOptions) => {
     console.log(value, selectedOptions);
   };
@@ -49,18 +58,24 @@ class ClassSelection extends React.Component {
         }
       ];
       this.setState({
-        options: [...this.state.options]
+        yearList: [...this.state.yearList]
       });
     }, 1000);
   };
   render() {
     return (
-      <Cascader
-        options={this.state.options}
-        loadData={this.loadData}
-        onChange={this.onChange}
-        changeOnSelect
-      />
+      <div className="bodyContainer">
+        {this.state.yearList ? (
+          <Cascader
+            options={this.state.yearList}
+            loadData={this.loadData}
+            onChange={this.onChange}
+            changeOnSelect
+          />
+        ) : (
+          <Spin />
+        )}
+      </div>
     );
   }
 }
