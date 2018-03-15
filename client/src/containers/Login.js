@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as types from "actionTypes";
 import { POST_LOGIN } from "api";
+import { message } from "antd";
 
 export function loginSuccess(user) {
   return {
@@ -18,22 +19,16 @@ export function loginFailure() {
 export function login(info) {
   return function(dispatch) {
     return axios
-      .post(USER_LOGIN, info)
+      .post(POST_LOGIN, info)
       .then(res => {
+        console.log(res);
         dispatch(loginSuccess(res.data));
+        message.success(res.data);
       })
-      .catch(error => {
-        console.log("login failure", error.response);
-        if (error.response.data.error === "User Nonexist") {
-          Alert.alert("未识别到该账号，请注册或绑定已有账号");
-        }
+      .catch(e => {
+        console.error("login failure", e.response);
         dispatch(loginFailure());
+        message.error(e.response.data);
       });
-  };
-}
-
-export function updateSession(info) {
-  return function(dispatch) {
-    dispatch(loginSuccess(info));
   };
 }

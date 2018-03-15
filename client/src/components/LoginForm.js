@@ -1,38 +1,39 @@
 import React from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import * as loginActions from "containers/Login";
 
-import { Form, Icon, Input, Button, Checkbox, message } from "antd";
+import { Form, Icon, Input, Button, Checkbox } from "antd";
 
 import "styles/Login.css";
 
 const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
+  state = {};
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if (nextProps.loginError && !this.props.loginError) {
+    }
+    if (nextProps.loggedIn) {
+      this.props.history.push("/");
+    }
+  }
+
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log("Received values of form: ", values);
-
-        axios
-          .post("/login", {
-            email: values.email,
-            password: values.password
-          })
-          .then(res => {
-            message.success(res.data);
-            this.props.history.push("/");
-            console.log(res);
-          })
-          .catch(e => {
-            message.error(e.response.data);
-            console.log(e.response);
-          });
+        this.props.actions.login({
+          email: values.email,
+          password: values.password
+        });
       }
     });
   };
+
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
@@ -82,7 +83,7 @@ class NormalLoginForm extends React.Component {
 
 function mapStateToProps(state, ownProps) {
   return {
-    loginError: state.status.loginFailed,
+    loginError: state.auth.loginFailed,
     loggedIn: state.auth.user !== undefined
   };
 }

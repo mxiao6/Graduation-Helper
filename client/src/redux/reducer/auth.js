@@ -8,6 +8,8 @@ export default function(state = initialState.auth, action) {
     case types.LOGOUT_SUCCESS:
     case types.SESSION_EXPIRED:
       return { ...state, user: undefined };
+    case types.LOGIN_FAILURE:
+      return { ...state, loginFailed: true };
     default:
       return state;
   }
