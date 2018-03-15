@@ -81,7 +81,7 @@ exports.login = function (req, res) {
         if (results.length > 0) {
           if (results[0].password === password) {
             // user_id = results[0].user_id;
-            res.status(250).send('login sucessfull');
+            res.status(250).send({...results[0], message: 'login successful'});
           } else {
             res.status(422).send('Email and password does not match');
           }

@@ -23,7 +23,7 @@ export function login(info) {
       .then(res => {
         console.log(res);
         dispatch(loginSuccess(res.data));
-        message.success(res.data);
+        message.success(res.data.message);
       })
       .catch(e => {
         console.error("login failure", e.response);
