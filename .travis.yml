@@ -23,7 +23,7 @@ deploy:
   password: "GH428429"
   site: "grhfree"
   on:
-    branch: travis-fix
+    branch: master
 
 addons:
   apt:
