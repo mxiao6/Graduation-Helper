@@ -37,11 +37,7 @@ class Home extends Component {
                 and see at a glance what your friends are up to.
               </p>
             </div>
-            { user ? <div>Hello, {user.username}!</div>
-            :<Button type="primary" className="loginButton">
-              <Link to={"/Login"}>Login</Link>
-            </Button>
-            }
+            {user && <div>Hello, {user.username}!</div>}
           </div>
         </div>
       </div>

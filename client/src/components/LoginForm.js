@@ -5,7 +5,6 @@ import { bindActionCreators } from "redux";
 import * as loginActions from "containers/Login";
 
 import { Form, Icon, Input, Button, Checkbox } from "antd";
-
 import "styles/Login.css";
 
 const FormItem = Form.Item;
