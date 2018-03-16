@@ -1,11 +1,7 @@
 var mysql = require('mysql');
-// var user_id = null;
-
-// var nodemailer = require('nodemailer');
-// var randomstring = require('randomstring');
-
+var nodemailer = require('nodemailer');
+var randomstring = require('randomstring');
 var pool;
-
 if (process.argv.length > 2 && process.argv[2] === 'test') {
   pool = mysql.createPool({
     host: 'localhost',
@@ -92,52 +88,58 @@ exports.login = function (req, res) {
     });
   });
 };
-// for password reset:
+/* for password reset:
 
-/*
-Need test
-exports.sendemail = function(req,res){
-//first check if email exist and send authentication code to that email and to response
-  var email = req.body.email;
-  connection.query('SELECT * FROM users WHERE email = ?',[email], function (error, results, fields) {
-  if (error) {
-    res.send("error ocurred");
-  }else{
-    if(results.length >0){
-      var aucode = randomstring.generate(10);
-      var transporter = nodemailer.createTransport({
-        service: 'gmail??',
-        auth: {
-        user: 'sender@email.com',
-        pass: 'emailpassword'
-        }
-      });
+Process: User click reset password -> user input email -> user receive code
+-> user input authentication code -> frontend check if code match -> call reset function.
 
-      var themail = {
-      from: 'sender@email.com', // sender address
-      to: email, // receiver
-      subject: 'Reset information from GRH', // Subject line
-      text: "Your are receiving this because you try to reset password for your account on Graduation Helper. \n" +
-      "The reset authentication code is "+aucode+"\n" +
-      "If you didn't request this, please ignore and nothing will be changed in your account."
-      };
-
-      transporter.sendMail(themail, function (err, info) {
-        if(err)
-          console.log(err)
-        else
-          console.log(info);
-      });
-
-      res.send(aucode);
-    }
-    else{
-      res.send("Email does not exist");
-    }
-  }
-  });
-}
+-request: user email
+-respond: Authentication code used to reset password
 */
+
+exports.sendemail = function (req, res) {
+// first check if email exist and send authentication code to that email and to response
+  var email = req.body.email;
+  pool.getConnection(function (err, connection) {
+    if (err) {
+      res.status(500).send('Database pool connection error');
+    }
+    connection.query('SELECT * FROM users WHERE email = ?', [email], function (error, results, fields) {
+      connection.release();
+      if (error) {
+        res.status(500).send('Database query error ocurred');
+      } else {
+        if (results.length > 0) {
+          var aucode = randomstring.generate(10);
+          var transporter = nodemailer.createTransport({
+            service: 'gmail??',
+            auth: {
+              user: 'sender@email.com',
+              pass: 'emailpassword'
+            }
+          });
+
+          var themail = {
+            from: 'sender@email.com', // sender address
+            to: email, // receiver
+            subject: 'Reset information from GRH', // Subject line
+            text: 'Your are receiving this because you try to reset password for your account on Graduation Helper. \n' +
+        'The reset authentication code is ' + aucode + '\n' +
+        "If you didn't request this, please ignore and nothing will be changed in your account."
+          };
+
+          transporter.sendMail(themail, function (err, info) {
+            if (err) { console.log(err); } else { console.log(info); }
+          });
+
+          res.send(aucode);
+        } else {
+          res.status(422).send('Email does not exist');
+        }
+      }
+    });
+  });
+};
 
 exports.resetpassword = function (req, res) {
   // called when user is authorized to reset password
@@ -146,16 +148,15 @@ exports.resetpassword = function (req, res) {
 
   pool.getConnection(function (err, connection) {
     if (err) {
-      res.send('Get pool connection error');
+      res.status(500).send('Database pool connection error');
     }
-
     connection.query('UPDATE users SET password = ? WHERE email = ?', [
       password, email
     ], function (error, results, fields) {
       connection.release();
 
       if (error) {
-        res.send('error ocurred');
+        res.status(500).send('Database query error ocurred');
       } else {
         res.status(300).send('Reset successfully!');
       }
