@@ -5,8 +5,6 @@ var userLogin = require('./userlogin');
 var userId = userLogin.userId;
 var pool = userLogin.pool;
 
-<<<<<<< HEAD
-//input: semester, year, list of crns, list of subject, list of courseNums
 /**
  *@{post}/saveschedule save the user schedule to the database
  *@saveName saveschedule
@@ -20,21 +18,8 @@ var pool = userLogin.pool;
  *@saveParam {String[]} courseNumbers List of the course numbers from schedule
  *
  */
-exports.save = function(req,res) {
-    //console.log("CALLING SAVESCHEDULE()");
-    //temp ==> DELETE ME
-    //user_id = 1;
-    //
-    //console.log("CURRENTUSERID: " + user_id);
-    let semester = req.query.semester;
-    let year = req.query.year;
-    let crns = req.query.crns;
-    let subjects = req.query.subjects;
-    let courseNumbers = req.query.courseNumbers;
-=======
-// input: semester, year, list of crns, list of subject, list of courseNums
 exports.save = function (req, res) {
-  console.log('CALLING SAVESCHEDULE()');
+  //console.log('CALLING SAVESCHEDULE()');
   // temp ==> DELETE ME
   // userId = 1;
   //
@@ -44,7 +29,6 @@ exports.save = function (req, res) {
   let crns = req.query.crns;
   let subjects = req.query.subjects;
   let courseNumbers = req.query.courseNumbers;
->>>>>>> cf40fee3b39c1bc7d722ed989b56828029b07c43
 
   // console.log("subjects: " + subjects[0]);
   // console.log("subjects: " + subjects[1]);
