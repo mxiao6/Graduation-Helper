@@ -1,6 +1,7 @@
 var mysql = require('mysql');
 var nodemailer = require('nodemailer');
 var randomstring = require('randomstring');
+var userId = null;
 var pool;
 if (process.argv.length > 2 && process.argv[2] === 'test') {
   pool = mysql.createPool({
@@ -76,6 +77,7 @@ exports.login = function (req, res) {
       } else {
         if (results.length > 0) {
           if (results[0].password === password) {
+            // userId = results[0].user_id;
             res.status(250).send('login sucessfull');
           } else {
             res.status(422).send('Email and password does not match');
@@ -162,3 +164,5 @@ exports.resetpassword = function (req, res) {
     });
   });
 };
+exports.userId = userId;
+exports.pool = pool;
