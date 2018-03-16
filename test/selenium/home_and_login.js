@@ -2,7 +2,7 @@ var webdriver = require('selenium-webdriver');
 require('chromedriver');
 require('chai').should();
 
-describe('Test Suite', function () {
+describe('Home and Login Tests', function () {
   var chromeCapabilities = webdriver.Capabilities.chrome();
   var chromeOptions = {
     'args': ['--no-sandbox', '--headless']
