@@ -94,6 +94,71 @@ describe('API tests', () => {
   });
 });
 
+describe('schedule test', () => {
+  it('should give us a schedule', function (done) {
+    chai.request(server)
+      .get('/schedule/generate')
+      .query({
+        'year': '2018',
+        'semester': 'Spring',
+        'courses': [
+          'CS125',
+          'CS173'
+        ]
+      })
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('array');
+        done();
+        if (err) {
+          console.log(err);
+        }
+      });
+  });
+  it('should not give us a schedule', function (done) {
+    chai.request(server)
+      .get('/schedule/generate')
+      .query({
+        'year': '-1',
+        'semester': 'blah',
+        'courses': [
+          'CS125',
+          'CS173'
+        ]
+      })
+      .end((err, res) => {
+        res.should.have.status(500);
+        res.body.error.should.be.equal('Could not generate schedules');
+        done();
+        if (err) {
+          console.log(err);
+        }
+      });
+  });
+});
+/*
+describe('save schedule tests', () => {
+    it('save schedule', function (done) {
+        chai.request(server)
+            .post('/saveschedule')
+            .send({
+                userId: 'admin@gmail.com',
+                semester: 'Spring',
+                year: '2018',
+                crns: ['31187', '31152'],
+                subjects: ['CS', 'CS'],
+                courseNumbers: ["173", "125"]
+            })
+            .end((err, res) => {
+              res.should.have.status(200);
+              done();
+              if (err) {
+                console.log(err);
+              }
+            });
+    });
+}); */
+
 describe('API tests', () => {
   it('it should get all years', function (done) {
     chai.request(server)
