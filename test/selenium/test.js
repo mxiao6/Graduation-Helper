@@ -249,9 +249,9 @@ function findNextButton () {
 }
 
 function findAddOrGenerateButton (index) {
-    return driver.findElements(webdriver.By.css('.nextButton')).then(function (result) {
-        return result[index];
-    });
+  return driver.findElements(webdriver.By.css('.nextButton')).then(function (result) {
+    return result[index];
+  });
 }
 
 function findSelectedSemester () {
@@ -273,9 +273,9 @@ function findGenerateScheduleButton () {
 }
 
 function findSectionsText () {
-    return driver.findElements(webdriver.By.css('.sectionsContainer div')).then(function (result) {
-        return result[0];
-    });
+  return driver.findElements(webdriver.By.css('.sectionsContainer div')).then(function (result) {
+    return result[0];
+  });
 }
 
 describe('Schedule Generation Tests', function () {
@@ -354,47 +354,47 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
-    it('Generate Schedule', function (done) {
-        this.timeout(30000);
-        driver.get('http://localhost:3000/')
-            .then(() => driver.wait(findLoginPageButton, 2000))
-    .then(button => button.click())
-    .then(() => driver.wait(findEmailEntry(), 2000))
-    .then(input => input.sendKeys('admin@gmail.com'))
-    .then(() => driver.wait(findPasswordEntry(), 2000))
-    .then(input => input.sendKeys('test'))
-    .then(() => driver.wait(findLoginButton, 2000))
-    .then(button => button.click())
-    .then(() => driver.sleep(2000))
-    .then(() => driver.wait(findGenerateScheduleButton(), 2000))
-    .then(button => button.click())
-    .then(() => driver.sleep(2000))
-    .then(() => driver.wait(findSemesterDropdown(), 2000))
-    .then(dropdown => dropdown.click())
-    .then(() => driver.wait(findElementByTitle('2018'), 2000))
-    .then(element => element.click())
-    .then(() => driver.sleep(2000))
-    .then(() => driver.wait(findElementByTitle('Fall 2018'), 2000))
-    .then(element => element.click())
-    .then(() => driver.wait(findNextButton(), 2000))
-    .then(button => button.click())
-    .then(() => driver.sleep(2000))
-    .then(() => driver.wait(findSemesterDropdown(), 2000))
-    .then(dropdown => dropdown.click())
-    .then(() => driver.wait(findElementByTitle('Asian American Studies'), 2000))
-    .then(element => element.click())
-    .then(() => driver.sleep(2000))
-    .then(() => driver.wait(findElementByTitle('200: U.S. Race and Empire'), 2000))
-    .then(element => element.click())
-    .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
-    .then(button => button.click())
-    .then(() => driver.wait(findAddOrGenerateButton(1), 2000))
-    .then(button => button.click())
-    .then(() => driver.sleep(2000))
-    .then(() => driver.wait(findSectionsText(), 2000))
-    .then(textElem => textElem.getAttribute('innerText'))
-    .then(sectionText => sectionText.should.contain('67473'))
-    .then(() => done())
-    .catch(error => done(error));
-    });
+  it('Generate Schedule', function (done) {
+    this.timeout(30000);
+    driver.get('http://localhost:3000/')
+      .then(() => driver.wait(findLoginPageButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(() => driver.wait(findPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findGenerateScheduleButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSemesterDropdown(), 2000))
+      .then(dropdown => dropdown.click())
+      .then(() => driver.wait(findElementByTitle('2018'), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findElementByTitle('Fall 2018'), 2000))
+      .then(element => element.click())
+      .then(() => driver.wait(findNextButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSemesterDropdown(), 2000))
+      .then(dropdown => dropdown.click())
+      .then(() => driver.wait(findElementByTitle('Asian American Studies'), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findElementByTitle('200: U.S. Race and Empire'), 2000))
+      .then(element => element.click())
+      .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findAddOrGenerateButton(1), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSectionsText(), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(sectionText => sectionText.should.contain('67473'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
 });
