@@ -2,19 +2,21 @@ import React from "react";
 import axios from "axios";
 import _ from "lodash";
 import { Link } from "react-router-dom";
-import { GET_SUBJECT, GET_COURSE, GET_SECTION, GET_SECTION_DETAILS } from "api";
+import { GET_SUBJECT, GET_COURSE, GET_GENERATE_SCHEDULE } from "api";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as classActions from "containers/Classes";
 
-import { Cascader, Spin, Button, message } from "antd";
+import { Cascader, Spin, Button, Tag, message } from "antd";
 import "styles/ClassSelection.css";
 
 class ClassSelection extends React.Component {
   state = {
     options: undefined,
     selected: undefined,
-    schedule: []
+    schedule: [],
+    generated: [],
+    generating: false
   };
 
   componentWillMount() {
@@ -98,12 +100,42 @@ class ClassSelection extends React.Component {
 
   _addCourse = () => {
     const { selected, schedule } = this.state;
+    let tag = selected.course + selected.courseId;
+    if (schedule.indexOf(tag) !== -1) {
+      message.error("Course exists");
+      return;
+    }
     let newSchedule = schedule.slice(0);
-    newSchedule.push(selected);
+    newSchedule.push(tag);
 
     this.setState({
       schedule: newSchedule
     });
+  };
+
+  _generateSchedule = () => {
+    const { semester } = this.props;
+    const { schedule } = this.state;
+    this.setState({
+      generating: true
+    });
+    axios
+      .get(GET_GENERATE_SCHEDULE, {
+        params: {
+          ...semester,
+          courses: schedule
+        }
+      })
+      .then(res => {
+        this.setState({
+          generated: res.data,
+          generating: false
+        });
+        console.log(res.data);
+      })
+      .catch(e => {
+        console.error(e.response);
+      });
   };
 
   _resetSemester = () => {
@@ -112,6 +144,12 @@ class ClassSelection extends React.Component {
       pathname: "/SemesterSelection",
       state: { next: "/GenerateSchedule" }
     });
+  };
+
+  _closeTab = removedTag => {
+    const schedule = this.state.schedule.filter(tag => tag !== removedTag);
+    console.log(schedule);
+    this.setState({ schedule });
   };
 
   _renderCascader = () => {
@@ -133,6 +171,27 @@ class ClassSelection extends React.Component {
         >
           Add
         </Button>
+        <Button
+          type="primary"
+          className="nextButton"
+          onClick={this._generateSchedule}
+          disabled={this.state.schedule.length === 0}
+        >
+          Generate
+        </Button>
+      </div>
+    );
+  };
+
+  _renderGenerated = () => {
+    const { generating, generated } = this.state;
+    return (
+      <div className="sectionsContainer">
+        {generating ? (
+          <Spin />
+        ) : (
+          generated.length !== 0 && <div>{JSON.stringify(generated)}</div>
+        )}
       </div>
     );
   };
@@ -140,8 +199,19 @@ class ClassSelection extends React.Component {
   _renderSchedule = () => {
     const { schedule } = this.state;
     return (
-      <div className="sectionsContainer">
-        <div>{JSON.stringify(schedule)}</div>
+      <div className="tagsContainer">
+        {schedule.map((tag, index) => {
+          return (
+            <Tag
+              color="blue"
+              closable
+              key={tag}
+              afterClose={() => this._closeTab(tag)}
+            >
+              {tag}
+            </Tag>
+          );
+        })}
       </div>
     );
   };
@@ -158,6 +228,7 @@ class ClassSelection extends React.Component {
         </div>
         {this._renderCascader()}
         {schedule.length !== 0 && this._renderSchedule()}
+        {this._renderGenerated()}
       </div>
     );
   };
