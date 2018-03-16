@@ -254,6 +254,18 @@ function findSelectedSemester () {
   });
 }
 
+function findHomeButton () {
+  return driver.findElements(webdriver.By.linkText('HOME')).then(function (result) {
+    return result[0];
+  });
+}
+
+function findGenerateScheduleButton () {
+  return driver.findElements(webdriver.By.linkText('Generate Schedule')).then(function (result) {
+    return result[0];
+  });
+}
+
 describe('Schedule Generation Tests', function () {
   it('Select Semester', function (done) {
     this.timeout(20000);
@@ -284,6 +296,45 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.sleep(2000))
       .then(() => driver.getCurrentUrl())
       .then(url => url.should.contain('ClassSelection'))
+      .then(() => driver.wait(findSelectedSemester(), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(titleText => titleText.should.contain('Selected Semester: Fall 2018'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Semester Already Selected', function (done) {
+    this.timeout(20000);
+    driver.get('http://localhost:3000/')
+      .then(() => driver.wait(findLoginPageButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(() => driver.wait(findPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSelectClassButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSemesterDropdown(), 2000))
+      .then(dropdown => dropdown.click())
+      .then(() => driver.wait(findElementByTitle('2018'), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findElementByTitle('Fall 2018'), 2000))
+      .then(element => element.click())
+      .then(() => driver.wait(findNextButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findHomeButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findGenerateScheduleButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.contain('GenerateSchedule'))
       .then(() => driver.wait(findSelectedSemester(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.contain('Selected Semester: Fall 2018'))
