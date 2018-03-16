@@ -17,8 +17,9 @@ class SemesterSelection extends React.Component {
   };
 
   componentWillMount() {
-    if (this.props.selected) {
-      this.props.history.push("/ClassSelection");
+    const { selected, history, location } = this.props;
+    if (selected) {
+      history.push(location.state.next);
     } else {
       axios
         .get(GET_YEAR)
@@ -102,7 +103,7 @@ class SemesterSelection extends React.Component {
           className="nextButton"
           disabled={!this.state.selected}
         >
-          <Link to={"/ClassSelection"}>Next</Link>
+          <Link to={this.props.location.state.next}>Next</Link>
         </Button>
       </div>
     );

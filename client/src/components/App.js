@@ -8,6 +8,7 @@ import Login from "components/Login";
 import Signup from "components/Signup";
 import SemesterSelection from "components/SemesterSelection";
 import ClassSelection from "components/ClassSelection";
+import GenerateSchedule from "components/GenerateSchedule";
 import "styles/App.css";
 
 const store = configureStore();
@@ -23,6 +24,7 @@ class App extends Component {
             <Route path="/Signup" component={Signup} />
             <Route path="/SemesterSelection" component={SemesterSelection} />
             <Route path="/ClassSelection" component={ClassSelection} />
+            <Route path="/GenerateSchedule" component={GenerateSchedule} />
           </div>
         </Router>
       </Provider>

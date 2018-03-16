@@ -7,47 +7,14 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as classActions from "containers/Classes";
 
-import { Cascader, Spin, Button, Table, message } from "antd";
+import { Cascader, Spin, Button, message } from "antd";
 import "styles/ClassSelection.css";
-
-const sectionColumns = [
-  {
-    title: "Status",
-    dataIndex: "enrollmentStatus"
-  },
-  {
-    title: "CRN",
-    dataIndex: "sectionId"
-  },
-  {
-    title: "Type",
-    dataIndex: "type"
-  },
-  {
-    title: "Section",
-    dataIndex: "sectionNumber"
-  },
-  {
-    title: "Start Time",
-    dataIndex: "startTime"
-  },
-  {
-    title: "End Time",
-    dataIndex: "endTime"
-  },
-  {
-    title: "Day",
-    dataIndex: "daysOfWeek"
-  }
-];
 
 class ClassSelection extends React.Component {
   state = {
     options: undefined,
     selected: undefined,
-    sectionList: undefined,
-    selectedRowKeys: [],
-    tableLoading: false
+    schedule: []
   };
 
   componentWillMount() {
@@ -129,72 +96,21 @@ class ClassSelection extends React.Component {
       return <span key={option.value}>{option.value} </span>;
     });
 
-  _showSections = () => {
-    const { selected } = this.state;
-    const { semester } = this.props;
+  _addCourse = () => {
+    const { selected, schedule } = this.state;
+    let newSchedule = schedule.slice(0);
+    newSchedule.push(selected);
 
     this.setState({
-      tableLoading: true
+      schedule: newSchedule
     });
-
-    axios
-      .get(GET_SECTION, {
-        params: {
-          ...semester,
-          ...selected
-        }
-      })
-      .then(res => {
-        console.log("simple sections", res.data);
-        this._retrieceSectionDetails(res.data);
-      })
-      .catch(e => {
-        console.error(e.response);
-      });
   };
-
-  _retrieceSectionDetails(sections) {
-    const { selected } = this.state;
-    const { semester } = this.props;
-
-    let promises = _.map(sections, section => {
-      return axios.get(GET_SECTION_DETAILS, {
-        params: {
-          ...selected,
-          ...semester,
-          sectionId: section.id
-        }
-      });
-    });
-
-    axios
-      .all(promises)
-      .then(
-        axios.spread((...results) => {
-          console.log("detailed sections", results);
-          this.setState({
-            sectionList: _.map(results, res => ({
-              ...res.data,
-              key: res.data.sectionId
-            }))
-          });
-        })
-      )
-      .then(res => {
-        this.setState({
-          tableLoading: false
-        });
-      })
-      .catch(es => {
-        console.error(es);
-      });
-  }
 
   _resetSemester = () => {
     this.props.actions.resetSemester();
     this.props.history.push({
       pathname: "/SemesterSelection",
-      state: { next: "/ClassSelection" }
+      state: { next: "/GenerateSchedule" }
     });
   };
 
@@ -212,39 +128,27 @@ class ClassSelection extends React.Component {
         <Button
           type="primary"
           className="nextButton"
-          onClick={this._showSections}
+          onClick={this._addCourse}
           disabled={this.state.selected === undefined}
         >
-          Choose
+          Add
         </Button>
       </div>
     );
   };
 
-  _onSelectChange = selectedRowKeys => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
-    this.setState({ selectedRowKeys });
-  };
-
-  _renderSections = () => {
-    const { sectionList, selectedRowKeys } = this.state;
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this._onSelectChange
-    };
+  _renderSchedule = () => {
+    const { schedule } = this.state;
     return (
       <div className="sectionsContainer">
-        <Table
-          rowSelection={rowSelection}
-          columns={sectionColumns}
-          dataSource={sectionList}
-        />
+        <div>{JSON.stringify(schedule)}</div>
       </div>
     );
   };
 
   _renderContent = () => {
     const { semester } = this.props;
+    const { schedule } = this.state;
     return (
       <div className="contentContainer">
         <div>
@@ -253,11 +157,7 @@ class ClassSelection extends React.Component {
           <a onClick={this._resetSemester}>reset</a>
         </div>
         {this._renderCascader()}
-        {this.state.tableLoading ? (
-          <Spin />
-        ) : (
-          this.state.sectionList && this._renderSections()
-        )}
+        {schedule.length !== 0 && this._renderSchedule()}
       </div>
     );
   };

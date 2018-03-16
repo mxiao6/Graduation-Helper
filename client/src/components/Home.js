@@ -44,10 +44,24 @@ class Home extends Component {
               {user && (
                 <div className="tempButtonContainer">
                   <Button type="primary" className="tempButton">
-                    <Link to={"/SemesterSelection"}>Select Class</Link>
+                    <Link
+                      to={{
+                        pathname: "/SemesterSelection",
+                        state: { next: "/ClassSelection" }
+                      }}
+                    >
+                      Select Class
+                    </Link>
                   </Button>
                   <Button type="primary" className="tempButton">
-                    <Link to={"/SemesterSelection"}>Generate Schedule</Link>
+                    <Link
+                      to={{
+                        pathname: "/SemesterSelection",
+                        state: { next: "/GenerateSchedule" }
+                      }}
+                    >
+                      Generate Schedule
+                    </Link>
                   </Button>
                 </div>
               )}
