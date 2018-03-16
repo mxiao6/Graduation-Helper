@@ -1,20 +1,24 @@
 var mysql = require('mysql');
 var nodemailer = require('nodemailer');
 var randomstring = require('randomstring');
-var pool = mysql.createPool({
-  // information for connecting to Azure database
+var pool;
+if (process.argv.length > 2 && process.argv[2] === 'test') {
+  pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'testDatabase'
 
-  host: 'graduationhelper.mysql.database.azure.com',
-  user: 'myadmin@graduationhelper',
-  password: 'Cs428grh!',
-  database: 'graduation_helper'
-
-  // Please try to use local database to test!!!
-  // host:'localhost',
-  // user:'xxx',
-  // password:'xxx',
-  // database:'xxx'
-});
+  });
+} else {
+  pool = mysql.createPool({
+    // information for connecting to Azure database
+    host: 'graduationhelper.mysql.database.azure.com',
+    user: 'myadmin@graduationhelper',
+    password: 'Cs428grh!',
+    database: 'graduation_helper'
+  });
+}
 
 exports.register = function (req, res) {
   var users = {
@@ -83,7 +87,14 @@ exports.login = function (req, res) {
     });
   });
 };
-// for password reset:
+/* for password reset:
+
+Process: User click reset password -> user input email -> user receive code
+-> user input authentication code -> frontend check if code match -> call reset function.
+
+-request: user email
+-respond: Authentication code used to reset password
+*/
 
 exports.sendemail = function (req, res) {
 // first check if email exist and send authentication code to that email and to response

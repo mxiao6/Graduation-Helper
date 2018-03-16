@@ -3,6 +3,11 @@ node_js:
  - "stable"
  
 sudo: required
+
+services:
+  - mysql
+before_install:
+  - mysql -u root --password="" < test/travis.sql
  
 before_script:
   - npm install -g mocha
@@ -10,7 +15,16 @@ before_script:
   - cd client
   - npm install
   - cd ..
-  
+
+deploy:
+  provider: azure_web_apps
+  skip_cleanup: true
+  username: "gh428"
+  password: "GH428429"
+  site: "grhfree"
+  on:
+    branch: master
+
 addons:
   apt:
     sources:
@@ -19,7 +33,7 @@ addons:
       - google-chrome-stable
 
 script:
-  - node server.js &
+  - node server.js test &
   - sleep 10
   - cd client
   - npm start &
@@ -29,13 +43,3 @@ script:
   - mocha --exit test/backend
   - semistandard "routes/**/*.js" "*.js"
   - semistandard --env mocha "test/**/*.js"
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then cd client; fi
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run build; fi
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then cp -R build ..; fi
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then cd ..; fi
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then rm -rf public; fi
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then mv build public; fi
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then git checkout -b azure-deploy; fi
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then git add public; fi
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then git commit -m "$TRAVIS_COMMIT"; fi
-  - if [ "$TRAVIS_BRANCH" = "master"  -a "$TRAVIS_PULL_REQUEST" = "false" ]; then git push --force https://gh428:GH428429@grhfree.scm.azurewebsites.net:443/grhfree.git HEAD:master; fi
