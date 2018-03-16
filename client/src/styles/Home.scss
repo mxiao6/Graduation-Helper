@@ -19,9 +19,17 @@
       font-size: 1.125em;
     }
 
-    .tempButton {
-      width: 150px;
+    .tempButtonContainer {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
       margin: 0.5em 0;
+
+      .tempButton {
+        width: 150px;
+        margin: 0 0.5rem;
+      }
     }
   }
 }

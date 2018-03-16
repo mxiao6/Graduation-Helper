@@ -42,9 +42,14 @@ class Home extends Component {
                 and see at a glance what your friends are up to.
               </p>
               {user && (
-                <Button type="primary" className="tempButton">
-                  <Link to={"/SemesterSelection"}>Select Class</Link>
-                </Button>
+                <div className="tempButtonContainer">
+                  <Button type="primary" className="tempButton">
+                    <Link to={"/SemesterSelection"}>Select Class</Link>
+                  </Button>
+                  <Button type="primary" className="tempButton">
+                    <Link to={"/SemesterSelection"}>Generate Schedule</Link>
+                  </Button>
+                </div>
               )}
             </div>
           </div>
