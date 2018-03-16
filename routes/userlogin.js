@@ -157,7 +157,7 @@ exports.resetpassword = function (req, res) {
       if (error) {
         res.status(500).send('Database query error ocurred');
       } else {
-        res.send('Reset successfully!');
+        res.status(300).send('Reset successfully!');
       }
     });
   });
