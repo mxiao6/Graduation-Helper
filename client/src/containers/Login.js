@@ -1,33 +1,34 @@
-import React, { Component } from 'react';
-import WindowSizeListener from 'react-window-size-listener';
-import '../styles/Login.css';
+import axios from "axios";
+import * as types from "actionTypes";
+import { POST_LOGIN } from "api";
+import { message } from "antd";
 
-import { Card } from 'antd';
-
-import LoginForm from './LoginForm';
-
-class Login extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { height: 0 };
-  }
-  render() {
-    return (
-      <div>
-        <WindowSizeListener onResize={windowSize => {
-          this.setState({ height: windowSize.windowHeight });
-        }} />
-        <div className="bodyContainer">
-          <div className="formContainer" /*style={{ marginTop: this.state.height/10 }}*/>
-            <Card title="Login" bordered={true} className="cardStyle">
-              <LoginForm history={this.props.history} />
-            </Card>
-          </div>
-        </div>
-      </div>
-    );
-  }
+export function loginSuccess(user) {
+  return {
+    type: types.LOGIN_SUCCESS,
+    user
+  };
 }
 
-export default Login;
+export function loginFailure() {
+  return {
+    type: types.LOGIN_FAILURE
+  };
+}
+
+export function login(info) {
+  return function(dispatch) {
+    return axios
+      .post(POST_LOGIN, info)
+      .then(res => {
+        console.log(res);
+        dispatch(loginSuccess(res.data));
+        message.success(res.data.message);
+      })
+      .catch(e => {
+        console.error("login failure", e.response);
+        dispatch(loginFailure());
+        message.error(e.response.data);
+      });
+  };
+}

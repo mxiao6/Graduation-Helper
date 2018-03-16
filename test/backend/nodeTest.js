@@ -31,7 +31,7 @@ describe('API tests', () => {
         })
         .end((err, res) => {
           res.should.have.status(250);
-          res.text.should.be.equal('login sucessfull');
+          // res.text.should.be.equal('login successful');
           done();
           if (err) {
             console.log(err);

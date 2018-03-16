@@ -16,6 +16,7 @@ app.use('/schedule', generateSchedule);
 app.post('/saveschedule', schedule.save);
 app.post('/register', userlogin.register);
 app.post('/login', userlogin.login);
+app.post('/sendemail', userlogin.sendemail);
 app.post('/resetpassword', userlogin.resetpassword);
 
 process.on('uncaughtException', (err) => {

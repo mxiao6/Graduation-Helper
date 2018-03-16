@@ -49,7 +49,7 @@ exports.register = function (req, res) {
               res.status(500).send('Database query error ocurred');
             } else {
               // console.log('The solution is: ', results);
-              res.send('user registered sucessfully');
+              res.status(250).send('user registered sucessfully');
             }
           });
         }
@@ -77,8 +77,12 @@ exports.login = function (req, res) {
       } else {
         if (results.length > 0) {
           if (results[0].password === password) {
-            // userId = results[0].user_id;
-            res.status(250).send('login sucessfull');
+            let userInfo = {
+              userId: results[0].user_id,
+              username: results[0].username,
+              email: results[0].email
+            };
+            res.status(250).send({...userInfo, message: 'login successful'});
           } else {
             res.status(422).send('Email and password does not match');
           }
@@ -113,10 +117,10 @@ exports.sendemail = function (req, res) {
         if (results.length > 0) {
           var aucode = randomstring.generate(10);
           var transporter = nodemailer.createTransport({
-            service: 'gmail??',
+            service: 'gmail',
             auth: {
-              user: 'sender@email.com',
-              pass: 'emailpassword'
+              user: 'graduationhelper@gmail.com',
+              pass: 'Grh12345'
             }
           });
 
@@ -125,7 +129,7 @@ exports.sendemail = function (req, res) {
             to: email, // receiver
             subject: 'Reset information from GRH', // Subject line
             text: 'Your are receiving this because you try to reset password for your account on Graduation Helper. \n' +
-        'The reset authentication code is ' + aucode + '\n' +
+        'The reset authentication code is ：     ' + aucode + '\n' +
         "If you didn't request this, please ignore and nothing will be changed in your account."
           };
 
@@ -164,5 +168,34 @@ exports.resetpassword = function (req, res) {
     });
   });
 };
+
+exports.getUserInfo = function (req, res) {
+  var userId = req.body.user_id;
+  pool.getConnection(function (err, connection) {
+    if (err) {
+      res.status(500).send('Database pool connection error');
+    }
+    connection.query('SELECT * FROM users WHERE user_id = ?', [userId], function (error, results, fields) {
+      // Done with the connection
+      connection.release();
+
+      if (error) {
+        res.status(500).send('Database query error ocurred');
+      } else {
+        if (results.length > 0) {
+          let userInfo = {
+            userId: results[0].user_id,
+            username: results[0].username,
+            email: results[0].email
+          };
+          res.status(250).send(userInfo);
+        } else {
+          res.status(422).send('UserId does not exist');
+        }
+      }
+    });
+  });
+};
+
 // exports.userId = userId;
 exports.pool = pool;

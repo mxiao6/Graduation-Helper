@@ -1,7 +1,7 @@
 @import "Variables.scss";
 @import "Shared.scss";
 
-.loginContainer {
+.mainContainer {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -18,11 +18,18 @@
       width: 550px;
       font-size: 1.125em;
     }
-  }
 
-  .loginButton {
-    width: 150px;
-    margin: .5em 0;
-  }
+    .tempButtonContainer {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      margin: 0.5em 0;
 
+      .tempButton {
+        width: 150px;
+        margin: 0 0.5rem;
+      }
+    }
+  }
 }
