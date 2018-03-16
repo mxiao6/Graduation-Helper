@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import _ from "lodash";
 import { Link } from "react-router-dom";
-import { GET_SUBJECT, GET_COURSE, GET_SECTION, GET_SECTION_DETAILS } from "api";
+import { GET_SUBJECT, GET_COURSE, } from "api";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as classActions from "containers/Classes";
