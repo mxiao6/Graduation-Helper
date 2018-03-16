@@ -1,2 +1,24 @@
 @import "Variables.scss";
 @import "Shared.scss";
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.sectionsContainer {
+}
+
+.cascaderContainer {
+  margin: 3rem 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  .nextButton {
+    margin: 0 0.5rem;
+  }
+}

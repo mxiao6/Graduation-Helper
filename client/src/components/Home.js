@@ -43,7 +43,7 @@ class Home extends Component {
               </p>
               {user && (
                 <Button type="primary" className="tempButton">
-                  <Link to={"/ClassSelection"}>Select Class</Link>
+                  <Link to={"/SemesterSelection"}>Select Class</Link>
                 </Button>
               )}
             </div>

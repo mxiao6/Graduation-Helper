@@ -6,6 +6,7 @@ import Header from "components/Header";
 import Home from "components/Home";
 import Login from "components/Login";
 import Signup from "components/Signup";
+import SemesterSelection from "components/SemesterSelection";
 import ClassSelection from "components/ClassSelection";
 import "styles/App.css";
 
@@ -20,6 +21,7 @@ class App extends Component {
             <Route exact path="/" component={Home} />
             <Route path="/Login" component={Login} />
             <Route path="/Signup" component={Signup} />
+            <Route path="/SemesterSelection" component={SemesterSelection} />
             <Route path="/ClassSelection" component={ClassSelection} />
           </div>
         </Router>
