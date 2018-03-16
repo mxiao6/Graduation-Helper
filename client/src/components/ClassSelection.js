@@ -172,28 +172,21 @@ class ClassSelection extends React.Component {
     axios
       .all(promises)
       .then(
-        axios
-          .spread((...results) => {
-            console.log("detailed sections", results);
-            this.setState({
-              sectionList: _.map(results, res => ({
-                ...res.data,
-                key: res.data.sectionId
-              }))
-            });
-          })
-          .then(res => {
-            this.setState({
-              tableLoading: false
-            });
-          })
-          .catch(e => {
-            this.setState({
-              tableLoading: false
-            });
-            console.error(e);
-          })
+        axios.spread((...results) => {
+          console.log("detailed sections", results);
+          this.setState({
+            sectionList: _.map(results, res => ({
+              ...res.data,
+              key: res.data.sectionId
+            }))
+          });
+        })
       )
+      .then(res => {
+        this.setState({
+          tableLoading: false
+        });
+      })
       .catch(es => {
         console.error(es);
       });
