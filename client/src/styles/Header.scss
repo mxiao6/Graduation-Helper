@@ -13,34 +13,43 @@
   justify-content: space-between;
   align-items: center;
 
-  &.transparentNav {
-    background: none;
-  }
-
   a {
     text-decoration: none;
     color: $ui-blue;
   }
 
-  .menu {
+  .menuContainer {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
 
-    a {
-      margin: 0 80px / 2 * $ratio;
-      letter-spacing: .3em;
-      color: #fff;
+    .menu {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
 
-      font-weight: 100;
+      a {
+        margin: 0 80px / 2 * $ratio;
+        letter-spacing: 0.3em;
+        color: skyblue;
 
-      text-transform: uppercase;
+        font-weight: 100;
 
-      &.linkActive {
-        font-weight: 600;
-        color: $ui-orange;
+        text-transform: uppercase;
+
+        &.linkActive {
+          font-weight: 600;
+          color: $ui-orange;
+        }
       }
     }
+  }
+
+  .logoutButton {
+  }
+
+  .loginButton {
   }
 }
