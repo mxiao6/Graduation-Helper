@@ -19,7 +19,7 @@ var pool = userLogin.pool;
  *
  */
 exports.save = function (req, res) {
-  //console.log('CALLING SAVESCHEDULE()');
+  // console.log('CALLING SAVESCHEDULE()');
   // temp ==> DELETE ME
   // userId = 1;
   //
