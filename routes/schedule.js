@@ -6,8 +6,21 @@ var user_id = userLogin.user_id;
 var pool = userLogin.pool;
 
 //input: semester, year, list of crns, list of subject, list of courseNums
+/**
+ *@{post}/saveschedule save the user schedule to the database
+ *@saveName saveschedule
+ *@saveGroup Class
+ *@saveVersion 0.1.0
+ *
+ *@saveParam {String} semester The specific semester
+ *@saveParam {String} year The school year
+ *@saveParam {String[]} crns List of the course CRN values from schedule
+ *@saveParam {String[]} subjects List of the course subject codes from schedule
+ *@saveParam {String[]} courseNumbers List of the course numbers from schedule
+ *
+ */
 exports.save = function(req,res) {
-    console.log("CALLING SAVESCHEDULE()");
+    //console.log("CALLING SAVESCHEDULE()");
     //temp ==> DELETE ME
     //user_id = 1;
     //
