@@ -408,5 +408,67 @@ define({ "api": [
     },
     "filename": "routes/api.js",
     "groupTitle": "Class"
+  },
+  {
+    "type": "get",
+    "url": "/schedule/generate",
+    "title": "Get generated schedules for classes",
+    "name": "GenerateSchedules",
+    "group": "Schedule",
+    "version": "0.1.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "year",
+            "description": "<p>The specific school year</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "semester",
+            "description": "<p>The specific semester year</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "optional": false,
+            "field": "courses",
+            "description": "<p>List of courses to generate schedules</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"year\": \"2018\",\n  \"semester\": \"Spring\",\n  \"courses\": [\"CS125\", \"CS173\"]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n  [\n    {\n      \"subjectId\": \"CS\",\n      \"courseId\": \"173\",\n      \"sectionId\": \"39311\",\n      \"sectionNumber\": \"AL1\",\n      \"enrollmentStatus\": \"Open (Restricted)\",\n      \"type\": \"LEC\",\n      \"startTime\": \"09:30 AM\",\n      \"endTime\": \"10:45 AM\",\n      \"daysOfWeek\": \"TR\"\n    }, {\n      \"subjectId\": \"CS\",\n      \"courseId\": \"173\",\n      \"sectionId\": \"31187\",\n      \"sectionNumber\": \"ADA\",\n      \"enrollmentStatus\": \"Closed\",\n      \"type\": \"DIS\",\n      \"startTime\": \"01:00 PM\",\n      \"endTime\": \"01:50 PM\",\n      \"daysOfWeek\": \"R\"\n    }, {\n      \"subjectId\": \"CS\",\n      \"courseId\": \"125\",\n      \"sectionId\": \"31152\",\n      \"sectionNumber\": \"AL1\",\n      \"enrollmentStatus\": \"Open (Restricted)\",\n      \"type\": \"LEC\",\n      \"startTime\": \"08:00 AM\",\n      \"endTime\": \"08:50 AM\",\n      \"daysOfWeek\": \"MWF\"\n    }, {\n      \"subjectId\": \"CS\",\n      \"courseId\": \"125\",\n      \"sectionId\": \"31159\",\n      \"sectionNumber\": \"AYB\",\n      \"enrollmentStatus\": \"Open\",\n      \"type\": \"LBD\",\n      \"startTime\": \"11:00 AM\",\n      \"endTime\": \"12:50 PM\",\n      \"daysOfWeek\": \"T\"\n    }\n  ]\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not generate schedules\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/generateSchedule.js",
+    "groupTitle": "Schedule"
   }
 ] });

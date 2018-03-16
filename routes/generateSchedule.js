@@ -1,32 +1,93 @@
 const express = require('express');
 const router = express.Router();
 const getAllDetails = require('./utilities.js').getAllDetails;
-// data input in [[],[]]
-router.get('/generate', function (req, res) {
-  /*
-  initial function to get all data from list of classes.
-  This function does not currently generate anything just gets all the section details for every class
-  Assuming selected classes are given as ['AAS100','CS428','CS225', etc]
-  */
 
-  // let url = 'schedule/' + req.params.year + '/' + req.params.semester + '/';
-  let url = 'schedule/2018/Spring/';
-  let selectedClasses = ['CS173', 'CS125', 'CS225'];
-  // let selectedClasses = ['CS173','CS125','CS225','CHEM236','CHEM237','CHEM312'];
-  getAllDetails(url, selectedClasses, function (result) {
-    let generatedSchedules = [];
-    for (let i = 0; i < 1; i++) {
-      console.time('Generate Schedules');
-      generatedSchedules = genPrototype(result);
-      console.timeEnd('Generate Schedules');
+/**
+*@api{get}/schedule/generate Get generated schedules for classes
+*@apiName GenerateSchedules
+*@apiGroup Schedule
+*@apiVersion 0.1.0
+*
+*@apiParam {String} year The specific school year
+*@apiParam {String} semester The specific semester year
+**@apiParam {String[]} courses List of courses to generate schedules
+*
+*@apiParamExample {json} Request-Example:
+*   {
+*     "year": "2018",
+*     "semester": "Spring",
+*     "courses": ["CS125", "CS173"]
+*   }
+*
+*@apiSuccessExample {json} Success-Response:
+*   HTTP/1.1 200 OK
+*   [
+*     [
+*       {
+*         "subjectId": "CS",
+*         "courseId": "173",
+*         "sectionId": "39311",
+*         "sectionNumber": "AL1",
+*         "enrollmentStatus": "Open (Restricted)",
+*         "type": "LEC",
+*         "startTime": "09:30 AM",
+*         "endTime": "10:45 AM",
+*         "daysOfWeek": "TR"
+*       }, {
+*         "subjectId": "CS",
+*         "courseId": "173",
+*         "sectionId": "31187",
+*         "sectionNumber": "ADA",
+*         "enrollmentStatus": "Closed",
+*         "type": "DIS",
+*         "startTime": "01:00 PM",
+*         "endTime": "01:50 PM",
+*         "daysOfWeek": "R"
+*       }, {
+*         "subjectId": "CS",
+*         "courseId": "125",
+*         "sectionId": "31152",
+*         "sectionNumber": "AL1",
+*         "enrollmentStatus": "Open (Restricted)",
+*         "type": "LEC",
+*         "startTime": "08:00 AM",
+*         "endTime": "08:50 AM",
+*         "daysOfWeek": "MWF"
+*       }, {
+*         "subjectId": "CS",
+*         "courseId": "125",
+*         "sectionId": "31159",
+*         "sectionNumber": "AYB",
+*         "enrollmentStatus": "Open",
+*         "type": "LBD",
+*         "startTime": "11:00 AM",
+*         "endTime": "12:50 PM",
+*         "daysOfWeek": "T"
+*       }
+*     ]
+*   ]
+*
+*@apiErrorExample Error-Response:
+*   HTTP/1.1 500 Internal Server Error
+*   {
+*     "error": "Could not generate schedules"
+*   }
+*/
+router.get('/generate', function (req, res) {
+  let url = 'schedule/' + req.query.year + '/' + req.query.semester + '/';
+  let selectedClasses = req.query.courses;
+  getAllDetails(url, selectedClasses, function (error, result) {
+    if (error) {
+      return res.status(500).json({error: 'Could not generate schedules'});
     }
-    console.log('NUMBER OF SCHEDULES: ' + generatedSchedules.length);
-    res.json(generatedSchedules);
+
+    let generatedSchedules = genPrototype(result);
+    res.status(200).json(generatedSchedules);
   });
 });
 
-// Preproccesses section List into section Letter
-// And type code
+// Preproccesses section List by section letters and type code
+// returns in the form of array of section Letters with each section type ['A': {lEC:[], DIS:[]}, 'B':{LEC:[], DIS:[]}]
 function preProcessSections (sectionList) {
   let processedList = {};
   for (let i = 0; i < sectionList.length; i++) {
@@ -49,8 +110,12 @@ function preProcessSections (sectionList) {
   return processedList;
 }
 
+// Checks if two sections occurs on the same day
+// Returns true if occurs on same day, false otherwise
 function occursOnSameDays (currSection, newSection) {
-  if (currSection.startTime === 'ARRANGED' || newSection.startTime === 'ARRANGED') { return false; }
+  if (currSection.startTime === 'ARRANGED' || newSection.startTime === 'ARRANGED') {
+    return false;
+  }
 
   let daysOfTheWeek = newSection.daysOfWeek;
   for (let i = 0; i < daysOfTheWeek.length; i++) {
@@ -61,6 +126,9 @@ function occursOnSameDays (currSection, newSection) {
   return false;
 }
 
+// Given current sections check if the new sections Overlaps
+// If the new section overlaps then it inserts it into current sections in order and returns false
+// If the new section overlaps then it returns false and new sections is not added to current
 function insertAndSortIfNotOverlapped (currSections, newSections) {
   if (currSections.length === 0) {
     currSections.push(...newSections);
@@ -96,25 +164,23 @@ function insertAndSortIfNotOverlapped (currSections, newSections) {
   return false;
 }
 
-// get permutations in {"LEC": [], "LBD":[]}
+// Generates all permuations for a class section i.e 'A'
+// get data in the form of {"LEC": [], "LBD":[]}
+// returns non-overlapping array of all section combinations required for course
 function cartesianProduct (data) {
-  var current = [[]];
-  for (var p in data) {
-    var arr = data[p];
-    var newCurrent = [];
-    for (var c = 0; c < current.length; c++) {
-      var baseArray = current[c];
-      for (var a = 0; a < arr.length; a++) {
-        var clone = baseArray.slice();
-        var isOverlapped = insertAndSortIfNotOverlapped(clone, [arr[a]]);
-        // console.log("Overlaps: " + isOverlapped);
+  let current = [
+    []
+  ];
+  for (let p in data) {
+    let arr = data[p];
+    let newCurrent = [];
+    for (let c = 0; c < current.length; c++) {
+      let baseArray = current[c];
+      for (let a = 0; a < arr.length; a++) {
+        let clone = baseArray.slice();
+        let isOverlapped = insertAndSortIfNotOverlapped(clone, [arr[a]]);
         if (!isOverlapped) {
           newCurrent.push(clone);
-        } else {
-          // console.log('TRUE PRINT');
-          // console.log(clone);
-          // console.log(arr[a]);
-          // console.log(current);
         }
       }
     }
@@ -124,6 +190,7 @@ function cartesianProduct (data) {
   return current;
 }
 
+// For some classes each section letter represents a type of class
 function flattenSectionLetters (sectionList) {
   let flatten = {};
   for (let letter in sectionList) {
@@ -132,8 +199,11 @@ function flattenSectionLetters (sectionList) {
   return flatten;
 }
 
-// Very very simple bandage for certain classes where theres only 1 section
-// And you have to pick one of each like physc 211
+// For some classes, each section letter represents a type of section in combination with other section letters
+// i.e. PHYS211 A is for lectures, D is for discussion
+// It will check if processed list for a class needs to be flatten
+// returns a flatten list of sections
+// {A: {LEC:[]}, B: {DIS:[]}} -> {A: [], B:[]}
 function shouldFlatten (processedDict) {
   let sectionAExists = false;
   for (let sectionLetter in processedDict) {
@@ -147,13 +217,11 @@ function shouldFlatten (processedDict) {
   return sectionAExists;
 }
 
-// Get All section permutations for a given class course
+// Helper method to get All section permutations for a given class course
+// returns an array of permutations for a course
 function getCourseSectionPermutations (classSectionList) {
   let processedDict = preProcessSections(classSectionList);
   let allPermutations = [];
-
-  // console.log(shouldFlatten(processedDict));
-  // console.log(processedDict);
 
   if (shouldFlatten(processedDict)) {
     let flattened = flattenSectionLetters(processedDict);
@@ -165,6 +233,18 @@ function getCourseSectionPermutations (classSectionList) {
     }
   }
   return allPermutations;
+}
+
+// Gets section permutations for every class's course
+// returns an array of arrays of section permutaion arrays
+function getPermutationsForAllClasses (classes) {
+  // console.log('Calculating permuations for every class');
+  let permutationResult = [];
+  for (let i = 0; i < classes.length; i++) {
+    permutationResult.push(getCourseSectionPermutations(classes[i].sectionList));
+  }
+  // console.log('Finished finding all permutations');
+  return permutationResult;
 }
 
 // function generateRecursive (currSchedule, listOfPermutationsForEveryClass, index) {
@@ -185,9 +265,12 @@ function getCourseSectionPermutations (classSectionList) {
 //   return newSchedules;
 // };
 
+// Iteratively generate Schedules
+// Much faster than recursively but still space issues
 function generateIterative (listOfPermutationsForEveryClass) {
-  console.log('Generating Schedules');
-  let newSchedules = [[]];
+  let newSchedules = [
+    []
+  ];
   for (let i = 0; i < listOfPermutationsForEveryClass.length; i++) {
     let classPermutations = listOfPermutationsForEveryClass[i];
     let newCurrent = [];
@@ -206,44 +289,12 @@ function generateIterative (listOfPermutationsForEveryClass) {
   return newSchedules;
 }
 
-function getPermutationsForAllClasses (classes) {
-  console.log('Calculating permuations for every class');
-  let permutationResult = [];
-  for (let i = 0; i < classes.length; i++) {
-    permutationResult.push(getCourseSectionPermutations(classes[i].sectionList));
-  }
-  console.log('Finished finding all permutations');
-  return permutationResult;
-}
-
+// Generates all possible valid schedules given details for all classes
 let genPrototype = (classes) => {
   let allPermutations = getPermutationsForAllClasses(classes);
-
   // let schedules = generateRecursive([], allPermutations, 0);
   let schedules = generateIterative(allPermutations);
   return schedules;
 };
-
-// router.get('/generate/:year([0-9]{4})/:semester(summer|fall|spring|winter)', function (req, res) {
-//   /*
-//   initial function to get all data from list of classes.
-//   This function does not currently generate anything just gets all the section details for every class
-//   Assuming selected classes are given as ['AAS100','CS428','CS225', etc]
-//   */
-//   let url = 'schedule/' + req.params.year + '/' + req.params.semester + '/';
-//   let selectedClasses = ['CS173', 'CS125', 'CS225'];
-//   // let selectedClasses = ['CS173','CS125','CS225','CHEM236','CHEM237','CHEM312'];
-//   getAllDetails(url, selectedClasses, function (result) {
-//     let generatedSchedules = [];
-//     for (let i = 0; i < 1; i++) {
-//       console.time('Generate Schedules');
-//       generatedSchedules = genPrototype(result);
-//       console.timeEnd('Generate Schedules');
-//     }
-//     console.log('NUMBER OF SCHEDULES: ' + generatedSchedules.length);
-//     res.json(generatedSchedules);
-//     // res.json([]);
-//   });
-// });
 
 module.exports = router;

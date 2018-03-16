@@ -3,7 +3,7 @@ const parseString = require('xml2js').parseString;
 const async = require('async');
 
 // Helper function to make request to course xml data
-let getElements = (query, myCallback) => {
+function getElements (query, myCallback) {
   request('https://courses.illinois.edu/cisapp/explorer/' + query + '.xml', function (error, response, body) {
     if (!error && response.statusCode === 200) {
       parseString(body, function (err, result) {
@@ -15,21 +15,19 @@ let getElements = (query, myCallback) => {
       });
     } else if (response.statusCode !== 200) {
       myCallback(response.statusCode, {'error': 'Could not retrieve data from course website. ' + response.body});
-      console.log(response);
     } else {
       myCallback(500, {'error': 'Could not make request to the course website'});
     }
   }).end();
-};
+}
 
-// Given course "CS428" gets the list of sections
-let getListOfsectionsFromCourseNum = (context, course, doneCallBack) => {
+// Given course i.e. "CS428" gets the list of sections
+function getListOfsectionsFromCourseNum (context, course, doneCallBack) {
   let params = course.split(/(\d+)/);
   let url = context.partialURL + params[0] + '/' + params[1];
   getElements(url, function (error, result) {
     if (error) {
-      console.log(error);
-      return doneCallBack(null, {});
+      return doneCallBack(error, {});
     }
 
     let section = result['ns2:course']['sections'][0]['section'];
@@ -46,17 +44,16 @@ let getListOfsectionsFromCourseNum = (context, course, doneCallBack) => {
     };
     return doneCallBack(null, listOfSections);
   });
-};
+}
 
 // Given section id, get details for that specific section
 // async function for mapping
 // TODO: Extract function to remove duplicate code later
-let getSectionDetails = (context, sectionId, doneCallBack) => {
+function getSectionDetails (context, sectionId, doneCallBack) {
   let url = context.partialURL + sectionId;
   getElements(url, function (error, result) {
     if (error) {
-      console.log(error);
-      return doneCallBack(null, {});
+      return doneCallBack(error, {apple: 'apple'});
     }
 
     let sectionNumber = result['ns2:section']['sectionNumber'][0];
@@ -89,39 +86,40 @@ let getSectionDetails = (context, sectionId, doneCallBack) => {
     };
     return doneCallBack(null, sectionDetails);
   });
-};
+}
 
 // Iterates through list of sections for class and gets its specific details
-let getAllClassesSectionDetails = (context, listOfSectionsForClass, doneCallBack) => {
+function getAllClassesSectionDetails (context, listOfSectionsForClass, doneCallBack) {
   let sectionList = listOfSectionsForClass.sectionList;
   // console.log("Getting details now ");
   // console.log(listOfSectionsForClass);
   let partialURL = context.partialURL + listOfSectionsForClass.subjectId + '/' + listOfSectionsForClass.courseId + '/';
   async.map(sectionList, getSectionDetails.bind(null, {partialURL: partialURL, subjectId: listOfSectionsForClass.subjectId, courseId: listOfSectionsForClass.courseId}), function (err, results) {
     if (err) {
-      console.log('ERROR: ' + err);
+      return doneCallBack(err, {});
     }
     listOfSectionsForClass.sectionList = results;
     return doneCallBack(null, listOfSectionsForClass);
   });
-};
+}
 
-// Gets all data from list of classes.
-// For now assuming input of form ['CS428','CS421','CS412','CS225']
-let getAllDetails = (partialURL, selectedClasses, callback) => {
-  console.log('Getting all selected classes information');
+// initial function to get all data from list of classes.
+// This function does not currently generate anything just gets all the section details for every class
+// Assuming selected classes are given as ['AAS100','CS428','CS225', etc]
+function getAllDetails (partialURL, selectedClasses, callback) {
   async.map(selectedClasses, getListOfsectionsFromCourseNum.bind(null, {partialURL: partialURL}), function (err, allClassesSectionList) {
     if (err) {
-      console.log('ERROR: ' + err);
+      return callback(err, allClassesSectionList);
     }
     async.map(allClassesSectionList, getAllClassesSectionDetails.bind(null, {partialURL: partialURL}), function (err, results) {
       if (err) {
-        console.log('ERROR: ' + err);
+        callback(err, results);
+      } else {
+        callback(null, results);
       }
-      callback(results);
     });
   });
-};
+}
 
 module.exports = {
   getElements: getElements,
