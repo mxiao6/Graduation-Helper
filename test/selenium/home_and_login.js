@@ -38,6 +38,36 @@ describe('Test Suite', function () {
     });
   }
 
+  /* function findErrorMessage (index) {
+    return driver.findElements(webdriver.By.css('.ant-message-error span')).then(function (result) {
+      return result[index];
+    });
+  } */
+
+  function findEmailEntry () {
+    return driver.findElements(webdriver.By.css('#email')).then(function (result) {
+      return result[0];
+    });
+  }
+
+  function findUsernameEntry () {
+    return driver.findElements(webdriver.By.css('#username')).then(function (result) {
+      return result[0];
+    });
+  }
+
+  function findPasswordEntry () {
+    return driver.findElements(webdriver.By.css('#password')).then(function (result) {
+      return result[0];
+    });
+  }
+
+  function findHelloText () {
+    return driver.findElements(webdriver.By.css('.intro h1')).then(function (result) {
+      return result[0];
+    });
+  }
+
   it('Page Title', function (done) {
     this.timeout(10000);
     driver.get('http://localhost:3000/')
@@ -89,6 +119,29 @@ describe('Test Suite', function () {
       .then(() => done())
       .catch(error => done(error));
   });
-});
 
-/* errorText.text.should.equal('Please input your Email!') */
+  it('Register', function (done) {
+    this.timeout(20000);
+    driver.get('http://localhost:3000/')
+      .then(() => driver.wait(findLoginPageButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findRegisterButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(() => driver.wait(findUsernameEntry(), 2000))
+      .then(input => input.sendKeys('admin'))
+      .then(() => driver.wait(findPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.equal('http://localhost:3000/#/'))
+      .then(() => driver.wait(findHelloText(), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(helloText => helloText.should.equal('Hello, \nadmin!'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+});
