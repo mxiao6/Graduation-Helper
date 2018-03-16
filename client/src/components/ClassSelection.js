@@ -7,14 +7,47 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as classActions from "containers/Classes";
 
-import { Cascader, Spin, Button, message } from "antd";
+import { Cascader, Spin, Button, Table, message } from "antd";
 import "styles/ClassSelection.css";
+
+const sectionColumns = [
+  {
+    title: "Status",
+    dataIndex: "enrollmentStatus"
+  },
+  {
+    title: "CRN",
+    dataIndex: "sectionId"
+  },
+  {
+    title: "Type",
+    dataIndex: "type"
+  },
+  {
+    title: "Section",
+    dataIndex: "sectionNumber"
+  },
+  {
+    title: "Start Time",
+    dataIndex: "startTime"
+  },
+  {
+    title: "End Time",
+    dataIndex: "endTime"
+  },
+  {
+    title: "Day",
+    dataIndex: "daysOfWeek"
+  }
+];
 
 class ClassSelection extends React.Component {
   state = {
     options: undefined,
     selected: undefined,
-    sectionList: undefined
+    sectionList: undefined,
+    selectedRowKeys: [],
+    tableLoading: false
   };
 
   componentWillReceiveProps(nextProps) {}
@@ -102,6 +135,10 @@ class ClassSelection extends React.Component {
     const { selected } = this.state;
     const { semester } = this.props;
 
+    this.setState({
+      tableLoading: true
+    });
+
     axios
       .get(GET_SECTION, {
         params: {
@@ -136,10 +173,18 @@ class ClassSelection extends React.Component {
       .then(
         axios.spread((...results) => {
           this.setState({
-            sectionList: _.map(results, res => res.data)
+            sectionList: _.map(results, res => ({
+              ...res.data,
+              key: res.data.sectionId
+            }))
           });
         })
       )
+      .then(res => {
+        this.setState({
+          tableLoading: false
+        });
+      })
       .catch(es => {
         console.error(es);
       });
@@ -167,10 +212,24 @@ class ClassSelection extends React.Component {
     );
   };
 
+  _onSelectChange = selectedRowKeys => {
+    console.log("selectedRowKeys changed: ", selectedRowKeys);
+    this.setState({ selectedRowKeys });
+  };
+
   _renderSections = () => {
+    const { sectionList, selectedRowKeys } = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this._onSelectChange
+    };
     return (
       <div className="sectionsContainer">
-        <div>{JSON.stringify(this.state.sectionList)}</div>
+        <Table
+          rowSelection={rowSelection}
+          columns={sectionColumns}
+          dataSource={sectionList}
+        />
       </div>
     );
   };
@@ -179,7 +238,11 @@ class ClassSelection extends React.Component {
     return (
       <div className="contentContainer">
         {this._renderCascader()}
-        {this.state.sectionList && this._renderSections()}
+        {this.state.tableLoading ? (
+          <Spin />
+        ) : (
+          this.state.sectionList && this._renderSections()
+        )}
       </div>
     );
   };
