@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import _ from "lodash";
 import { Link } from "react-router-dom";
-import { GET_SUBJECT, GET_COURSE, GET_SECTION } from "api";
+import { GET_SUBJECT, GET_COURSE, GET_SECTION, GET_SECTION_DETAILS } from "api";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as classActions from "containers/Classes";
@@ -98,6 +98,53 @@ class ClassSelection extends React.Component {
       return <span key={option.value}>{option.value} </span>;
     });
 
+  _showSections = () => {
+    const { selected } = this.state;
+    const { semester } = this.props;
+
+    axios
+      .get(GET_SECTION, {
+        params: {
+          ...semester,
+          ...selected
+        }
+      })
+      .then(res => {
+        this._retrieceSectionDetails(res.data);
+      })
+      .catch(e => {
+        console.error(e.response);
+      });
+  };
+
+  _retrieceSectionDetails(sections) {
+    const { selected } = this.state;
+    const { semester } = this.props;
+
+    let promises = _.map(sections, section => {
+      return axios.get(GET_SECTION_DETAILS, {
+        params: {
+          ...selected,
+          ...semester,
+          sectionId: section.id
+        }
+      });
+    });
+
+    axios
+      .all(promises)
+      .then(
+        axios.spread((...results) => {
+          this.setState({
+            sectionList: _.map(results, res => res.data)
+          });
+        })
+      )
+      .catch(es => {
+        console.error(es);
+      });
+  }
+
   _renderCascader = () => {
     return (
       <div className="cascaderContainer">
@@ -123,7 +170,7 @@ class ClassSelection extends React.Component {
   _renderSections = () => {
     return (
       <div className="sectionsContainer">
-        <div>{JSON.stringify(this.state.selected)}</div>
+        <div>{JSON.stringify(this.state.sectionList)}</div>
       </div>
     );
   };
@@ -132,7 +179,7 @@ class ClassSelection extends React.Component {
     return (
       <div className="contentContainer">
         {this._renderCascader()}
-        {this.state.selected && this._renderSections()}
+        {this.state.sectionList && this._renderSections()}
       </div>
     );
   };
