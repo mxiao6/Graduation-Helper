@@ -408,7 +408,6 @@ define({ "api": [
     },
     "filename": "routes/api.js",
     "groupTitle": "Class"
-<<<<<<< HEAD
   },
   {
     "type": "get",
@@ -471,7 +470,5 @@ define({ "api": [
     },
     "filename": "routes/generateSchedule.js",
     "groupTitle": "Schedule"
-=======
->>>>>>> master
   }
 ] });

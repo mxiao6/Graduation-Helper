@@ -12,11 +12,7 @@ password (VARCHAR(32))
 
 Schedule Table:
 schedule_id* (INT)
-<<<<<<< HEAD
 semester (VARCHAR(16))
-=======
-semester (VARCHAR(8))
->>>>>>> master
 user_id (UNSIGNED INT)
 
 Course Table:
