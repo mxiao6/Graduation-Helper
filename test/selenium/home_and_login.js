@@ -38,11 +38,11 @@ describe('Test Suite', function () {
     });
   }
 
-  /* function findErrorMessage (index) {
+  function findErrorMessage (index) {
     return driver.findElements(webdriver.By.css('.ant-message-error span')).then(function (result) {
       return result[index];
     });
-  } */
+  }
 
   function findEmailEntry () {
     return driver.findElements(webdriver.By.css('#email')).then(function (result) {
@@ -120,7 +120,7 @@ describe('Test Suite', function () {
       .catch(error => done(error));
   });
 
-  it('Register', function (done) {
+  it('Successful Registration', function (done) {
     this.timeout(20000);
     driver.get('http://localhost:3000/')
       .then(() => driver.wait(findLoginPageButton, 2000))
@@ -131,6 +131,52 @@ describe('Test Suite', function () {
       .then(input => input.sendKeys('admin@gmail.com'))
       .then(() => driver.wait(findUsernameEntry(), 2000))
       .then(input => input.sendKeys('admin'))
+      .then(() => driver.wait(findPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.equal('http://localhost:3000/#/'))
+      .then(() => driver.wait(findHelloText(), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(helloText => helloText.should.equal('Hello, \nadmin!'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Register with Same Email', function (done) {
+    this.timeout(20000);
+    driver.get('http://localhost:3000/')
+      .then(() => driver.wait(findLoginPageButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findRegisterButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(() => driver.wait(findUsernameEntry(), 2000))
+      .then(input => input.sendKeys('admin'))
+      .then(() => driver.wait(findPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(curUrl => curUrl.should.include('Signup'))
+      .then(() => driver.wait(findErrorMessage(0), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(helloText => helloText.should.equal('Email already registered!'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Successful Login', function (done) {
+    this.timeout(20000);
+    driver.get('http://localhost:3000/')
+      .then(() => driver.wait(findLoginPageButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
       .then(() => driver.wait(findPasswordEntry(), 2000))
       .then(input => input.sendKeys('test'))
       .then(() => driver.wait(findLoginButton, 2000))
