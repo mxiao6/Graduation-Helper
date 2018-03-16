@@ -470,5 +470,56 @@ define({ "api": [
     },
     "filename": "routes/generateSchedule.js",
     "groupTitle": "Schedule"
+  },
+  {
+    "type": "post",
+    "url": "/saveschedule",
+    "title": "save the user schedule to the database",
+    "name": "saveschedule",
+    "group": "Schedule",
+    "version": "0.1.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "semester",
+            "description": "<p>The specific semester</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "year",
+            "description": "<p>The school year</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "optional": false,
+            "field": "crns",
+            "description": "<p>List of the course CRN values from schedule</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "optional": false,
+            "field": "subjects",
+            "description": "<p>List of the course subject codes from schedule</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "optional": false,
+            "field": "courseNumbers",
+            "description": "<p>List of the course numbers from schedule</p>"
+          }
+        ]
+      }
+    },
+    "filename": "routes/schedule.js",
+    "groupTitle": "Schedule"
   }
 ] });

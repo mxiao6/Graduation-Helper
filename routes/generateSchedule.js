@@ -10,7 +10,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *
 *@apiParam {String} year The specific school year
 *@apiParam {String} semester The specific semester year
-**@apiParam {String[]} courses List of courses to generate schedules
+*@apiParam {String[]} courses List of courses to generate schedules
 *
 *@apiParamExample {json} Request-Example:
 *   {
