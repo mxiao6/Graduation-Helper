@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 var nodemailer = require('nodemailer');
 var randomstring = require('randomstring');
-var userId = null;
+// var userId = null;
 var pool;
 if (process.argv.length > 2 && process.argv[2] === 'test') {
   pool = mysql.createPool({
@@ -164,5 +164,5 @@ exports.resetpassword = function (req, res) {
     });
   });
 };
-exports.userId = userId;
+// exports.userId = userId;
 exports.pool = pool;

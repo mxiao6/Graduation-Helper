@@ -2,7 +2,7 @@
 // functions related to schedule objects
 // var mysql = require('mysql');
 var userLogin = require('./userlogin');
-var userId = userLogin.userId;
+// var userId = userLogin.userId;
 var pool = userLogin.pool;
 
 /**
@@ -11,6 +11,7 @@ var pool = userLogin.pool;
  *@apiGroup Schedule
  *@apiVersion 0.1.0
  *
+ *@apiParam {int} userId user ID that the schedule is to be associated with
  *@apiParam {String} semester The specific semester
  *@apiParam {String} year The school year
  *@apiParam {String[]} crns List of the course CRN values from schedule
@@ -19,19 +20,12 @@ var pool = userLogin.pool;
  *
  */
 exports.save = function (req, res) {
-  // console.log('CALLING SAVESCHEDULE()');
-  // temp ==> DELETE ME
-  // userId = 1;
-  //
-  // console.log("CURRENTUSERID: " + userId);
+  let userId = req.query.userId;
   let semester = req.query.semester;
   let year = req.query.year;
   let crns = req.query.crns;
   let subjects = req.query.subjects;
   let courseNumbers = req.query.courseNumbers;
-
-  // console.log("subjects: " + subjects[0]);
-  // console.log("subjects: " + subjects[1]);
 
   pool.getConnection(function (err, connection) {
     if (err) {
@@ -43,7 +37,6 @@ exports.save = function (req, res) {
     connection.query('SELECT schedule_id FROM Schedules WHERE user_id = ? AND semester = ?;', [userId, semester + '' + year], function (err, res) {
       if (err) { throw err; }
       let scheduleId = res[0].schedule_id;
-      // console.log("SCHEDULEID: " + scheduleId);
 
       if (crns.length !== subjects.length || crns.length !== courseNumbers.length || subjects.length !== courseNumbers.length) {
         throw new {
