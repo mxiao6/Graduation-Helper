@@ -408,6 +408,7 @@
     },
     "filename": "routes/api.js",
     "groupTitle": "Class"
+<<<<<<< HEAD
   },
   {
     "type": "get",
@@ -470,5 +471,7 @@
     },
     "filename": "routes/generateSchedule.js",
     "groupTitle": "Schedule"
+=======
+>>>>>>> master
   }
 ]

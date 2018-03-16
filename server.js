@@ -4,7 +4,10 @@ const port = process.env.PORT || 5000;
 const api = require('./routes/api');
 const userlogin = require('./routes/userlogin');
 const generateSchedule = require('./routes/generateSchedule');
+<<<<<<< HEAD
 const schedule = require('./routes/schedule');
+=======
+>>>>>>> master
 const bodyParser = require('body-parser');
 var path = require('path');
 
@@ -13,7 +16,10 @@ app.use(bodyParser.json());
 
 app.use('/api', api);
 app.use('/schedule', generateSchedule);
+<<<<<<< HEAD
 app.post('/saveschedule', schedule.save);
+=======
+>>>>>>> master
 app.post('/register', userlogin.register);
 app.post('/login', userlogin.login);
 app.post('/resetpassword', userlogin.resetpassword);
