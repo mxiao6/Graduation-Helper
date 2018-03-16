@@ -77,8 +77,12 @@ exports.login = function (req, res) {
       } else {
         if (results.length > 0) {
           if (results[0].password === password) {
-            userId = results[0].user_id;
-            res.status(250).send({userId, message: 'login successful'});
+            let userInfo = {
+              userId: results[0].user_id,
+              username: results[0].username,
+              email: results[0].email
+            };
+            res.status(250).send({...userInfo, message: 'login successful'});
           } else {
             res.status(422).send('Email and password does not match');
           }
@@ -179,7 +183,12 @@ exports.getUserInfo = function (req, res) {
         res.status(500).send('Database query error ocurred');
       } else {
         if (results.length > 0) {
-          res.status(250).send([results[0].user_id, results[0].username, results[0].email]);
+          let userInfo = {
+            userId: results[0].user_id,
+            username: results[0].username,
+            email: results[0].email
+          };
+          res.status(250).send(userInfo);
         } else {
           res.status(422).send('UserId does not exist');
         }
