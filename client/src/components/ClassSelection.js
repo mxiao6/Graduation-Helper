@@ -147,6 +147,7 @@ class ClassSelection extends React.Component {
         }
       })
       .then(res => {
+        console.log("simple sections", res.data);
         this._retrieceSectionDetails(res.data);
       })
       .catch(e => {
@@ -171,24 +172,37 @@ class ClassSelection extends React.Component {
     axios
       .all(promises)
       .then(
-        axios.spread((...results) => {
-          this.setState({
-            sectionList: _.map(results, res => ({
-              ...res.data,
-              key: res.data.sectionId
-            }))
-          });
-        })
+        axios
+          .spread((...results) => {
+            console.log("detailed sections", results);
+            this.setState({
+              sectionList: _.map(results, res => ({
+                ...res.data,
+                key: res.data.sectionId
+              }))
+            });
+          })
+          .then(res => {
+            this.setState({
+              tableLoading: false
+            });
+          })
+          .catch(e => {
+            this.setState({
+              tableLoading: false
+            });
+            console.error(e);
+          })
       )
-      .then(res => {
-        this.setState({
-          tableLoading: false
-        });
-      })
       .catch(es => {
         console.error(es);
       });
   }
+
+  _resetSemester = () => {
+    this.props.actions.resetSemester();
+    this.props.history.push("/SemesterSelection");
+  };
 
   _renderCascader = () => {
     return (
@@ -198,6 +212,7 @@ class ClassSelection extends React.Component {
           loadData={this.loadData}
           onChange={this.onChange}
           displayRender={this._displayRender}
+          placeholder="Select Class"
           changeOnSelect
         />
         <Button
@@ -235,8 +250,14 @@ class ClassSelection extends React.Component {
   };
 
   _renderContent = () => {
+    const { semester } = this.props;
     return (
       <div className="contentContainer">
+        <div>
+          Selected Semester: {semester.semester} {semester.year}
+          &nbsp; &nbsp;
+          <a onClick={this._resetSemester}>reset</a>
+        </div>
         {this._renderCascader()}
         {this.state.tableLoading ? (
           <Spin />

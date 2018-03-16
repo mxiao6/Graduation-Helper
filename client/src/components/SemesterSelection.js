@@ -87,13 +87,6 @@ class SemesterSelection extends React.Component {
       });
   };
 
-  _filter = (inputValue, path) => {
-    return path.some(
-      option =>
-        option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
-    );
-  };
-
   _renderCascader = () => {
     return (
       <div className="cascaderContainer">
