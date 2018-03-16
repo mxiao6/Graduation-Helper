@@ -1,22 +1,27 @@
 CREATE DATABASE testDatabase;
 
 CREATE TABLE testDatabase.users (
-  user_id int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
-  username varchar(16) NOT NULL,
-  email varchar(32) NOT NULL,
-  password varchar(32) NOT NULL
+  user_id INT NOT NULL AUTO_INCREMENT,
+  username VARCHAR(16) NOT NULL,
+  email VARCHAR(32) NOT NULL,
+  password VARCHAR(32) NOT NULL,
+  PRIMARY KEY (user_id)
 );
 
 CREATE TABLE testDatabase.courses(
-  course_id int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
-  subject varchar(4) NOT NULL,
-  course_number int(11) NOT NULL,
-  cru int(11) NOT NULL,
-  schedule_id int(11) NOT NULL
+  course_id INT NOT NULL AUTO_INCREMENT,
+  subject VARCHAR(4) NOT NULL,
+  course_number INT NOT NULL,
+  crn INT NOT NULL,
+  schedule_id INT NOT NULL,
+  semester VARCHAR(6) NOT NULL,
+  year INT NOT NULL,
+  PRIMARY KEY (course_id)
 );
 
 CREATE TABLE testDatabase.schedules(
-  schedule_id int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
-  semester varchar(8) NOT NULL,
-  user_id int(11) NOT NULL
+  schedule_id INT NOT NULL AUTO_INCREMENT,
+  semester VARCHAR(8) NOT NULL,
+  user_id INT NOT NULL,
+  PRIMARY KEY (schedule_id)
 );
