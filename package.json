@@ -2,13 +2,14 @@
   "name": "cs428grh",
   "version": "0.1.0",
   "scripts": {
-    "start": "node app.js",
+    "start": "node server.js",
     "build": "cd client && npm run build && cp -R build .. && cd .. && rm -rf public && mv build public && mv apidoc public",
     "ins": "npm install && cd client && npm install && cd ..",
     "client": "cd client && npm start",
-    "server": "nodemon app.js",
+    "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-    "test": "mocha --exit"
+    "mocha": "mocha test/selenium && mocha --exit test/backend",
+    "test": "npm run mocha && semistandard \"routes/**/*.js\" \"*.js\" && semistandard --env mocha \"test/**/*.js\""
   },
   "dependencies": {
     "body-parser": "^1.18.2",
