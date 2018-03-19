@@ -6,7 +6,7 @@ const userlogin = require('./routes/userlogin');
 const generateSchedule = require('./routes/generateSchedule');
 const schedule = require('./routes/schedule');
 const bodyParser = require('body-parser');
-var path = require('path');
+// var path = require('path');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -23,11 +23,8 @@ process.on('uncaughtException', (err) => {
   console.log('uncaughtException ' + err);
 });
 
-// for front end
 // need to put at the last
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+app.use(express.static('public'));
 
 if (!module.parent) {
   app.listen(port, () => console.log(`Listening on ${port}`));
