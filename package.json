@@ -2,7 +2,6 @@
   "name": "cs428grh",
   "version": "0.1.0",
   "scripts": {
-    "start": "node server.js",
     "build": "cd client && npm run build && cp -R build .. && cd .. && rm -rf public && mv build public && mv apidoc public",
     "ins": "npm install && cd client && npm install && cd ..",
     "client": "cd client && npm start",
