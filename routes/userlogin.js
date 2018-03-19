@@ -80,9 +80,10 @@ exports.login = function (req, res) {
             let userInfo = {
               userId: results[0].user_id,
               username: results[0].username,
-              email: results[0].email
+              email: results[0].email,
+              message: 'login successful'
             };
-            res.status(250).send({...userInfo, message: 'login successful'});
+            res.status(250).send(userInfo);
           } else {
             res.status(422).send('Email and password does not match');
           }

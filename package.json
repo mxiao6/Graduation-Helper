@@ -1,11 +1,9 @@
 {
   "name": "cs428grh",
   "version": "0.1.0",
-  "engines":{"node": "9.6.1 || 8.10.0"},
   "scripts": {
     "start": "node app.js",
     "build": "cd client && npm run build && cp -R build .. && cd .. && rm -rf public && mv build public && mv apidoc public",
-    "deploy": "git add -A && git commit -m \"Deploy to azure\" && git push --force https://gh428:GH428429@grhnew.scm.azurewebsites.net:443/grhnew.git HEAD:master",
     "ins": "npm install && cd client && npm install && cd ..",
     "client": "cd client && npm start",
     "server": "nodemon app.js",
