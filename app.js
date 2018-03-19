@@ -6,7 +6,7 @@ const userlogin = require('./routes/userlogin');
 const generateSchedule = require('./routes/generateSchedule');
 const schedule = require('./routes/schedule');
 const bodyParser = require('body-parser');
-var path = require('path');
+// var path = require('path');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -24,7 +24,7 @@ process.on('uncaughtException', (err) => {
 });
 
 // need to put at the last
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 if (!module.parent) {
   app.listen(port, () => console.log(`Listening on ${port}`));
