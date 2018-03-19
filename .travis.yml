@@ -24,7 +24,7 @@ addons:
       - google-chrome-stable
 
 script:
-  - node server.js test &
+  - node app.js test &
   - sleep 10
   - cd client
   - npm start &
