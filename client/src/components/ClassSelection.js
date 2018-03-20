@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as classActions from "containers/Classes";
 
-import { Cascader, Spin, Button, Table, message } from "antd";
+import { Cascader, Spin, Button, Table, Tag, message } from "antd";
 import "styles/ClassSelection.css";
 
 const sectionColumns = [
@@ -198,6 +198,36 @@ class ClassSelection extends React.Component {
     });
   };
 
+  _closeTag = removedTag => {
+    const selectedRowKeys = this.state.selectedRowKeys.filter(
+      tag => tag !== removedTag
+    );
+    console.log(selectedRowKeys);
+    this.setState({ selectedRowKeys });
+  };
+
+  _renderCRNs = () => {
+    const { selectedRowKeys } = this.state;
+    return (
+      selectedRowKeys.length !== 0 && (
+        <div className="tagsContainer">
+          {selectedRowKeys.map((tag, index) => {
+            return (
+              <Tag
+                color="blue"
+                closable
+                key={tag}
+                afterClose={() => this._closeTag(tag)}
+              >
+                {tag}
+              </Tag>
+            );
+          })}
+        </div>
+      )
+    );
+  };
+
   _renderCascader = () => {
     return (
       <div className="cascaderContainer">
@@ -253,6 +283,7 @@ class ClassSelection extends React.Component {
           <a onClick={this._resetSemester}>reset</a>
         </div>
         {this._renderCascader()}
+        {this._renderCRNs()}
         {this.state.tableLoading ? (
           <Spin />
         ) : (

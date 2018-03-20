@@ -16,15 +16,6 @@ before_script:
   - npm install
   - cd ..
 
-deploy:
-  provider: azure_web_apps
-  skip_cleanup: true
-  username: "gh428"
-  password: "GH428429"
-  site: "grhfree"
-  on:
-    branch: master
-
 addons:
   apt:
     sources:
