@@ -146,7 +146,7 @@ class ClassSelection extends React.Component {
     });
   };
 
-  _closeTab = removedTag => {
+  _closeTag = removedTag => {
     const schedule = this.state.schedule.filter(tag => tag !== removedTag);
     console.log(schedule);
     this.setState({ schedule });
@@ -199,20 +199,22 @@ class ClassSelection extends React.Component {
   _renderSchedule = () => {
     const { schedule } = this.state;
     return (
-      <div className="tagsContainer">
-        {schedule.map((tag, index) => {
-          return (
-            <Tag
-              color="blue"
-              closable
-              key={tag}
-              afterClose={() => this._closeTab(tag)}
-            >
-              {tag}
-            </Tag>
-          );
-        })}
-      </div>
+      schedule.length !== 0 && (
+        <div className="tagsContainer">
+          {schedule.map((tag, index) => {
+            return (
+              <Tag
+                color="blue"
+                closable
+                key={tag}
+                afterClose={() => this._closeTag(tag)}
+              >
+                {tag}
+              </Tag>
+            );
+          })}
+        </div>
+      )
     );
   };
 
@@ -227,7 +229,7 @@ class ClassSelection extends React.Component {
           <a onClick={this._resetSemester}>reset</a>
         </div>
         {this._renderCascader()}
-        {schedule.length !== 0 && this._renderSchedule()}
+        {this._renderSchedule()}
         {this._renderGenerated()}
       </div>
     );
