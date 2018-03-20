@@ -3,7 +3,8 @@ import thunkMiddleware from "redux-thunk";
 import promiseMiddleware from 'redux-promise-middleware';
 import rootReducer from "./reducer";
 
-let middleware = [thunkMiddleware, promiseMiddleware];
+// let middleware = [thunkMiddleware, promiseMiddleware];
+let middleware = [thunkMiddleware];
 
 function configureStore() {
   const store = createStore(
