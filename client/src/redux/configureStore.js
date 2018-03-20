@@ -1,13 +1,13 @@
 import { createStore, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
+import thunkMiddleware from "redux-thunk";
+import promiseMiddleware from 'redux-promise-middleware';
 import rootReducer from "./reducer";
 
-let middleware = [thunk];
+let middleware = [thunkMiddleware, promiseMiddleware];
 
-function configureStore(initialState) {
+function configureStore() {
   const store = createStore(
     rootReducer,
-    initialState,
     applyMiddleware(...middleware)
   );
 
