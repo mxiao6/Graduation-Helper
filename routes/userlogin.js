@@ -1,8 +1,9 @@
 var mysql = require('mysql');
 var nodemailer = require('nodemailer');
 var randomstring = require('randomstring');
-// var userId = null;
+var moment = require('moment');
 var pool;
+
 if (process.argv.length > 2 && process.argv[2] === 'test') {
   pool = mysql.createPool({
     host: 'localhost',
@@ -95,10 +96,6 @@ exports.login = function (req, res) {
   });
 };
 /* for password reset:
-
-Process: User click reset password -> user input email -> user receive code
--> user input authentication code -> frontend check if code match -> call reset function.
-
 -request: user email
 -respond: Authentication code used to reset password
 */
@@ -130,15 +127,31 @@ exports.sendemail = function (req, res) {
             to: email, // receiver
             subject: 'Reset information from GRH', // Subject line
             text: 'Your are receiving this because you try to reset password for your account on Graduation Helper. \n' +
-        'The reset authentication code is ：     ' + aucode + '\n' +
+        'The reset authentication code is ：     ' + aucode + '. The code will expired in 30 minutes.\n' +
         "If you didn't request this, please ignore and nothing will be changed in your account."
           };
 
           transporter.sendMail(themail, function (err, info) {
             if (err) { console.log(err); } else { console.log(info); }
           });
+          // record the aucode in the database
+          // res.send(aucode);
+          var now = moment();
+          var auinfor = {
+            'email': email,
+            'aucode': aucode,
+            'Timesaved': now
+          };
 
-          res.send(aucode);
+          connection.query('INSERT INTO authentication SET ?', auinfor, function (error, results, fields) {
+            if (error) {
+              // console.log("error ocurred",error);
+              res.status(500).send('Database query error ocurred');
+            } else {
+              // console.log('The solution is: ', results);
+              res.status(250).send('Aucode saved successfully');
+            }
+          });
         } else {
           res.status(422).send('Email does not exist');
         }
@@ -151,22 +164,57 @@ exports.resetpassword = function (req, res) {
   // called when user is authorized to reset password
   var email = req.body.email;
   var password = req.body.password;
+  var Uaucode = req.body.aucode;
+  var aucode;
+  var sendtime;
 
   pool.getConnection(function (err, connection) {
     if (err) {
       res.status(500).send('Database pool connection error');
     }
-    connection.query('UPDATE users SET password = ? WHERE email = ?', [
-      password, email
-    ], function (error, results, fields) {
+    // first get the true aucode
+    connection.query('SELECT * FROM authentication WHERE email = ?', [email], function (error, results, fields) {
       connection.release();
-
       if (error) {
         res.status(500).send('Database query error ocurred');
       } else {
-        res.status(300).send('Reset successfully!');
+        if (results.length > 0) {
+          aucode = results[0].aucode;
+          sendtime = results[0].Timesaved;
+        } else {
+          res.status(422).send('Email does not exist');
+        }
       }
     });
+    var now = moment();
+    var then = moment(sendtime);
+    var timediff = now.diff(then, 'minutes');
+    var clear = 0;
+    if (timediff > 30) {
+      res.status(422).write('aucode expired!');
+      clear = 1;
+    } else if (aucode.toLowerCase() !== Uaucode.toLowerCase()) {
+      res.status(422).send('aucode unmatched!');
+    } else {
+      connection.query('UPDATE users SET password = ? WHERE email = ?', [
+        password, email
+      ], function (error, results, fields) {
+        if (error) {
+          res.status(500).send('Database query error ocurred');
+        } else {
+          res.status(300).write('Reset successfully!');
+          clear = 1;
+        }
+      });
+    }
+    if (clear === 1) {
+      connection.query('DELETE * FROM authentication WHERE email = ?', [email], function (error, results, fields) {
+        if (error) {
+          res.status(500).send('Database query error ocurred');
+        }
+      });
+    }
+    // res.end();
   });
 };
 
@@ -198,5 +246,4 @@ exports.getUserInfo = function (req, res) {
   });
 };
 
-// exports.userId = userId;
 exports.pool = pool;
