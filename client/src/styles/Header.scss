@@ -1,4 +1,4 @@
-@import "Variables.scss";
+@import 'Variables.scss';
 
 .nav {
   z-index: 999;
@@ -13,7 +13,8 @@
   justify-content: space-between;
   align-items: center;
 
-  a {
+  a,
+  a:focus {
     text-decoration: none;
     color: $ui-blue;
   }
