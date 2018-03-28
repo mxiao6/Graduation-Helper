@@ -5,11 +5,15 @@ import promiseMiddleware from 'redux-promise-middleware';
 import rootReducer from './reducer';
 
 // let middleware = [thunkMiddleware, promiseMiddleware];
-let middleware = [thunkMiddleware, createLogger()];
+let middleware;
+if (process.env.NODE_ENV === 'production') {
+  middleware = [thunkMiddleware];
+} else {
+  middleware = [thunkMiddleware, createLogger()];
+}
 
 function configureStore() {
   const store = createStore(rootReducer, applyMiddleware(...middleware));
-
   return store;
 }
 

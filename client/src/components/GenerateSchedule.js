@@ -152,6 +152,13 @@ class ClassSelection extends React.Component {
     this.setState({ schedule });
   };
 
+  _filter = (inputValue, path) => {
+    return path.some(
+      option =>
+        option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
+    );
+  };
+
   _renderCascader = () => {
     return (
       <div className="cascaderContainer">
@@ -162,6 +169,7 @@ class ClassSelection extends React.Component {
           displayRender={this._displayRender}
           placeholder="Select Class"
           changeOnSelect
+          showSearch={{ filter: this._filter }}
         />
         <Button
           type="primary"
