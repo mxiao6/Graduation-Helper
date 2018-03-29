@@ -34,13 +34,13 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
 *@apiSuccessExample Success-Response:
 *   HTTP/1.1 250 OK
 *   {
-      "success": "user registered sucessfully"
+      "user registered sucessfully"
     }
 *
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 422
 *   {
-*     "error": "Email already registered!"
+*     "Email already registered!"
 *   }
 */
 exports.register = function (req, res) {
@@ -92,19 +92,19 @@ exports.register = function (req, res) {
 *@apiSuccessExample Success-Response:
 *   HTTP/1.1 250 OK
 *   {
-      "success": "user login sucessfully"
+      "user login sucessfully"
     }
 *
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 422
 *   {
-*     "error": "Email does not exist"
+*     "Email does not exist"
 *   }
 *
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 422
 *   {
-*     "error": "Email and password does not match"
+*     "Email and password does not match"
 *   }
 */
 
@@ -156,13 +156,13 @@ exports.login = function (req, res) {
 *@apiSuccessExample Success-Response:
 *   HTTP/1.1 250 OK
 *   {
-      "success": "Email sended successfully"
+      "Email sended successfully"
     }
 *
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 422
 *   {
-*     "error": "Email does not exist"
+*     "Email does not exist"
 *   }
 */
 exports.sendemail = function (req, res) {
@@ -274,19 +274,19 @@ exports.sendemail = function (req, res) {
 *@apiSuccessExample Success-Response:
 *   HTTP/1.1 250 OK
 *   {
-      "success": "Reset successfully"
+      "Reset successfully"
     }
 *
 *@apiErrorExample authentication code exipried:
 *   HTTP/1.1 422
 *   {
-*     "error": "aucode expired!"
+*     "aucode expired!"
 *   }
 *
 *@apiErrorExample authentication code exipried:
 *   HTTP/1.1 422
 *   {
-*     "error": "aucode unmatched!"
+*     "aucode unmatched!"
 *   }
 *
 */
