@@ -81,13 +81,28 @@ router.get('/generate', function (req, res) {
       return res.status(500).json({error: 'Could not generate schedules'});
     }
 
+    // console.log("Generating Schedules");
+    // console.time('genPrototype');
     let generatedSchedules = genPrototype(result);
+    // console.timeEnd('genPrototype');
+    // console.log("Generated Schedules. Sending Data back");
+    // console.log(generatedSchedules.length);
     res.status(200).json(generatedSchedules);
+    // res.status(200).json("Sent");
   });
+
 });
 
+function isSectionsSimilar(sectionA, sectionB){
+  if(sectionA.startTime === sectionB.startTime && sectionA.endTime === sectionB.endTime){
+    return true;
+  }
+  return false;
+}
+
+
 // Preproccesses section List by section letters and type code
-// returns in the form of array of section Letters with each section type ['A': {lEC:[], DIS:[]}, 'B':{LEC:[], DIS:[]}]
+// returns in the form of array of section Letters with each section type {'A': {lEC:[], DIS:[]}, 'B':{LEC:[], DIS:[]}}
 function preProcessSections (sectionList) {
   let processedList = {};
   for (let i = 0; i < sectionList.length; i++) {
@@ -97,8 +112,14 @@ function preProcessSections (sectionList) {
     if (processedList.hasOwnProperty(sectionLetter)) {
       // Has section Letter
       if (processedList[sectionLetter].hasOwnProperty(sectionType)) {
-        // Has type code
-        processedList[sectionLetter][sectionType].push(section);
+        let listOfSectionsWithLetterAndType = processedList[sectionLetter][sectionType];
+
+        prevSection = listOfSectionsWithLetterAndType[listOfSectionsWithLetterAndType.length - 1];
+        if (isSectionsSimilar(prevSection, section)){
+          prevSection.sectionNumber = prevSection.sectionNumber + " " + section.sectionNumber;
+        }else{
+          listOfSectionsWithLetterAndType.push(section)
+        }
       } else {
         processedList[sectionLetter][sectionType] = [section];
       }
