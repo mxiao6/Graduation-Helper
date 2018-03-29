@@ -21,7 +21,28 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
     database: 'graduation_helper'
   });
 }
-
+/**
+*@api{register}/Register a new user
+*@apiName Register
+*@apiGroup User
+*@apiVersion 0.1.0
+*
+*@apiParam {String} username Username
+*@apiParam {String} email User's email
+*@apiParam {String} password User entered password
+*
+*@apiSuccessExample Success-Response:
+*   HTTP/1.1 250 OK
+*   {  
+      "success": "user registered sucessfully"
+    }
+*
+*@apiErrorExample Error-Response:
+*   HTTP/1.1 422 
+*   {
+*     "error": "Email already registered!"
+*   }
+*/
 exports.register = function (req, res) {
   var users = {
     'username': req.body.username,
@@ -59,6 +80,34 @@ exports.register = function (req, res) {
   });
 };
 
+/**
+*@api{login}/user login
+*@apiName Login
+*@apiGroup User
+*@apiVersion 0.1.0
+*
+*@apiParam {String} email User's email
+*@apiParam {String} password Entered password
+*
+*@apiSuccessExample Success-Response:
+*   HTTP/1.1 250 OK
+*   {  
+      "success": "user login sucessfully"
+    }
+*
+*@apiErrorExample Error-Response:
+*   HTTP/1.1 422 
+*   {
+*     "error": "Email does not exist"
+*   }
+*
+*@apiErrorExample Error-Response:
+*   HTTP/1.1 422 
+*   {
+*     "error": "Email and password does not match"
+*   }
+*/
+
 exports.login = function (req, res) {
   var email = req.body.email;
   var password = req.body.password;
@@ -95,11 +144,27 @@ exports.login = function (req, res) {
     });
   });
 };
-/* for password reset:
--request: user email
--respond: Authentication code used to reset password
-*/
 
+/**
+*@api{sendemail}/user click sendemail to send reset information
+*@apiName Sendemail
+*@apiGroup User
+*@apiVersion 0.1.0
+*
+*@apiParam {String} email User's email
+*
+*@apiSuccessExample Success-Response:
+*   HTTP/1.1 250 OK
+*   {  
+      "success": "Email sended successfully"
+    }
+*
+*@apiErrorExample Error-Response:
+*   HTTP/1.1 422 
+*   {
+*     "error": "Email does not exist"
+*   }
+*/
 exports.sendemail = function (req, res) {
 // first check if email exist and send authentication code to that email and to response
   var email = req.body.email;
@@ -189,6 +254,35 @@ exports.sendemail = function (req, res) {
   });
 };
 
+/**
+*@api{resetpassword}/check if user enter authentication code right or vaild then update the password
+*@apiName Resetpassword
+*@apiGroup User
+*@apiVersion 0.1.0
+*
+*@apiParam {String} email User's email
+*@apiParam {String} password User's new password
+*@apiParam {String} aucode User entered authentication code
+*
+*@apiSuccessExample Success-Response:
+*   HTTP/1.1 250 OK
+*   {  
+      "success": "Reset successfully"
+    }
+*
+*@apiErrorExample authentication code exipried:
+*   HTTP/1.1 422 
+*   {
+*     "error": "aucode expired!"
+*   }
+*
+*@apiErrorExample authentication code exipried:
+*   HTTP/1.1 422 
+*   {
+*     "error": "aucode unmatched!"
+*   }
+*
+*/
 exports.resetpassword = function (req, res) {
   // called when user is authorized to reset password
   var email = req.body.email;
@@ -219,7 +313,7 @@ exports.resetpassword = function (req, res) {
       var timediff = now.diff(then, 'minutes');
       if (timediff > 30) {
         res.status(422).write('aucode expired!');
-      } else if (aucode.toLowerCase() !== Uaucode.toLowerCase()) {
+      } else if (aucode !== Uaucode) {
         res.status(422).send('aucode unmatched!');
       } else {
         connection.query('UPDATE users SET password = ? WHERE email = ?', [
