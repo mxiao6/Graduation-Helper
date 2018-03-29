@@ -350,7 +350,7 @@ exports.resetpassword = function (req, res) {
 *   {
       userId: user_id,
       username: username,
-      email: email    
+      email: email
     }
 *
 */
