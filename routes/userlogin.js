@@ -22,7 +22,7 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
   });
 }
 /**
-*@api{register}/Register a new user
+*@api{register}/userlogin Register a new user
 *@apiName Register
 *@apiGroup User
 *@apiVersion 0.1.0
@@ -81,7 +81,7 @@ exports.register = function (req, res) {
 };
 
 /**
-*@api{login}/user login
+*@api{login}/userlogin User login
 *@apiName Login
 *@apiGroup User
 *@apiVersion 0.1.0
@@ -146,7 +146,7 @@ exports.login = function (req, res) {
 };
 
 /**
-*@api{sendemail}/user click sendemail to send reset information
+*@api{sendemail}/userlogin Send reset information and record verification information
 *@apiName Sendemail
 *@apiGroup User
 *@apiVersion 0.1.0
@@ -255,7 +255,7 @@ exports.sendemail = function (req, res) {
 };
 
 /**
-*@api{resetpassword}/check if user enter authentication code right or vaild then update the password
+*@api{resetpassword}/userlogin Update password after verificating
 *@apiName Resetpassword
 *@apiGroup User
 *@apiVersion 0.1.0
@@ -338,7 +338,7 @@ exports.resetpassword = function (req, res) {
 };
 
 /**
-*@api{getUserInfo}/return the user information given the userid
+*@api{getUserInfo}/userlogin return the user information given the userid
 *@apiName GetUserInfo
 *@apiGroup User
 *@apiVersion 0.1.0
