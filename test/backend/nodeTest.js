@@ -73,7 +73,7 @@ describe('API tests', () => {
         });
     });
   });
-  
+  /*
   describe('/resetpassword', () => {
     it('resetpass', function (done) {
       chai.request(server)
@@ -92,6 +92,7 @@ describe('API tests', () => {
         });
     });
   });
+  */
 });
 
 describe('schedule test', () => {
