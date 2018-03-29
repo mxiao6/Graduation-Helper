@@ -110,47 +110,76 @@ exports.sendemail = function (req, res) {
     connection.query('SELECT * FROM users WHERE email = ?', [email], function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send('Database query error ocurred');
+        res.status(500).send('Database query error ocurred1');
       } else {
         if (results.length > 0) {
-          var aucode = randomstring.generate(10);
-          var transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: 'graduationhelper@gmail.com',
-              pass: 'Grh12345'
+          var aucode;
+          var now = moment().format('YYYY-MM-DD HH:mm:ss');
+          connection.query('SELECT * FROM authentication WHERE email = ?', [email], function (error, results, fields) {
+            if (error) {
+              res.status(500).send('Database query error ocurred0');
+            } else {
+              if (results.length > 0) {
+                var timenow = moment();
+                var timeold = results[0].timesaved;
+                console.log(timenow);
+                console.log(timeold);
+                console.log(timenow.diff(timeold, 'minutes'));
+                if (timenow.diff(timeold, 'minutes') <= 30) {
+                  aucode = results[0].aucode;
+                } else {
+                  aucode = randomstring.generate(10);
+                  connection.query('UPDATE authentication SET aucode = ? WHERE email = ?', [aucode, email], function (error, results, fields) {
+                    if (error) {
+                      res.status(500).send('Database query error ocurred');
+                    }
+                  });
+                  connection.query('UPDATE authentication SET timesaved = ? WHERE email = ?', [now, email], function (error, results, fields) {
+                    if (error) {
+                      res.status(500).send('Database query error ocurred');
+                    }
+                  });
+                }
+              } else {
+                aucode = randomstring.generate(10);
+                var auinfor = {
+                  'email': email,
+                  'aucode': aucode,
+                  'timesaved': now
+                };
+                connection.query('INSERT INTO authentication SET ?', auinfor, function (error, results, fields) {
+                  if (error) {
+                    // console.log("error ocurred",error);
+                    res.status(500).send('Database query error ocurred2');
+                  }
+                });
+              }
             }
-          });
-
-          var themail = {
-            from: 'sender@email.com', // sender address
-            to: email, // receiver
-            subject: 'Reset information from GRH', // Subject line
-            text: 'Your are receiving this because you try to reset password for your account on Graduation Helper. \n' +
+            var transporter = nodemailer.createTransport({
+              service: 'gmail',
+              auth: {
+                user: 'graduationhelper@gmail.com',
+                pass: 'Grh12345'
+              }
+            });
+            console.log(aucode);
+            var themail = {
+              from: 'sender@email.com', // sender address
+              to: email, // receiver
+              subject: 'Reset information from GRH', // Subject line
+              text: 'Your are receiving this because you try to reset password for your account on Graduation Helper. \n' +
         'The reset authentication code is ：     ' + aucode + '. The code will expired in 30 minutes.\n' +
         "If you didn't request this, please ignore and nothing will be changed in your account."
-          };
+            };
 
-          transporter.sendMail(themail, function (err, info) {
-            if (err) { console.log(err); } else { console.log(info); }
-          });
-          // record the aucode in the database
-          // res.send(aucode);
-          var now = moment();
-          var auinfor = {
-            'email': email,
-            'aucode': aucode,
-            'Timesaved': now
-          };
-
-          connection.query('INSERT INTO authentication SET ?', auinfor, function (error, results, fields) {
-            if (error) {
-              // console.log("error ocurred",error);
-              res.status(500).send('Database query error ocurred');
-            } else {
-              // console.log('The solution is: ', results);
-              res.status(250).send('Aucode saved successfully');
-            }
+            transporter.sendMail(themail, function (err, info) {
+              if (err) {
+                console.log(err);
+              } else {
+                res.status(250).send('Email sended successfully');
+                console.log(info);
+              }
+            });
           });
         } else {
           res.status(422).send('Email does not exist');
@@ -180,41 +209,30 @@ exports.resetpassword = function (req, res) {
       } else {
         if (results.length > 0) {
           aucode = results[0].aucode;
-          sendtime = results[0].Timesaved;
+          sendtime = results[0].timesaved;
         } else {
           res.status(422).send('Email does not exist');
         }
       }
+      var now = moment();
+      var then = sendtime;
+      var timediff = now.diff(then, 'minutes');
+      if (timediff > 30) {
+        res.status(422).write('aucode expired!');
+      } else if (aucode.toLowerCase() !== Uaucode.toLowerCase()) {
+        res.status(422).send('aucode unmatched!');
+      } else {
+        connection.query('UPDATE users SET password = ? WHERE email = ?', [
+          password, email
+        ], function (error, results, fields) {
+          if (error) {
+            res.status(500).send('Database query error ocurred');
+          } else {
+            res.status(300).send('Reset successfully!');
+          }
+        });
+      }
     });
-    var now = moment();
-    var then = moment(sendtime);
-    var timediff = now.diff(then, 'minutes');
-    var clear = 0;
-    if (timediff > 30) {
-      res.status(422).write('aucode expired!');
-      clear = 1;
-    } else if (aucode.toLowerCase() !== Uaucode.toLowerCase()) {
-      res.status(422).send('aucode unmatched!');
-    } else {
-      connection.query('UPDATE users SET password = ? WHERE email = ?', [
-        password, email
-      ], function (error, results, fields) {
-        if (error) {
-          res.status(500).send('Database query error ocurred');
-        } else {
-          res.status(300).write('Reset successfully!');
-          clear = 1;
-        }
-      });
-    }
-    if (clear === 1) {
-      connection.query('DELETE * FROM authentication WHERE email = ?', [email], function (error, results, fields) {
-        if (error) {
-          res.status(500).send('Database query error ocurred');
-        }
-      });
-    }
-    // res.end();
   });
 };
 
