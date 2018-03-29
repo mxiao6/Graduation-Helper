@@ -264,6 +264,13 @@ exports.sendemail = function (req, res) {
 *@apiParam {String} password User's new password
 *@apiParam {String} aucode User entered authentication code
 *
+*@apiParamExample {json} Request-Example:
+*   {
+*     "email": "jwu108@illinois.edu",
+*     "password": "12345678",
+*     "aucode": "Ml7eX4Q85L"
+*   }
+*
 *@apiSuccessExample Success-Response:
 *   HTTP/1.1 250 OK
 *   {
@@ -329,6 +336,24 @@ exports.resetpassword = function (req, res) {
     });
   });
 };
+
+/**
+*@api{getUserInfo}/return the user information given the userid
+*@apiName GetUserInfo
+*@apiGroup User
+*@apiVersion 0.1.0
+*
+*@apiParam {String} user_id User's unique id
+*
+*@apiSuccessExample Success-Response:
+*   HTTP/1.1 250 OK
+*   {
+      userId: user_id,
+      username: username,
+      email: email    
+    }
+*
+*/
 
 exports.getUserInfo = function (req, res) {
   var userId = req.body.user_id;
