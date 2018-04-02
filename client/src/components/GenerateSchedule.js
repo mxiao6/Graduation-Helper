@@ -10,7 +10,7 @@ import * as classActions from 'containers/Classes';
 import { Cascader, Spin, Button, Tag, message } from 'antd';
 import 'styles/ClassSelection.css';
 
-import BigCalendar from 'react-big-calendar';
+import BigCalendar from 'modules/react-big-calendar';
 
 class ClassSelection extends React.Component {
   state = {
