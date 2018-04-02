@@ -10,20 +10,22 @@ import * as classActions from 'containers/Classes';
 import { Cascader, Spin, Button, Tag, message } from 'antd';
 import 'styles/ClassSelection.css';
 
+import BigCalendar from 'react-big-calendar';
+
 class ClassSelection extends React.Component {
   state = {
     options: undefined,
     selected: undefined,
     schedule: [],
     generated: [],
-    generating: false
+    generating: false,
   };
 
   componentWillMount() {
     console.log(this.props.semester);
     axios
       .get(GET_SUBJECT, {
-        params: this.props.semester
+        params: this.props.semester,
       })
       .then(res => {
         console.log(res.data);
@@ -31,8 +33,8 @@ class ClassSelection extends React.Component {
           options: _.map(res.data, item => ({
             value: item.id,
             label: item.subject,
-            isLeaf: false
-          }))
+            isLeaf: false,
+          })),
         });
       })
       .catch(e => {
@@ -46,7 +48,7 @@ class ClassSelection extends React.Component {
     if (value.length === 0) {
       console.log('clear selection');
       this.setState({
-        selected: undefined
+        selected: undefined,
       });
       return;
     }
@@ -55,8 +57,8 @@ class ClassSelection extends React.Component {
       this.setState({
         selected: {
           course: value[0],
-          courseId: value[1]
-        }
+          courseId: value[1],
+        },
       });
     }
   };
@@ -69,8 +71,8 @@ class ClassSelection extends React.Component {
       .get(GET_COURSE, {
         params: {
           ...this.props.semester,
-          course: targetOption.value
-        }
+          course: targetOption.value,
+        },
       })
       .then(res => {
         console.log(res.data);
@@ -78,10 +80,10 @@ class ClassSelection extends React.Component {
         targetOption.children = _.map(res.data, item => ({
           label: `${item.id}: ${item.course}`,
           value: item.id,
-          isLeaf: true
+          isLeaf: true,
         }));
         this.setState({
-          options: [...this.state.options]
+          options: [...this.state.options],
         });
       })
       .catch(e => {
@@ -109,7 +111,7 @@ class ClassSelection extends React.Component {
     newSchedule.push(tag);
 
     this.setState({
-      schedule: newSchedule
+      schedule: newSchedule,
     });
   };
 
@@ -117,19 +119,19 @@ class ClassSelection extends React.Component {
     const { semester } = this.props;
     const { schedule } = this.state;
     this.setState({
-      generating: true
+      generating: true,
     });
     axios
       .get(GET_GENERATE_SCHEDULE, {
         params: {
           ...semester,
-          courses: schedule
-        }
+          courses: schedule,
+        },
       })
       .then(res => {
         this.setState({
           generated: res.data,
-          generating: false
+          generating: false,
         });
         console.log(res.data);
       })
@@ -142,7 +144,7 @@ class ClassSelection extends React.Component {
     this.props.actions.resetSemester();
     this.props.history.push({
       pathname: '/SemesterSelection',
-      state: { next: '/GenerateSchedule' }
+      state: { next: '/GenerateSchedule' },
     });
   };
 
@@ -191,6 +193,15 @@ class ClassSelection extends React.Component {
     );
   };
 
+  events = [
+    {
+      id: 1,
+      title: 'Birthday Party',
+      start: new Date(2018, 3, 1, 7, 0, 0),
+      end: new Date(2018, 3, 1, 10, 30, 0),
+    },
+  ];
+
   _renderGenerated = () => {
     const { generating, generated } = this.state;
     return (
@@ -198,11 +209,44 @@ class ClassSelection extends React.Component {
         {generating ? (
           <Spin />
         ) : (
-          generated.length !== 0 && <div>{JSON.stringify(generated)}</div>
+          generated.length !== 0 && (
+            <div style={{ width: 1200, height: 600 }}>
+              <BigCalendar
+                toolbar={false}
+                selectable
+                events={this.events}
+                step={30}
+                timeslots={2}
+                defaultView="week"
+                defaultDate={new Date(2018, 3, 1)}
+                onSelectEvent={event => alert(event.title)}
+                onSelectSlot={slotInfo =>
+                  alert(
+                    `selected slot: \n\nstart ${slotInfo.start.toLocaleString()} ` +
+                      `\nend: ${slotInfo.end.toLocaleString()}` +
+                      `\naction: ${slotInfo.action}`
+                  )
+                }
+              />
+            </div>
+          )
         )}
       </div>
     );
   };
+
+  // _renderGenerated = () => {
+  //   const { generating, generated } = this.state;
+  //   return (
+  //     <div className="sectionsContainer">
+  //       {generating ? (
+  //         <Spin />
+  //       ) : (
+  //         generated.length !== 0 && <div>{JSON.stringify(generated)}</div>
+  //       )}
+  //     </div>
+  //   );
+  // };
 
   _renderSchedule = () => {
     const { schedule } = this.state;
@@ -256,13 +300,13 @@ const _default = { year: '2018', semester: 'spring' };
 
 function mapStateToProps(state, ownProps) {
   return {
-    semester: state.classes.semester ? state.classes.semester : _default
+    semester: state.classes.semester ? state.classes.semester : _default,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(classActions, dispatch)
+    actions: bindActionCreators(classActions, dispatch),
   };
 }
 
