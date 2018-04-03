@@ -96,6 +96,8 @@ describe('API tests', () => {
 });
 
 describe('schedule test', () => {
+  this.timeout(10000);
+
   it('should give us a schedule', function (done) {
     chai.request(server)
       .get('/schedule/generate')
