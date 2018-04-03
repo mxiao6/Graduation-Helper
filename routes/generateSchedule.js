@@ -91,6 +91,19 @@ router.get('/generate', function (req, res) {
   });
 });
 
+/*
+*@apiParamExample {json} Request-Example:
+*   {
+*     "year": "2017",
+*     "semester": "Spring",
+*     "courses": ["PHYS211","CS125"],
+*     "preferences": {
+*     "noClassDays": ["M","W"],
+*       "noClassTime": [{"start": 14, "end": 16}],
+*       "noClassOptions": ["morning"]
+*     }
+*   }
+*/
 router.post('/generate', function (req, res) {
   let url = 'schedule/' + req.body.year + '/' + req.body.semester + '/';
   let selectedClasses = req.body.courses;
@@ -114,7 +127,6 @@ router.post('/generate', function (req, res) {
     console.log('Has Duplicates: ', hasDuplicates);
 
     console.log('Generated Schedules. Sending Data back');
-
     if (generatedSchedules.length >= 100) {
       res.status(200).json(generatedSchedules.slice(0, 100));
     } else {
@@ -298,6 +310,7 @@ function getPermutationsForAllClasses (classes) {
   return allPermutations;
 }
 
+// Calculates the score if the section conflicts with unwanted times
 function getScoreNoClassTime (score, section, noClassTime) {
   let startA = new Date('January 1, 2000 ' + section.startTime);
   let endA = new Date('January 1, 2000 ' + section.endTime);
@@ -312,6 +325,7 @@ function getScoreNoClassTime (score, section, noClassTime) {
   return score;
 }
 
+// Calculates the score if the section happens on unwanted days
 function getScoreNoClassDays (score, section, noClassDays) {
   for (let i = 0; i < noClassDays.length; i++) {
     let day = noClassDays[i];
@@ -322,6 +336,7 @@ function getScoreNoClassDays (score, section, noClassDays) {
   return score;
 }
 
+// Calculates the score for any section that conflict with preset times
 function getScoreNoClassOptions (score, section, noClassOptions) {
   let timeOptions = {
     morning: {
@@ -350,6 +365,7 @@ function getScoreNoClassOptions (score, section, noClassOptions) {
   return score;
 }
 
+// Calculates the weighted score for each the schedule
 function calculateScheduleScore (scheduleSections, preferences) {
   let score = 100;
   for (let i = 0; i < scheduleSections.length; i++) {
@@ -362,24 +378,6 @@ function calculateScheduleScore (scheduleSections, preferences) {
   }
   return score;
 }
-
-// function generateRecursive (currSchedule, listOfPermutationsForEveryClass, index) {
-//   if (index >= listOfPermutationsForEveryClass.length) {
-//     return [currSchedule];
-//   }
-//   let newSchedules = [];
-//   let permuationsForClass = listOfPermutationsForEveryClass[index];
-//   for (let i = 0; i < permuationsForClass.length; i++) {
-//     let newSections = permuationsForClass[i];
-//     let newSchedule = currSchedule.slice();
-//     let isOverlapping = insertAndSortIfNotOverlapped(newSchedule, newSections);
-//     if (!isOverlapping) {
-//       let generatedSchedule = generateRecursive(newSchedule, listOfPermutationsForEveryClass, index + 1);
-//       newSchedules = newSchedules.concat(generatedSchedule);
-//     }
-//   }
-//   return newSchedules;
-// };
 
 // Iteratively generate Schedules
 // Much faster than recursively but still space issues
