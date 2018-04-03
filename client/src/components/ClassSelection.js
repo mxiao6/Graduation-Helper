@@ -1,43 +1,43 @@
-import React from "react";
-import axios from "axios";
-import _ from "lodash";
-import { Link } from "react-router-dom";
-import { GET_SUBJECT, GET_COURSE, GET_SECTION, GET_SECTION_DETAILS } from "api";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as classActions from "containers/Classes";
+import React from 'react';
+import axios from 'axios';
+import _ from 'lodash';
+import { Link } from 'react-router-dom';
+import { GET_SUBJECT, GET_COURSE, GET_SECTION, GET_SECTION_DETAILS } from 'api';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as classActions from 'containers/Classes';
 
-import { Cascader, Spin, Button, Table, Tag, message } from "antd";
-import "styles/ClassSelection.css";
+import { Cascader, Spin, Button, Table, Tag, message } from 'antd';
+import 'styles/ClassSelection.css';
 
 const sectionColumns = [
   {
-    title: "Status",
-    dataIndex: "enrollmentStatus"
+    title: 'Status',
+    dataIndex: 'enrollmentStatus'
   },
   {
-    title: "CRN",
-    dataIndex: "sectionId"
+    title: 'CRN',
+    dataIndex: 'sectionId'
   },
   {
-    title: "Type",
-    dataIndex: "type"
+    title: 'Type',
+    dataIndex: 'type'
   },
   {
-    title: "Section",
-    dataIndex: "sectionNumber"
+    title: 'Section',
+    dataIndex: 'sectionNumber'
   },
   {
-    title: "Start Time",
-    dataIndex: "startTime"
+    title: 'Start Time',
+    dataIndex: 'startTime'
   },
   {
-    title: "End Time",
-    dataIndex: "endTime"
+    title: 'End Time',
+    dataIndex: 'endTime'
   },
   {
-    title: "Day",
-    dataIndex: "daysOfWeek"
+    title: 'Day',
+    dataIndex: 'daysOfWeek'
   }
 ];
 
@@ -75,7 +75,7 @@ class ClassSelection extends React.Component {
   onChange = (value, selectedOptions) => {
     console.log(value, selectedOptions);
     if (value.length === 0) {
-      console.log("clear selection");
+      console.log('clear selection');
       this.setState({
         selected: undefined
       });
@@ -145,7 +145,7 @@ class ClassSelection extends React.Component {
         }
       })
       .then(res => {
-        console.log("simple sections", res.data);
+        console.log('simple sections', res.data);
         this._retrieceSectionDetails(res.data);
       })
       .catch(e => {
@@ -171,7 +171,7 @@ class ClassSelection extends React.Component {
       .all(promises)
       .then(
         axios.spread((...results) => {
-          console.log("detailed sections", results);
+          console.log('detailed sections', results);
           this.setState({
             sectionList: _.map(results, res => ({
               ...res.data,
@@ -193,8 +193,8 @@ class ClassSelection extends React.Component {
   _resetSemester = () => {
     this.props.actions.resetSemester();
     this.props.history.push({
-      pathname: "/SemesterSelection",
-      state: { next: "/ClassSelection" }
+      pathname: '/SemesterSelection',
+      state: { next: '/ClassSelection' }
     });
   };
 
@@ -252,7 +252,7 @@ class ClassSelection extends React.Component {
   };
 
   _onSelectChange = selectedRowKeys => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
+    console.log('selectedRowKeys changed: ', selectedRowKeys);
     this.setState({ selectedRowKeys });
   };
 
@@ -302,7 +302,7 @@ class ClassSelection extends React.Component {
   }
 }
 
-const _default = { year: "2018", semester: "spring" };
+const _default = { year: '2018', semester: 'spring' };
 
 function mapStateToProps(state, ownProps) {
   return {
