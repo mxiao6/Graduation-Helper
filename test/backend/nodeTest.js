@@ -4,8 +4,8 @@ let server = require('../../server');
 chai.use(chaiHttp);
 require('chai').should();
 
-describe('API tests', () => {
-  describe('/register user', () => {
+describe('API tests', function () {
+  describe('/register user', function () {
     it('it should not register since email already exists', function (done) {
       chai.request(server)
         .post('/register')
@@ -21,7 +21,7 @@ describe('API tests', () => {
     });
   });
 
-  describe('/login user', () => {
+  describe('/login user', function () {
     it('it should login successfully', function (done) {
       chai.request(server)
         .post('/login')
@@ -74,7 +74,7 @@ describe('API tests', () => {
     });
   });
   /*
-  describe('/resetpassword', () => {
+  describe('/resetpassword', function() {
     it('resetpass', function (done) {
       chai.request(server)
         .post('/resetpassword')
@@ -95,7 +95,7 @@ describe('API tests', () => {
   */
 });
 
-describe('schedule test', () => {
+describe('schedule test', function () {
   this.timeout(10000);
 
   it('should give us a schedule', function (done) {
@@ -140,7 +140,7 @@ describe('schedule test', () => {
   });
 });
 /*
-describe('save schedule tests', () => {
+describe('save schedule tests', function() {
     it('save schedule', function (done) {
         chai.request(server)
             .post('/saveschedule')
@@ -162,7 +162,7 @@ describe('save schedule tests', () => {
     });
 }); */
 
-describe('API tests', () => {
+describe('API tests', function () {
   this.timeout(10000);
 
   it('it should get all years', function (done) {
