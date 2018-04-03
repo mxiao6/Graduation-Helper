@@ -163,6 +163,8 @@ describe('save schedule tests', () => {
 }); */
 
 describe('API tests', () => {
+  this.timeout(10000);
+
   it('it should get all years', function (done) {
     chai.request(server)
       .get('/api/years')
