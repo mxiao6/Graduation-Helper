@@ -81,25 +81,56 @@ router.get('/generate', function (req, res) {
       return res.status(500).json({error: 'Could not generate schedules'});
     }
 
-    // console.log("Generating Schedules");
-    // console.time('genPrototype');
+    console.log('Generating Schedules no preferences');
+    console.time('generate');
     let generatedSchedules = genPrototype(result);
-    // console.timeEnd('genPrototype');
-    // console.log("Generated Schedules. Sending Data back");
-    // console.log(generatedSchedules.length);
+    console.timeEnd('generate');
+    console.log(generatedSchedules.length);
+    console.log('Generated Schedules. Sending Data back');
     res.status(200).json(generatedSchedules);
-    // res.status(200).json("Sent");
   });
-
 });
 
-function isSectionsSimilar(sectionA, sectionB){
-  if(sectionA.startTime === sectionB.startTime && sectionA.endTime === sectionB.endTime){
-    return true;
+router.post('/generate', function (req, res) {
+  let url = 'schedule/' + req.body.year + '/' + req.body.semester + '/';
+  let selectedClasses = req.body.courses;
+  let preferences = req.body.preferences;
+  console.log();
+  console.log('Getting section details');
+  getAllDetails(url, selectedClasses, function (error, result) {
+    if (error) {
+      return res.status(500).json({error: 'Could not generate schedules'});
+    }
+    console.log('Generating Schedules');
+    console.time('generate');
+    let generatedSchedules = genPrototype(result, preferences);
+    console.timeEnd('generate');
+    console.log('Number of schedules: ', generatedSchedules.length);
+
+    let seen = new Set();
+    let hasDuplicates = generatedSchedules.some(function (curr) {
+      return seen.size === seen.add(curr.sections).size;
+    });
+    console.log('Has Duplicates: ', hasDuplicates);
+
+    console.log('Generated Schedules. Sending Data back');
+
+    if (generatedSchedules.length >= 100) {
+      res.status(200).json(generatedSchedules.slice(0, 100));
+    } else {
+      res.status(200).json(generatedSchedules);
+    }
+  });
+});
+
+function isSectionsSimilar (sectionA, sectionB) {
+  if (sectionA.daysOfWeek === sectionB.daysOfWeek) {
+    if (sectionA.startTime === sectionB.startTime && sectionA.endTime === sectionB.endTime) {
+      return true;
+    }
   }
   return false;
 }
-
 
 // Preproccesses section List by section letters and type code
 // returns in the form of array of section Letters with each section type {'A': {lEC:[], DIS:[]}, 'B':{LEC:[], DIS:[]}}
@@ -110,15 +141,15 @@ function preProcessSections (sectionList) {
     let sectionLetter = section.sectionNumber.charAt(0);
     let sectionType = section.type;
     if (processedList.hasOwnProperty(sectionLetter)) {
-      // Has section Letter
       if (processedList[sectionLetter].hasOwnProperty(sectionType)) {
         let listOfSectionsWithLetterAndType = processedList[sectionLetter][sectionType];
 
-        prevSection = listOfSectionsWithLetterAndType[listOfSectionsWithLetterAndType.length - 1];
-        if (isSectionsSimilar(prevSection, section)){
-          prevSection.sectionNumber = prevSection.sectionNumber + " " + section.sectionNumber;
-        }else{
-          listOfSectionsWithLetterAndType.push(section)
+        let prevSection = listOfSectionsWithLetterAndType[listOfSectionsWithLetterAndType.length - 1];
+        if (isSectionsSimilar(prevSection, section)) {
+          prevSection.sectionId = prevSection.sectionId + ' ' + section.sectionId;
+          prevSection.sectionNumber = prevSection.sectionNumber + ' ' + section.sectionNumber;
+        } else {
+          listOfSectionsWithLetterAndType.push(section);
         }
       } else {
         processedList[sectionLetter][sectionType] = [section];
@@ -185,7 +216,7 @@ function insertAndSortIfNotOverlapped (currSections, newSections) {
   return false;
 }
 
-// Generates all permuations for a class section i.e 'A'
+// Generates all permutations for a class section i.e 'A'
 // get data in the form of {"LEC": [], "LBD":[]}
 // returns non-overlapping array of all section combinations required for course
 function cartesianProduct (data) {
@@ -207,7 +238,6 @@ function cartesianProduct (data) {
     }
     current = newCurrent;
   }
-
   return current;
 }
 
@@ -242,30 +272,95 @@ function shouldFlatten (processedDict) {
 // returns an array of permutations for a course
 function getCourseSectionPermutations (classSectionList) {
   let processedDict = preProcessSections(classSectionList);
-  let allPermutations = [];
+  let coursePermutation = [];
 
   if (shouldFlatten(processedDict)) {
     let flattened = flattenSectionLetters(processedDict);
-    allPermutations = cartesianProduct(flattened);
+    coursePermutation = cartesianProduct(flattened);
   } else {
     for (let sectionLetter in processedDict) {
       let product = cartesianProduct(processedDict[sectionLetter]);
-      allPermutations = allPermutations.concat(product);
+      coursePermutation = coursePermutation.concat(product);
     }
   }
-  return allPermutations;
+  return coursePermutation;
 }
 
 // Gets section permutations for every class's course
 // returns an array of arrays of section permutaion arrays
 function getPermutationsForAllClasses (classes) {
   // console.log('Calculating permuations for every class');
-  let permutationResult = [];
+  let allPermutations = [];
   for (let i = 0; i < classes.length; i++) {
-    permutationResult.push(getCourseSectionPermutations(classes[i].sectionList));
+    allPermutations.push(getCourseSectionPermutations(classes[i].sectionList));
   }
   // console.log('Finished finding all permutations');
-  return permutationResult;
+  return allPermutations;
+}
+
+function getScoreNoClassTime (score, section, noClassTime) {
+  let startA = new Date('January 1, 2000 ' + section.startTime);
+  let endA = new Date('January 1, 2000 ' + section.endTime);
+  for (let i = 0; i < noClassTime.length; i++) {
+    let time = noClassTime[i];
+    let startB = new Date(2000, 0, 1, time.start);
+    let endB = new Date(2000, 0, 1, time.end);
+    if (startA < endB && endA > startB) {
+      score -= 10;
+    }
+  }
+  return score;
+}
+
+function getScoreNoClassDays (score, section, noClassDays) {
+  for (let i = 0; i < noClassDays.length; i++) {
+    let day = noClassDays[i];
+    if (section.daysOfWeek.indexOf(day) > -1) {
+      score -= 10;
+    }
+  }
+  return score;
+}
+
+function getScoreNoClassOptions (score, section, noClassOptions) {
+  let timeOptions = {
+    morning: {
+      start: new Date(2000, 0, 1, 6),
+      end: new Date(2000, 0, 1, 10)
+    },
+    lunch: {
+      start: new Date(2000, 0, 1, 12),
+      end: new Date(2000, 0, 1, 14)
+    },
+    evening: {
+      start: new Date(2000, 0, 1, 18),
+      end: new Date(2000, 0, 1, 24)
+    }
+  };
+
+  let startA = new Date('January 1, 2000 ' + section.startTime);
+  let endA = new Date('January 1, 2000 ' + section.endTime);
+  for (let i = 0; i < noClassOptions.length; i++) {
+    let startB = timeOptions[noClassOptions[i]].start;
+    let endB = timeOptions[noClassOptions[i]].end;
+    if (startA < endB && endA > startB) {
+      score -= 10;
+    }
+  }
+  return score;
+}
+
+function calculateScheduleScore (scheduleSections, preferences) {
+  let score = 100;
+  for (let i = 0; i < scheduleSections.length; i++) {
+    let section = scheduleSections[i];
+    if (section.startTime !== 'ARRANGED') {
+      score = getScoreNoClassTime(score, section, preferences.noClassTime);
+      score = getScoreNoClassDays(score, section, preferences.noClassDays);
+      score = getScoreNoClassOptions(score, section, preferences.noClassOptions);
+    }
+  }
+  return score;
 }
 
 // function generateRecursive (currSchedule, listOfPermutationsForEveryClass, index) {
@@ -288,20 +383,28 @@ function getPermutationsForAllClasses (classes) {
 
 // Iteratively generate Schedules
 // Much faster than recursively but still space issues
-function generateIterative (listOfPermutationsForEveryClass) {
+function generateIterative (listOfPermutationsForEveryClass, preferences) {
   let newSchedules = [
-    []
+    {
+      score: 100,
+      sections: []
+    }
   ];
   for (let i = 0; i < listOfPermutationsForEveryClass.length; i++) {
     let classPermutations = listOfPermutationsForEveryClass[i];
     let newCurrent = [];
     for (let j = 0; j < newSchedules.length; j++) {
-      let base = newSchedules[j];
       for (let k = 0; k < classPermutations.length; k++) {
-        let clone = base.slice();
-        let isOverlapped = insertAndSortIfNotOverlapped(clone, classPermutations[k]);
+        let base = {
+          ...newSchedules[j]
+        };
+        base.sections = base.sections.slice();
+        let isOverlapped = insertAndSortIfNotOverlapped(base.sections, classPermutations[k]);
         if (!isOverlapped) {
-          newCurrent.push(clone);
+          if (preferences && i === listOfPermutationsForEveryClass.length - 1) {
+            base.score = calculateScheduleScore(base.sections, preferences);
+          }
+          newCurrent.push(base);
         }
       }
     }
@@ -310,12 +413,54 @@ function generateIterative (listOfPermutationsForEveryClass) {
   return newSchedules;
 }
 
-// Generates all possible valid schedules given details for all classes
-let genPrototype = (classes) => {
+// function isIndicesFull (indices, listOfPermutationsForEveryClass) {
+//   for (let i = indices.length - 1; i >= 0; i--) {
+//     if (indices[i] !== listOfPermutationsForEveryClass[i].length - 1) {
+//       indices[i] = indices[i] + 1;
+//       indices.fill(0, i + 1);
+//       return false;
+//     }
+//   }
+//   return true;
+// }
+
+// Testing a new less space intensive iterative genenrating method. Slower
+// function generateIterativeSpace (listOfPermutationsForEveryClass) {
+//   let indices = new Array(listOfPermutationsForEveryClass.length).fill(0);
+//   let current = [];
+//   let isDone = false;
+//   while (!isDone) {
+//     let temp = [];
+//     let isOverlapped = false;
+//     for (let i = 0; i < indices.length; i++) {
+//       isOverlapped = insertAndSortIfNotOverlapped(temp, listOfPermutationsForEveryClass[i][indices[i]]);
+//       if (isOverlapped) {
+//         break;
+//       }
+//     }
+//     if (!isOverlapped) {
+//       current.push(temp);
+//     }
+//     isDone = isIndicesFull(indices, listOfPermutationsForEveryClass);
+//   }
+//   return current;
+// }
+
+// Generates all possible valid schedules given details for all classes and optional preferences
+function genPrototype (classes, preferences) {
   let allPermutations = getPermutationsForAllClasses(classes);
-  // let schedules = generateRecursive([], allPermutations, 0);
-  let schedules = generateIterative(allPermutations);
+  let schedules = generateIterative(allPermutations, preferences);
+  console.time('Sorting');
+  schedules.sort(function (a, b) {
+    if (a.score > b.score) {
+      return -1;
+    } else if (a.score < b.score) {
+      return 1;
+    }
+    return 0;
+  });
+  console.timeEnd('Sorting');
   return schedules;
-};
+}
 
 module.exports = router;
