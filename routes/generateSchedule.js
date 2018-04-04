@@ -91,8 +91,7 @@ router.get('/generate', function (req, res) {
   });
 });
 
-/*
-*@apiParamExample {json} Request-Example:
+/* *@apiParamExample {json} Request-Example:
 *   {
 *     "year": "2017",
 *     "semester": "Spring",
@@ -102,8 +101,7 @@ router.get('/generate', function (req, res) {
 *       "noClassTime": [{"start": 14, "end": 16}],
 *       "noClassOptions": ["morning"]
 *     }
-*   }
-*/
+*   } */
 router.post('/generate', function (req, res) {
   let url = 'schedule/' + req.body.year + '/' + req.body.semester + '/';
   let selectedClasses = req.body.courses;
@@ -273,6 +271,11 @@ function shouldFlatten (processedDict) {
     if (sectionLetter === 'A') {
       sectionAExists = true;
     }
+
+    if (sectionLetter === '0' || sectionLetter === 'O') {
+      return false;
+    }
+
     if (Object.keys(processedDict[sectionLetter]).length >= 2) {
       return false;
     }
