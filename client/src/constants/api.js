@@ -3,6 +3,7 @@ export const API_ROOT = `/api`;
 // auth
 export const POST_LOGIN = `/login`;
 export const POST_SIGNUP = `/register`;
+export const POST_SEND_EMAIL = `/sendemail`;
 export const POST_RESET_PASSWORD = `/resetpassword`;
 
 // class
