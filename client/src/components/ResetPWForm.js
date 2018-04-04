@@ -1,34 +1,42 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { POST_SIGNUP } from "api";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as loginActions from "containers/Login";
 
-import { Form, Icon, Input, Button, Checkbox } from "antd";
+import { Form, Icon, Input, Button, message } from "antd";
+
 import "styles/Login.css";
 
 const FormItem = Form.Item;
 
-class NormalLoginForm extends React.Component {
-  state = {};
-
-  componentWillReceiveProps(nextProps, nextState) {
-    if (nextProps.loginError && !this.props.loginError) {
-    }
-    if (nextProps.loggedIn) {
-      this.props.history.push("/");
-    }
-  }
-
+class NormalResetPWForm extends React.Component {
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log("Received values of form: ", values);
-        this.props.actions.login({
-          email: values.email,
-          password: values.password
-        });
+
+        axios
+          .post(POST_SIGNUP, {
+            username: values.username,
+            email: values.email,
+            password: values.password
+          })
+          .then(res => {
+            console.log(res);
+            message.success(res.data);
+            this.props.actions.login({
+              email: values.email,
+              password: values.password
+            });
+            this.props.history.push("/");
+          })
+          .catch(e => {
+            message.error(e.response.data);
+            console.log(e.response);
+          });
       }
     });
   };
@@ -36,7 +44,7 @@ class NormalLoginForm extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form onSubmit={this.handleSubmit} className="login-form">
+      <Form onSubmit={this.handleSubmit} className="signup-form">
         <FormItem>
           {getFieldDecorator("email", {
             rules: [{ required: true, message: "Please input your Email!" }]
@@ -44,6 +52,16 @@ class NormalLoginForm extends React.Component {
             <Input
               prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />}
               placeholder="Email"
+            />
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("username", {
+            rules: [{ required: true, message: "Please input your Username!" }]
+          })(
+            <Input
+              prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />}
+              placeholder="Username"
             />
           )}
         </FormItem>
@@ -59,21 +77,13 @@ class NormalLoginForm extends React.Component {
           )}
         </FormItem>
         <FormItem>
-          {getFieldDecorator("remember", {
-            valuePropName: "checked",
-            initialValue: true
-          })(<Checkbox>Remember me</Checkbox>)}
-          <Link className="login-form-forgot" to={"/ResetPassword"}>
-            Forgot password
-          </Link>
           <Button
             type="primary"
             htmlType="submit"
             className="login-form-button"
           >
-            Log in
+            Sign up
           </Button>
-          Or <Link to={"/Signup"}>register now!</Link>
         </FormItem>
       </Form>
     );
@@ -82,7 +92,6 @@ class NormalLoginForm extends React.Component {
 
 function mapStateToProps(state, ownProps) {
   return {
-    loginError: state.auth.loginFailed,
     loggedIn: state.auth.user !== undefined
   };
 }
@@ -93,7 +102,8 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-const WrappedNormalLoginForm = Form.create()(NormalLoginForm);
+const WrappedNormalResetPWForm = Form.create()(NormalResetPWForm);
+
 export default connect(mapStateToProps, mapDispatchToProps)(
-  WrappedNormalLoginForm
+  WrappedNormalResetPWForm
 );
