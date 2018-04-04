@@ -1,14 +1,14 @@
-import React from "react";
-import axios from "axios";
-import _ from "lodash";
-import { Link } from "react-router-dom";
-import { GET_SUBJECT, GET_COURSE, GET_GENERATE_SCHEDULE } from "api";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as classActions from "containers/Classes";
+import React from 'react';
+import axios from 'axios';
+import _ from 'lodash';
+import { Link } from 'react-router-dom';
+import { GET_SUBJECT, GET_COURSE, GET_GENERATE_SCHEDULE } from 'api';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as classActions from 'containers/Classes';
 
-import { Cascader, Spin, Button, Tag, message } from "antd";
-import "styles/ClassSelection.css";
+import { Cascader, Spin, Button, Tag, message } from 'antd';
+import 'styles/ClassSelection.css';
 
 class ClassSelection extends React.Component {
   state = {
@@ -44,7 +44,7 @@ class ClassSelection extends React.Component {
   onChange = (value, selectedOptions) => {
     console.log(value, selectedOptions);
     if (value.length === 0) {
-      console.log("clear selection");
+      console.log('clear selection');
       this.setState({
         selected: undefined
       });
@@ -102,7 +102,7 @@ class ClassSelection extends React.Component {
     const { selected, schedule } = this.state;
     let tag = selected.course + selected.courseId;
     if (schedule.indexOf(tag) !== -1) {
-      message.error("Course exists");
+      message.error('Course exists');
       return;
     }
     let newSchedule = schedule.slice(0);
@@ -141,8 +141,8 @@ class ClassSelection extends React.Component {
   _resetSemester = () => {
     this.props.actions.resetSemester();
     this.props.history.push({
-      pathname: "/SemesterSelection",
-      state: { next: "/GenerateSchedule" }
+      pathname: '/SemesterSelection',
+      state: { next: '/GenerateSchedule' }
     });
   };
 
@@ -150,6 +150,13 @@ class ClassSelection extends React.Component {
     const schedule = this.state.schedule.filter(tag => tag !== removedTag);
     console.log(schedule);
     this.setState({ schedule });
+  };
+
+  _filter = (inputValue, path) => {
+    return path.some(
+      option =>
+        option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
+    );
   };
 
   _renderCascader = () => {
@@ -162,6 +169,7 @@ class ClassSelection extends React.Component {
           displayRender={this._displayRender}
           placeholder="Select Class"
           changeOnSelect
+          showSearch={{ filter: this._filter }}
         />
         <Button
           type="primary"
@@ -244,7 +252,7 @@ class ClassSelection extends React.Component {
   }
 }
 
-const _default = { year: "2018", semester: "spring" };
+const _default = { year: '2018', semester: 'spring' };
 
 function mapStateToProps(state, ownProps) {
   return {

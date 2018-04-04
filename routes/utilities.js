@@ -56,7 +56,7 @@ function getSectionDetails (context, sectionId, doneCallBack) {
       return doneCallBack(error, {apple: 'apple'});
     }
 
-    let sectionNumber = result['ns2:section']['sectionNumber'][0];
+    let sectionNumber = result['ns2:section']['sectionNumber'][0].trim();
     let enrollmentStatus = result['ns2:section']['enrollmentStatus'][0];
     let type = result['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
 
