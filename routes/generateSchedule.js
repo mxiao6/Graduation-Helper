@@ -116,18 +116,19 @@ router.post('/generate', function (req, res) {
     console.time('generate');
     let generatedSchedules = genPrototype(result, preferences);
     console.timeEnd('generate');
-    console.log('Number of schedules: ', generatedSchedules.length);
+    console.log('Number of schedules: ', generatedSchedules.numOfSchedules);
 
     let seen = new Set();
-    let hasDuplicates = generatedSchedules.some(function (curr) {
+    let hasDuplicates = generatedSchedules.schedules.some(function (curr) {
       return seen.size === seen.add(curr.sections).size;
     });
     console.log('Has Duplicates: ', hasDuplicates);
 
     console.log('Generated Schedules. Sending Data back');
-    if (generatedSchedules.length >= 100) {
-      res.status(200).json(generatedSchedules.slice(0, 100));
-    } else {
+    if (generatedSchedules.numOfSchedules > 100){
+      generatedSchedules.schedules = generatedSchedules.schedules.slice(0, 100);
+      res.status(200).json(generatedSchedules)
+    }else{
       res.status(200).json(generatedSchedules);
     }
   });
@@ -298,6 +299,7 @@ function getCourseSectionPermutations (classSectionList) {
       coursePermutation = coursePermutation.concat(product);
     }
   }
+  console.log(coursePermutation.length);
   return coursePermutation;
 }
 
@@ -309,7 +311,6 @@ function getPermutationsForAllClasses (classes) {
   for (let i = 0; i < classes.length; i++) {
     allPermutations.push(getCourseSectionPermutations(classes[i].sectionList));
   }
-  // console.log('Finished finding all permutations');
   return allPermutations;
 }
 
@@ -391,6 +392,7 @@ function generateIterative (listOfPermutationsForEveryClass, preferences) {
       sections: []
     }
   ];
+  let metAllPreferences = false;
   for (let i = 0; i < listOfPermutationsForEveryClass.length; i++) {
     let classPermutations = listOfPermutationsForEveryClass[i];
     let newCurrent = [];
@@ -404,6 +406,9 @@ function generateIterative (listOfPermutationsForEveryClass, preferences) {
         if (!isOverlapped) {
           if (preferences && i === listOfPermutationsForEveryClass.length - 1) {
             base.score = calculateScheduleScore(base.sections, preferences);
+            if (base.score === 100){
+              metAllPreferences = true;
+            }
           }
           newCurrent.push(base);
         }
@@ -411,7 +416,13 @@ function generateIterative (listOfPermutationsForEveryClass, preferences) {
     }
     newSchedules = newCurrent;
   }
-  return newSchedules;
+
+  let generated = {
+    numOfSchedules: newSchedules.length,
+    metAllPreferences: metAllPreferences,
+    schedules: newSchedules
+  }
+  return generated;
 }
 
 // function isIndicesFull (indices, listOfPermutationsForEveryClass) {
@@ -450,9 +461,9 @@ function generateIterative (listOfPermutationsForEveryClass, preferences) {
 // Generates all possible valid schedules given details for all classes and optional preferences
 function genPrototype (classes, preferences) {
   let allPermutations = getPermutationsForAllClasses(classes);
-  let schedules = generateIterative(allPermutations, preferences);
+  let generated = generateIterative(allPermutations, preferences);
   console.time('Sorting');
-  schedules.sort(function (a, b) {
+  generated.schedules.sort(function (a, b) {
     if (a.score > b.score) {
       return -1;
     } else if (a.score < b.score) {
@@ -461,7 +472,7 @@ function genPrototype (classes, preferences) {
     return 0;
   });
   console.timeEnd('Sorting');
-  return schedules;
+  return generated;
 }
 
 module.exports = router;
