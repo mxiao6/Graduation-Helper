@@ -29,7 +29,10 @@ exports.save = function (req, res) {
 
   pool.getConnection(function (err, connection) {
     if (err) {
-      res.send('Get pool connection error');
+      res.status(400).send('Get pool connection error');
+    }
+    if (userId == null) {
+      res.status(400).send('invalid userId : userId is NULL');
     }
     connection.query('INSERT INTO Schedules (semester,user_id) VALUES (?,?);', [semester + '' + year, userId], function (err, res) {
       if (err) { throw err; }
@@ -39,10 +42,7 @@ exports.save = function (req, res) {
       let scheduleId = res[0].schedule_id;
 
       if (crns.length !== subjects.length || crns.length !== courseNumbers.length || subjects.length !== courseNumbers.length) {
-        throw new {
-          name: 'Inconsistent course lengths',
-          message: 'Course count is not uniform across inputs'
-        }();
+        res.status(400).send('input error : Course count is not uniform across inputs');
       }
 
       // start adding the courses
@@ -52,6 +52,19 @@ exports.save = function (req, res) {
         });
       }
     });
+  });
+  res.status(200);
+};
+
+exports.get = function (req, res) {
+  let userId = req.query.userId;
+  let schedule = null;
+  pool.getConnection(function (err, connection) {
+    if (err) {
+      res.send('Get pool connection error');
+    }
+
+
   });
   res.status(200);
 };
