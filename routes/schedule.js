@@ -63,8 +63,6 @@ exports.get = function (req, res) {
     if (err) {
       res.send('Get pool connection error');
     }
-
-
   });
   res.status(200);
 };
