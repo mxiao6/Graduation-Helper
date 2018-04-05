@@ -94,7 +94,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *   }
 */
 router.post('/generate', function (req, res) {
-  if(!hasProperties(req)){
+  if (!hasProperties(req)) {
     return res.status(422).json({error: 'Incorrect Parameters'});
   }
   let url = 'schedule/' + req.body.year + '/' + req.body.semester + '/';
@@ -126,8 +126,8 @@ router.post('/generate', function (req, res) {
   });
 });
 
-function hasProperties (req){
-  if (!req.body.hasOwnProperty('year') || !req.body.hasOwnProperty('semester') || !req.body.hasOwnProperty('courses')){
+function hasProperties (req) {
+  if (!req.body.hasOwnProperty('year') || !req.body.hasOwnProperty('semester') || !req.body.hasOwnProperty('courses')) {
     return false;
   }
   return true;
