@@ -1,24 +1,30 @@
-import React from "react";
-import axios from "axios";
-import _ from "lodash";
-import { Link } from "react-router-dom";
-import { GET_YEAR, GET_SEMESTER } from "api";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as classActions from "containers/Classes";
+import React from 'react';
+import axios from 'axios';
+import _ from 'lodash';
+import { Link } from 'react-router-dom';
+import { GET_YEAR, GET_SEMESTER } from 'api';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as classActions from 'containers/Classes';
 
-import { Cascader, Spin, Button, message } from "antd";
-import "styles/ClassSelection.css";
+import { Cascader, Spin, Button, message } from 'antd';
+import 'styles/ClassSelection.css';
 
 class SemesterSelection extends React.Component {
   state = {
     options: undefined,
-    selected: false
+    selected: false,
   };
 
   componentWillMount() {
     const { selected, history, location } = this.props;
-    if (selected) {
+    console.log('semester selected', selected);
+    console.log('history', history);
+    console.log('location', location, !location.state);
+
+    if (!location.state) {
+      history.goBack();
+    } else if (selected) {
       history.push(location.state.next);
     } else {
       axios
@@ -28,8 +34,8 @@ class SemesterSelection extends React.Component {
             options: _.map(res.data, year => ({
               value: year,
               label: year,
-              isLeaf: false
-            }))
+              isLeaf: false,
+            })),
           });
         })
         .catch(e => {
@@ -42,9 +48,9 @@ class SemesterSelection extends React.Component {
   onChange = (value, selectedOptions) => {
     console.log(value, selectedOptions);
     if (value.length === 0) {
-      console.log("clear selection");
+      console.log('clear selection');
       this.setState({
-        selected: false
+        selected: false,
       });
       return;
     }
@@ -52,10 +58,10 @@ class SemesterSelection extends React.Component {
     if (targetOption.isLeaf) {
       this.props.actions.setSemester({
         year: value[0],
-        semester: value[1]
+        semester: value[1],
       });
       this.setState({
-        selected: true
+        selected: true,
       });
     }
   };
@@ -67,8 +73,8 @@ class SemesterSelection extends React.Component {
     axios
       .get(GET_SEMESTER, {
         params: {
-          year: targetOption.value
-        }
+          year: targetOption.value,
+        },
       })
       .then(res => {
         console.log(res.data);
@@ -76,10 +82,10 @@ class SemesterSelection extends React.Component {
         targetOption.children = _.map(res.data, item => ({
           label: `${item} ${targetOption.label}`,
           value: item,
-          isLeaf: true
+          isLeaf: true,
         }));
         this.setState({
-          options: [...this.state.options]
+          options: [...this.state.options],
         });
       })
       .catch(e => {
@@ -120,13 +126,13 @@ class SemesterSelection extends React.Component {
 
 function mapStateToProps(state, ownProps) {
   return {
-    selected: state.classes.semester !== undefined
+    selected: state.classes.semester !== undefined,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(classActions, dispatch)
+    actions: bindActionCreators(classActions, dispatch),
   };
 }
 
