@@ -1,6 +1,4 @@
-// will contain a .save() function to push data to database
 // functions related to schedule objects
-// var mysql = require('mysql');
 var userLogin = require('./userlogin');
 var pool = userLogin.pool;
 
@@ -25,16 +23,12 @@ exports.save = function (req, res) {
   let crns = req.query.crns;
   let subjects = req.query.subjects;
   let courseNumbers = req.query.courseNumbers;
-
-  //DEBUG --> REMOVE AFTER FINISHED TESTING
-  //userId = 0;
-  //END DEBUG
+  if (userId == null || semester == null || year == null || crns == null || subjects == null || courseNumbers == null) {
+    res.status(400).send('ERROR : missing parameters');
+  }
   pool.getConnection(function (err, connection) {
     if (err) {
       res.status(400).send('Get pool connection error');
-    }
-    if (userId == null) {
-      res.status(400).send('invalid userId : userId is NULL');
     }
     connection.query('INSERT INTO Schedules (semester,user_id) VALUES (?,?);', [semester + '' + year, userId], function (err, res) {
       if (err) { throw err; }
@@ -72,6 +66,9 @@ exports.get = function (req, res) {
   let semester = req.query.semester;
   let year = req.query.year;
   let schedule = null;
+  if (userId == null || semester == null || year == null || schedule == null) {
+    res.status(400).send('ERROR : missing parameters');
+  }
   pool.getConnection(function (err, connection) {
     if (err) {
       res.status(400).send('Get pool connection error');
