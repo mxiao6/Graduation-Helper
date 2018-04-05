@@ -127,16 +127,63 @@ class ClassSelection extends React.Component {
         courses: schedule,
       })
       .then(res => {
+        console.log('raw data', res.data);
         this.setState({
-          generated: res.data,
+          generated: this._parseSchedules(res.data),
           generating: false,
         });
-        console.log(res.data);
       })
       .catch(e => {
-        console.error(e.response);
+        console.error('_generateSchedule', e);
       });
   };
+
+  _parseTime = time => {
+    let hour = parseInt(time.substr(0, 2));
+    let mins = parseInt(time.substr(3, 2));
+
+    if (time.slice(-2) === 'PM' && hour !== 12) hour += 12;
+
+    return { hour, mins };
+  };
+
+  _parseSchedules = data => {
+    let parsed = _.map(data.schedules, schedule => {
+      return {
+        score: schedule.score,
+        sections: _.flatMap(schedule.sections, section => {
+          let retval = [];
+          if (!section.daysOfWeek) return retval;
+          for (let day of section.daysOfWeek) {
+            let date = 1 + daysMap[day];
+            let startTime = this._parseTime(section.startTime);
+            let endTime = this._parseTime(section.endTime);
+            retval.push({
+              title: section.subjectId + section.courseId,
+              start: new Date(2018, 3, date, startTime.hour, startTime.mins, 0),
+              end: new Date(2018, 3, date, endTime.hour, endTime.mins, 0),
+            });
+          }
+          return retval;
+        }),
+      };
+    });
+    console.log('parsed', parsed);
+    return parsed;
+  };
+
+  /**
+   * fake data
+   * @type {[Object]}
+   */
+  events = [
+    {
+      id: 1,
+      title: 'Birthday Party',
+      start: new Date(2018, 3, 1, 7, 0, 0),
+      end: new Date(2018, 3, 1, 10, 30, 0),
+    },
+  ];
 
   _resetSemester = () => {
     this.props.actions.resetSemester();
@@ -191,15 +238,6 @@ class ClassSelection extends React.Component {
     );
   };
 
-  events = [
-    {
-      id: 1,
-      title: 'Birthday Party',
-      start: new Date(2018, 3, 1, 7, 0, 0),
-      end: new Date(2018, 3, 1, 10, 30, 0),
-    },
-  ];
-
   _renderGenerated = () => {
     const { generating, generated } = this.state;
     return (
@@ -210,9 +248,11 @@ class ClassSelection extends React.Component {
           generated.length !== 0 && (
             <div style={{ width: 1200, height: 600 }}>
               <BigCalendar
+                min={new Date(2018, 3, 1, 8, 0, 0)}
+                max={new Date(2018, 3, 1, 21, 0, 0)}
                 toolbar={false}
                 selectable
-                events={this.events}
+                events={generated[0].sections}
                 step={30}
                 timeslots={2}
                 defaultView="week"
@@ -294,7 +334,15 @@ class ClassSelection extends React.Component {
   }
 }
 
-const _default = { year: '2018', semester: 'spring' };
+const daysMap = {
+  M: 1,
+  T: 2,
+  W: 3,
+  R: 4,
+  F: 5,
+};
+
+const _default = { year: '2018', semester: 'fall' };
 
 function mapStateToProps(state, ownProps) {
   return {
