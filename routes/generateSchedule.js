@@ -3,69 +3,89 @@ const router = express.Router();
 const getAllDetails = require('./utilities.js').getAllDetails;
 
 /**
-*@api{get}/schedule/generate Get generated schedules for classes
+*@api {post} /schedule/generate Get generated schedules for classes
 *@apiName GenerateSchedules
 *@apiGroup Schedule
-*@apiVersion 0.1.0
+*@apiVersion 0.2.0
 *
 *@apiParam {String} year The specific school year
 *@apiParam {String} semester The specific semester year
 *@apiParam {String[]} courses List of courses to generate schedules
+*@apiParam {Object} [preferences] User preferences information
+*@apiParam {String[]="M","T","W","R","F"} preferences.noClassDays List of days the user does not want classes
+*@apiParam {String[]="morning","lunch","evening"} preferences.noClassOptions List of not prefered times of the day
+*@apiParam {Object[]} preferences.noClassTime List of times the user does not want classes
+*@apiParam {Number} preferences.noClassTime.start Start time
+*@apiParam {Number} preferences.noClassTime.end End time
 *
 *@apiParamExample {json} Request-Example:
 *   {
-*     "year": "2018",
+*     "year": "2017",
 *     "semester": "Spring",
-*     "courses": ["CS125", "CS173"]
+*     "courses": ["PHYS211","CS125"],
+*     "preferences": {
+*       "noClassDays": ["M","W"],
+*       "noClassOptions": ["morning","lunch","evening"],
+*       "noClassTime": [{"start": 14, "end": 16}],
+*     }
 *   }
 *
 *@apiSuccessExample {json} Success-Response:
 *   HTTP/1.1 200 OK
-*   [
-*     [
+*   {
+*     "numOfSchedules": 21,
+*     "metAllPreferences": false,
+*     "schedules": [
 *       {
-*         "subjectId": "CS",
-*         "courseId": "173",
-*         "sectionId": "39311",
-*         "sectionNumber": "AL1",
-*         "enrollmentStatus": "Open (Restricted)",
-*         "type": "LEC",
-*         "startTime": "09:30 AM",
-*         "endTime": "10:45 AM",
-*         "daysOfWeek": "TR"
-*       }, {
-*         "subjectId": "CS",
-*         "courseId": "173",
-*         "sectionId": "31187",
-*         "sectionNumber": "ADA",
-*         "enrollmentStatus": "Closed",
-*         "type": "DIS",
-*         "startTime": "01:00 PM",
-*         "endTime": "01:50 PM",
-*         "daysOfWeek": "R"
-*       }, {
-*         "subjectId": "CS",
-*         "courseId": "125",
-*         "sectionId": "31152",
-*         "sectionNumber": "AL1",
-*         "enrollmentStatus": "Open (Restricted)",
-*         "type": "LEC",
-*         "startTime": "08:00 AM",
-*         "endTime": "08:50 AM",
-*         "daysOfWeek": "MWF"
-*       }, {
-*         "subjectId": "CS",
-*         "courseId": "125",
-*         "sectionId": "31159",
-*         "sectionNumber": "AYB",
-*         "enrollmentStatus": "Open",
-*         "type": "LBD",
-*         "startTime": "11:00 AM",
-*         "endTime": "12:50 PM",
-*         "daysOfWeek": "T"
+*         "score": 80,
+*         "sections": [
+*           {
+*             "subjectId": "CS",
+*             "courseId": "461",
+*             "sectionId": "48199",
+*             "sectionNumber": "AL4",
+*             "enrollmentStatus": "CrossListOpen",
+*             "type": "LCD",
+*             "startTime": "12:30 PM",
+*             "endTime": "01:45 PM",
+*             "daysOfWeek": "MW"
+*           },
+*           {
+*             "subjectId": "CS",
+*             "courseId": "425",
+*             "sectionId": "31384 56315",
+*             "sectionNumber": "T3 T4",
+*             "enrollmentStatus": "CrossListOpen",
+*             "type": "LCD",
+*             "startTime": "09:30 AM",
+*             "endTime": "10:45 AM",
+*             "daysOfWeek": "TR"
+*           },
+*           {
+*             "subjectId": "CS",
+*             "courseId": "461",
+*             "sectionId": "63508",
+*             "sectionNumber": "AY2",
+*             "enrollmentStatus": "CrossListOpen",
+*             "type": "DIS",
+*             "startTime": "11:00 AM",
+*             "endTime": "11:50 AM",
+*             "daysOfWeek": "R"
+*           },
+*           {
+*             "subjectId": "CHLH",
+*             "courseId": "243",
+*             "sectionId": "65894 57812",
+*             "sectionNumber": "ON ONL",
+*             "enrollmentStatus": "Closed",
+*             "type": "ONL",
+*             "startTime": "ARRANGED"
+*           }
+*         ]
 *       }
 *     ]
-*   ]
+*   }
+*
 *
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 500 Internal Server Error
@@ -73,55 +93,53 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *     "error": "Could not generate schedules"
 *   }
 */
-router.get('/generate', function (req, res) {
-  let url = 'schedule/' + req.query.year + '/' + req.query.semester + '/';
-  let selectedClasses = req.query.courses;
-  getAllDetails(url, selectedClasses, function (error, result) {
-    if (error) {
-      return res.status(500).json({error: 'Could not generate schedules'});
-    }
-
-    console.log('Generating Schedules no preferences');
-    console.time('generate');
-    let generatedSchedules = genPrototype(result);
-    console.timeEnd('generate');
-    console.log(generatedSchedules.length);
-    console.log('Generated Schedules. Sending Data back');
-    res.status(200).json(generatedSchedules);
-  });
-});
-
 router.post('/generate', function (req, res) {
+  if (!hasProperties(req)) {
+    return res.status(422).json({error: 'Incorrect Parameters'});
+  }
   let url = 'schedule/' + req.body.year + '/' + req.body.semester + '/';
   let selectedClasses = req.body.courses;
   let preferences = req.body.preferences;
-  console.log();
-  console.log('Getting section details');
+  // console.log();
+  // console.log('Getting section details');
   getAllDetails(url, selectedClasses, function (error, result) {
     if (error) {
       return res.status(500).json({error: 'Could not generate schedules'});
     }
-    console.log('Generating Schedules');
-    console.time('generate');
+    // console.log('Generating Schedules');
+    // console.time('generate');
     let generatedSchedules = genPrototype(result, preferences);
-    console.timeEnd('generate');
-    console.log('Number of schedules: ', generatedSchedules.length);
+    // console.timeEnd('generate');
+    // console.log('Number of schedules: ', generatedSchedules.numOfSchedules);
 
-    let seen = new Set();
-    let hasDuplicates = generatedSchedules.some(function (curr) {
-      return seen.size === seen.add(curr.sections).size;
-    });
-    console.log('Has Duplicates: ', hasDuplicates);
+    // checkDuplicates(generatedSchedules);
 
-    console.log('Generated Schedules. Sending Data back');
-
-    if (generatedSchedules.length >= 100) {
-      res.status(200).json(generatedSchedules.slice(0, 100));
-    } else {
-      res.status(200).json(generatedSchedules);
-    }
+    // console.log('Generated Schedules. Sending Data back');
+    // if (generatedSchedules.numOfSchedules > 100) {
+    //   generatedSchedules.schedules = generatedSchedules.schedules.slice(0, 150);
+    //   generatedSchedules.numOfSchedules = 150;
+    //   res.status(200).json(generatedSchedules)
+    // } else {
+    //   res.status(200).json(generatedSchedules);
+    // }
+    return res.status(200).json(generatedSchedules);
   });
 });
+
+function hasProperties (req) {
+  if (!req.body.hasOwnProperty('year') || !req.body.hasOwnProperty('semester') || !req.body.hasOwnProperty('courses')) {
+    return false;
+  }
+  return true;
+}
+
+// function checkDuplicates(generatedSchedules){
+//   let seen = new Set();
+//   let hasDuplicates = generatedSchedules.schedules.some(function(curr) {
+//     return seen.size === seen.add(curr.sections).size;
+//   });
+//   console.log('Has Duplicates: ', hasDuplicates);
+// }
 
 function isSectionsSimilar (sectionA, sectionB) {
   if (sectionA.daysOfWeek === sectionB.daysOfWeek) {
@@ -261,6 +279,11 @@ function shouldFlatten (processedDict) {
     if (sectionLetter === 'A') {
       sectionAExists = true;
     }
+
+    if (sectionLetter === '0' || sectionLetter === 'O') {
+      return false;
+    }
+
     if (Object.keys(processedDict[sectionLetter]).length >= 2) {
       return false;
     }
@@ -294,10 +317,10 @@ function getPermutationsForAllClasses (classes) {
   for (let i = 0; i < classes.length; i++) {
     allPermutations.push(getCourseSectionPermutations(classes[i].sectionList));
   }
-  // console.log('Finished finding all permutations');
   return allPermutations;
 }
 
+// Calculates the score if the section conflicts with unwanted times
 function getScoreNoClassTime (score, section, noClassTime) {
   let startA = new Date('January 1, 2000 ' + section.startTime);
   let endA = new Date('January 1, 2000 ' + section.endTime);
@@ -312,6 +335,7 @@ function getScoreNoClassTime (score, section, noClassTime) {
   return score;
 }
 
+// Calculates the score if the section happens on unwanted days
 function getScoreNoClassDays (score, section, noClassDays) {
   for (let i = 0; i < noClassDays.length; i++) {
     let day = noClassDays[i];
@@ -322,6 +346,7 @@ function getScoreNoClassDays (score, section, noClassDays) {
   return score;
 }
 
+// Calculates the score for any section that conflict with preset times
 function getScoreNoClassOptions (score, section, noClassOptions) {
   let timeOptions = {
     morning: {
@@ -350,6 +375,7 @@ function getScoreNoClassOptions (score, section, noClassOptions) {
   return score;
 }
 
+// Calculates the weighted score for each the schedule
 function calculateScheduleScore (scheduleSections, preferences) {
   let score = 100;
   for (let i = 0; i < scheduleSections.length; i++) {
@@ -363,54 +389,49 @@ function calculateScheduleScore (scheduleSections, preferences) {
   return score;
 }
 
-// function generateRecursive (currSchedule, listOfPermutationsForEveryClass, index) {
-//   if (index >= listOfPermutationsForEveryClass.length) {
-//     return [currSchedule];
-//   }
-//   let newSchedules = [];
-//   let permuationsForClass = listOfPermutationsForEveryClass[index];
-//   for (let i = 0; i < permuationsForClass.length; i++) {
-//     let newSections = permuationsForClass[i];
-//     let newSchedule = currSchedule.slice();
-//     let isOverlapping = insertAndSortIfNotOverlapped(newSchedule, newSections);
-//     if (!isOverlapping) {
-//       let generatedSchedule = generateRecursive(newSchedule, listOfPermutationsForEveryClass, index + 1);
-//       newSchedules = newSchedules.concat(generatedSchedule);
-//     }
-//   }
-//   return newSchedules;
-// };
-
 // Iteratively generate Schedules
 // Much faster than recursively but still space issues
 function generateIterative (listOfPermutationsForEveryClass, preferences) {
-  let newSchedules = [
+  let schedules = [
     {
       score: 100,
       sections: []
     }
   ];
+  let metAllPreferences = false;
   for (let i = 0; i < listOfPermutationsForEveryClass.length; i++) {
     let classPermutations = listOfPermutationsForEveryClass[i];
-    let newCurrent = [];
-    for (let j = 0; j < newSchedules.length; j++) {
+    let updatedSchedules = [];
+    for (let j = 0; j < schedules.length; j++) {
       for (let k = 0; k < classPermutations.length; k++) {
         let base = {
-          ...newSchedules[j]
+          ...schedules[j]
         };
         base.sections = base.sections.slice();
         let isOverlapped = insertAndSortIfNotOverlapped(base.sections, classPermutations[k]);
         if (!isOverlapped) {
           if (preferences && i === listOfPermutationsForEveryClass.length - 1) {
             base.score = calculateScheduleScore(base.sections, preferences);
+            if (base.score === 100) {
+              metAllPreferences = true;
+            }
           }
-          newCurrent.push(base);
+          updatedSchedules.push(base);
         }
       }
     }
-    newSchedules = newCurrent;
+    schedules = updatedSchedules;
+    if (schedules.length === 0) {
+      break;
+    }
   }
-  return newSchedules;
+
+  let generated = {
+    numOfSchedules: schedules.length,
+    metAllPreferences: metAllPreferences,
+    schedules: schedules
+  };
+  return generated;
 }
 
 // function isIndicesFull (indices, listOfPermutationsForEveryClass) {
@@ -449,9 +470,9 @@ function generateIterative (listOfPermutationsForEveryClass, preferences) {
 // Generates all possible valid schedules given details for all classes and optional preferences
 function genPrototype (classes, preferences) {
   let allPermutations = getPermutationsForAllClasses(classes);
-  let schedules = generateIterative(allPermutations, preferences);
-  console.time('Sorting');
-  schedules.sort(function (a, b) {
+  let generated = generateIterative(allPermutations, preferences);
+  // console.time('Sorting');
+  generated.schedules.sort(function (a, b) {
     if (a.score > b.score) {
       return -1;
     } else if (a.score < b.score) {
@@ -459,8 +480,8 @@ function genPrototype (classes, preferences) {
     }
     return 0;
   });
-  console.timeEnd('Sorting');
-  return schedules;
+  // console.timeEnd('Sorting');
+  return generated;
 }
 
 module.exports = router;

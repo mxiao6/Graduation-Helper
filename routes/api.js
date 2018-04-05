@@ -9,7 +9,7 @@ const getElements = require('./utilities.js').getElements;
 *@api{get}/years Get all years
 *@apiName GetYears
 *@apiGroup Class
-*@apiVersion 0.1.0
+*@apiVersion 0.2.0
 *
 *@apiSuccessExample {String[]} Success-Response:
 *   HTTP/1.1 200 OK
@@ -48,7 +48,7 @@ router.get('/years', function (req, res) {
 *@api{get}/semester Get semesters for year
 *@apiName GetSemester
 *@apiGroup Class
-*@apiVersion 0.1.0
+*@apiVersion 0.2.0
 *
 *@apiParam {String} year The specific school year
 *
@@ -89,7 +89,7 @@ router.get('/semester', function (req, res) {
 *@api{get}/subject Get all subjects
 *@apiName GetSubjects
 *@apiGroup Class
-*@apiVersion 0.1.0
+*@apiVersion 0.2.0
 *
 *@apiParam {String} year The school year
 *@apiParam {String} semester The specific semester
@@ -144,7 +144,7 @@ router.get('/subject', function (req, res) {
 *@api{get}/course Get courses in a subject
 *@apiName GetCourses
 *@apiGroup Class
-*@apiVersion 0.1.0
+*@apiVersion 0.2.0
 *
 *@apiParam {String} year The school year
 *@apiParam {String} semester The specific semester
@@ -201,7 +201,7 @@ router.get('/course', function (req, res) {
 *@api{get}/section Get sections in a specific course
 *@apiName GetSections
 *@apiGroup Class
-*@apiVersion 0.1.0
+*@apiVersion 0.2.0
 *
 *@apiParam {String} year The school year
 *@apiParam {String} semester The specific semester
@@ -264,7 +264,7 @@ router.get('/section', function (req, res) {
 *@api{get}/sectionDetails Get section details
 *@apiName GetSectionDetails
 *@apiGroup Class
-*@apiVersion 0.1.0
+*@apiVersion 0.2.0
 *
 *@apiParam {String} year The school year
 *@apiParam {String} semester The specific semester

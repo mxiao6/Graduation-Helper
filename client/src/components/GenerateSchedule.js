@@ -120,11 +120,9 @@ class ClassSelection extends React.Component {
       generating: true
     });
     axios
-      .get(GET_GENERATE_SCHEDULE, {
-        params: {
-          ...semester,
-          courses: schedule
-        }
+      .post(GET_GENERATE_SCHEDULE, {
+        ...semester,
+        courses: schedule
       })
       .then(res => {
         this.setState({
