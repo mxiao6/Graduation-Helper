@@ -4,9 +4,9 @@ import "styles/Login.css";
 
 import { Card } from "antd";
 
-import SignupForm from "components/SignupForm";
+import ResetPWForm from "components/ResetPWForm";
 
-class Signup extends Component {
+class ResetPassword extends Component {
   constructor(props) {
     super(props);
 
@@ -24,8 +24,8 @@ class Signup extends Component {
           <div
             className="formContainer" /*style={{ marginTop: this.state.height/10 }}*/
           >
-            <Card title="Sign Up" bordered={true} className="cardStyle">
-              <SignupForm history={this.props.history} />
+            <Card title="Reset Password" bordered={true} className="cardStyle">
+              <ResetPWForm history={this.props.history} />
             </Card>
           </div>
         </div>
@@ -34,4 +34,4 @@ class Signup extends Component {
   }
 }
 
-export default Signup;
+export default ResetPassword;
