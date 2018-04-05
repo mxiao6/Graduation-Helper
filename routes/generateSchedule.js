@@ -94,6 +94,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *   }
 */
 router.post('/generate', function (req, res) {
+  console.log(req.body);
   let url = 'schedule/' + req.body.year + '/' + req.body.semester + '/';
   let selectedClasses = req.body.courses;
   let preferences = req.body.preferences;
