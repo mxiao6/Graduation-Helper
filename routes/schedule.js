@@ -52,21 +52,45 @@ exports.save = function (req, res) {
   res.status(200);
 };
 
-/* schedule object:
-*  string term (semester+year)
-*  Course[] courses
- */
-/* course object:
-*  string subject
-*  int courseNumber
-*  int crn
- */
+/**
+ *@api{get}/getschedule retrieve the user schedule from the database
+ *@apiName getschedule
+ *@apiGroup Schedule
+ *@apiVersion 0.1.0
+ *
+ *@apiParam {int} userId user ID that the schedule is associated with
+ *@apiParam {String} semester The specific semester
+ *@apiParam {String} year The school year
+ *
+ *@apiSuccessExample {json} Success-Response
+ * HTTP/1.1 200 OK
+ * {
+ *   "term": "FALL2018",
+ *   "courses": [
+ *       {
+ *           "subject": "CS",
+ *           "courseNumber": 125,
+ *           "crn": 123456
+ *       },
+ *       {
+ *           "subject": "ARCH",
+ *           "courseNumber": 101,
+ *           "crn": 789123
+ *       }
+ *   ]
+ * }
+ *@apiErrorExample Error-Response:
+ * HTTP/1.1 400 Bad Request
+ * {
+ *    "ERROR : missing parameters"
+ * }
+ **/
 exports.get = function (req, res) {
   let userId = req.query.userId;
   let semester = req.query.semester;
   let year = req.query.year;
   let schedule = null;
-  if (userId == null || semester == null || year == null || schedule == null) {
+  if (userId == null || semester == null || year == null) {
     res.status(400).send('ERROR : missing parameters');
   }
   pool.getConnection(function (err, connection) {
