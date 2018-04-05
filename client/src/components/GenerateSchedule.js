@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { GET_SUBJECT, GET_COURSE, GET_GENERATE_SCHEDULE } from 'api';
+import { GET_SUBJECT, GET_COURSE, POST_GENERATE_SCHEDULE } from 'api';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
@@ -122,11 +122,9 @@ class ClassSelection extends React.Component {
       generating: true,
     });
     axios
-      .get(GET_GENERATE_SCHEDULE, {
-        params: {
-          ...semester,
-          courses: schedule,
-        },
+      .post(POST_GENERATE_SCHEDULE, {
+        ...semester,
+        courses: schedule,
       })
       .then(res => {
         this.setState({
