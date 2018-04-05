@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
 
-import { Cascader, Spin, Button, Tag, message } from 'antd';
+import { Cascader, Spin, Button, Tag, message, Row, Col } from 'antd';
 import 'styles/ClassSelection.css';
 
 import BigCalendar from 'modules/react-big-calendar';
@@ -19,6 +19,7 @@ class ClassSelection extends React.Component {
     schedule: [],
     generated: [],
     generating: false,
+    smallArray: undefined,
   };
 
   componentWillMount() {
@@ -130,6 +131,7 @@ class ClassSelection extends React.Component {
         console.log('raw data', res.data);
         this.setState({
           generated: this._parseSchedules(res.data),
+          smallArray: this._parseSmallArray(res.data),
           generating: false,
         });
       })
@@ -145,6 +147,40 @@ class ClassSelection extends React.Component {
     if (time.slice(-2) === 'PM' && hour !== 12) hour += 12;
 
     return { hour, mins };
+  };
+
+  _generateEmptyArray = () => {
+    let array = [];
+    for (let i = 0; i < 24; i++) {
+      let row = [];
+      for (let j = 0; j < 5; j++) {
+        row.push(false);
+      }
+      array.push(row);
+    }
+    return array;
+  };
+
+  _parseSmallArray = data => {
+    let parsed = [];
+    for (let schedule of data.schedules) {
+      let oneImg = this._generateEmptyArray();
+      for (let section of schedule.sections) {
+        if (!section.daysOfWeek) continue;
+        for (let day of section.daysOfWeek) {
+          let colIdx = daysMap[day] - 1; // 0 - 4
+          let startTime = this._parseTime(section.startTime);
+          let endTime = this._parseTime(section.endTime);
+          let rowStart = (startTime.hour - 8) * 2;
+          let rowEnd = (endTime.hour + 1 - 8) * 2;
+          for (let r = rowStart; r < rowEnd; r++) {
+            oneImg[r][colIdx] = true;
+          }
+        }
+      }
+      parsed.push(oneImg);
+    }
+    return parsed;
   };
 
   _parseSchedules = data => {
@@ -238,6 +274,37 @@ class ClassSelection extends React.Component {
     );
   };
 
+  _renderSmallGrids = () => {
+    const { smallArray } = this.state;
+    return !smallArray ? (
+      <Spin />
+    ) : (
+      <div style={{ width: 250, height: 240 }}>
+        {_.map(smallArray[0], row => {
+          return (
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              {_.map(row, col => {
+                return col ? (
+                  <div
+                    style={{
+                      width: 50,
+                      height: 10,
+                      backgroundColor: 'skyblue',
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{ width: 50, height: 10, backgroundColor: 'white' }}
+                  />
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   _renderGenerated = () => {
     const { generating, generated } = this.state;
     return (
@@ -320,6 +387,7 @@ class ClassSelection extends React.Component {
         </div>
         {this._renderCascader()}
         {this._renderSchedule()}
+        {this._renderSmallGrids()}
         {this._renderGenerated()}
       </div>
     );
