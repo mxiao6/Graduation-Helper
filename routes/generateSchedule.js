@@ -94,7 +94,9 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *   }
 */
 router.post('/generate', function (req, res) {
-  console.log(req.body);
+  if(!hasProperties(req)){
+    return res.status(422).json({error: 'Incorrect Parameters'});
+  }
   let url = 'schedule/' + req.body.year + '/' + req.body.semester + '/';
   let selectedClasses = req.body.courses;
   let preferences = req.body.preferences;
@@ -120,9 +122,16 @@ router.post('/generate', function (req, res) {
     // } else {
     //   res.status(200).json(generatedSchedules);
     // }
-    res.status(200).json(generatedSchedules);
+    return res.status(200).json(generatedSchedules);
   });
 });
+
+function hasProperties (req){
+  if (!req.body.hasOwnProperty('year') || !req.body.hasOwnProperty('semester') || !req.body.hasOwnProperty('courses')){
+    return false;
+  }
+  return true;
+}
 
 // function checkDuplicates(generatedSchedules){
 //   let seen = new Set();
