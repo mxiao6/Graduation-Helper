@@ -132,7 +132,6 @@ describe('Home and Login Tests', function () {
   it('Successful Registration', function (done) {
     this.timeout(20000);
     goToLoginPage()
-      .then(button => button.click())
       .then(() => driver.wait(findRegisterButton, 2000))
       .then(button => button.click())
       .then(() => driver.wait(findEmailEntry(), 2000))
