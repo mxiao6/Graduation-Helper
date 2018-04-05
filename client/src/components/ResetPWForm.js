@@ -14,24 +14,19 @@ const FormItem = Form.Item;
 class NormalResetPWForm extends React.Component {
   handleSubmit1 = e => {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log("Received values of form: ", values);
-
-        axios
-          .post(POST_SEND_EMAIL, {
-            email: values.email
-          })
-          .then(res => {
-            console.log(res);
-            message.success(res.data);
-          })
-          .catch(e => {
-            message.error(e.response.data);
-            console.log(e.response);
-          });
-      }
-    });
+    var user_email = this.props.form.getFieldValue('email');
+    axios
+      .post(POST_SEND_EMAIL, {
+        email: user_email
+      })
+      .then(res => {
+        console.log(res);
+        message.success(res.data);
+      })
+      .catch(e => {
+        message.error(e.response.data);
+        console.log(e.response);
+      });
   };
   handleSubmit2 = e => {
     e.preventDefault();
@@ -98,6 +93,7 @@ class NormalResetPWForm extends React.Component {
             })(
               <Input
                 prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
+                type="password"
                 placeholder="Authentification Code"
               />
             )}
