@@ -53,7 +53,7 @@ exports.save = function (req, res) {
 };
 
 /**
- *@api{get}/getschedule retrieve the user schedule from the database
+ *@api{get}/getschedule get a user schedule from the database
  *@apiName getschedule
  *@apiGroup Schedule
  *@apiVersion 0.1.0
@@ -84,6 +84,11 @@ exports.save = function (req, res) {
  * {
  *    "ERROR : missing parameters"
  * }
+ *@apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *    "ERROR : no schedule exists for the user and semester combination"
+ * }
  **/
 exports.get = function (req, res) {
   let userId = req.query.userId;
@@ -97,16 +102,19 @@ exports.get = function (req, res) {
     if (err) {
       res.status(400).send('Get pool connection error');
     }
-    connection.query('SELECT schedule_id FROM Schedules WHERE user_id = ? AND semester = ?;',[userId,semester+''+year],function (err, qres) {
+    connection.query('SELECT schedule_id FROM Schedules WHERE user_id = ? AND semester = ?;', [userId, semester + '' + year], function (err, qres) {
       if (err) { throw err; }
+      if (qres.length === 0) {
+        res.status(500).send('ERROR : no schedule exists for the user and semester combination');
+      }
       let scheduleId = qres[0].schedule_id;
-      connection.query('SELECT * FROM Courses WHERE schedule_id = ?;',[scheduleId],function(err,qres) {
+      connection.query('SELECT * FROM Courses WHERE schedule_id = ?;', [scheduleId], function (err, qres) {
         if (err) { throw err; }
-        schedule = new Object();
-        schedule.term = semester+''+year;
+        schedule = {};
+        schedule.term = semester + '' + year;
         schedule.courses = [];
-        for(let i = 0; i < qres.length; i++) {
-          let c = new Object();
+        for (let i = 0; i < qres.length; i++) {
+          let c = {};
           c.subject = qres[i].subject;
           c.courseNumber = qres[i].course_number;
           c.crn = qres[i].crn;
