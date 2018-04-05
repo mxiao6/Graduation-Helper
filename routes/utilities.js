@@ -8,13 +8,17 @@ function getElements (query, myCallback) {
     if (!error && response.statusCode === 200) {
       parseString(body, function (err, result) {
         if (err) {
-          myCallback(500, {'error': 'Could not parse xml data ' + err});
+          myCallback(500, {
+            'error': 'Could not parse xml data ' + err
+          });
         } else {
           myCallback(null, result);
         }
       });
     } else if (response.statusCode !== 200) {
-      myCallback(response.statusCode, {'error': 'Could not retrieve data from course website. ' + response.body});
+      myCallback(response.statusCode, {
+        'error': 'Could not retrieve data from course website. ' + response.body
+      });
     } else {
       myCallback(500, {'error': 'Could not make request to the course website'});
     }
@@ -56,8 +60,20 @@ function getSectionDetails (context, sectionId, doneCallBack) {
       return doneCallBack(error, {apple: 'apple'});
     }
 
-    let sectionNumber = result['ns2:section']['sectionNumber'][0].trim();
-    let enrollmentStatus = result['ns2:section']['enrollmentStatus'][0];
+    let sectionNumber = result['ns2:section']['sectionNumber'];
+    if (sectionNumber != null) {
+      sectionNumber = sectionNumber[0].trim();
+    } else {
+      sectionNumber = '0';
+    }
+
+    let enrollmentStatus = result['ns2:section']['enrollmentStatus'];
+    if (enrollmentStatus != null) {
+      enrollmentStatus = enrollmentStatus[0];
+    } else {
+      enrollmentStatus = 'UNKNOWN';
+    }
+
     let type = result['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
 
     let startTime = result['ns2:section']['meetings'][0]['meeting'][0]['start'];
@@ -94,7 +110,11 @@ function getAllClassesSectionDetails (context, listOfSectionsForClass, doneCallB
   // console.log("Getting details now ");
   // console.log(listOfSectionsForClass);
   let partialURL = context.partialURL + listOfSectionsForClass.subjectId + '/' + listOfSectionsForClass.courseId + '/';
-  async.map(sectionList, getSectionDetails.bind(null, {partialURL: partialURL, subjectId: listOfSectionsForClass.subjectId, courseId: listOfSectionsForClass.courseId}), function (err, results) {
+  async.map(sectionList, getSectionDetails.bind(null, {
+    partialURL: partialURL,
+    subjectId: listOfSectionsForClass.subjectId,
+    courseId: listOfSectionsForClass.courseId
+  }), function (err, results) {
     if (err) {
       return doneCallBack(err, {});
     }

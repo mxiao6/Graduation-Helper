@@ -6,7 +6,7 @@ var pool = userLogin.pool;
  *@api{post}/saveschedule save the user schedule to the database
  *@apiName saveschedule
  *@apiGroup Schedule
- *@apiVersion 0.1.0
+ *@apiVersion 0.2.0
  *
  *@apiParam {int} userId user ID that the schedule is to be associated with
  *@apiParam {String} semester The specific semester

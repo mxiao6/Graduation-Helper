@@ -1,1 +1,27 @@
-define({  "name": "Graduation Helper",  "version": "0.1.0",  "description": "apiDoc for backend",  "title": "API documentation GRH",  "order": [    "GetYears",    "GetSemester",    "GetSubjects",    "GetCourses",    "GetSections",    "GetSectionDetails"  ],  "sampleUrl": false,  "defaultVersion": "0.0.0",  "apidoc": "0.3.0",  "generator": {    "name": "apidoc",    "time": "2018-03-29T20:55:21.427Z",    "url": "http://apidocjs.com",    "version": "0.17.6"  }});
+define({
+  "name": "Graduation Helper",
+  "version": "0.2.0",
+  "description": "apiDoc for backend",
+  "title": "API documentation GRH",
+  "order": [
+    "GetYears",
+    "GetSemester",
+    "GetSubjects",
+    "GetCourses",
+    "GetSections",
+    "GetSectionDetails"
+  ],
+  "template": {
+    "withCompare": true,
+    "withGenerator": true
+  },
+  "sampleUrl": false,
+  "defaultVersion": "0.0.0",
+  "apidoc": "0.3.0",
+  "generator": {
+    "name": "apidoc",
+    "time": "2018-04-05T09:40:50.305Z",
+    "url": "http://apidocjs.com",
+    "version": "0.17.6"
+  }
+});
