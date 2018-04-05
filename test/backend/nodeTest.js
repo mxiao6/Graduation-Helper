@@ -96,12 +96,11 @@ describe('API tests', function () {
 });
 
 describe('schedule test', function () {
-  this.timeout(10000);
-
   it('should give us a schedule', function (done) {
+    this.timeout(20000);
     chai.request(server)
-      .get('/schedule/generate')
-      .query({
+      .post('/schedule/generate')
+      .send({
         'year': '2018',
         'semester': 'Spring',
         'courses': [
@@ -111,7 +110,9 @@ describe('schedule test', function () {
       })
       .end((err, res) => {
         res.should.have.status(200);
-        res.body.should.be.a('array');
+        res.body.should.be.a('Object');
+        res.body.should.have.nested.property('numOfSchedules');
+        res.body.should.have.nested.property('schedules');
         done();
         if (err) {
           console.log(err);
@@ -120,8 +121,8 @@ describe('schedule test', function () {
   });
   it('should not give us a schedule', function (done) {
     chai.request(server)
-      .get('/schedule/generate')
-      .query({
+      .post('/schedule/generate')
+      .send({
         'year': '-1',
         'semester': 'blah',
         'courses': [
