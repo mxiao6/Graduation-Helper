@@ -50,7 +50,7 @@ class NormalResetPWForm extends React.Component {
               message.success(res.data);
               this.props.actions.login({
                 email: values.email,
-                password: values.password
+                password: values.password1
               });
               this.props.history.push("/");
             })
@@ -104,7 +104,7 @@ class NormalResetPWForm extends React.Component {
           </FormItem>
           <FormItem>
             {getFieldDecorator("password1", {
-              rules: [{ required: true, message: "Please input new Password!" }]
+              rules: [{ required: true, message: "Please input New Password!" }]
             })(
               <Input
                 prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
@@ -115,7 +115,7 @@ class NormalResetPWForm extends React.Component {
           </FormItem>
           <FormItem>
             {getFieldDecorator("password2", {
-              rules: [{ required: true, message: "Please input the new Password again!" }]
+              rules: [{ required: true, message: "Please input the New Password again!" }]
             })(
               <Input
                 prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
