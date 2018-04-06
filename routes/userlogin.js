@@ -206,10 +206,7 @@ exports.sendemail = function (req, res) {
                   });
                 }
               } else {
-                if (process.argv.length > 2 && process.argv[2] === 'test')
-                  aucode = "ABCDEFGHIJ";
-                else
-                  aucode = randomstring.generate(10);
+                if (process.argv.length > 2 && process.argv[2] === 'test') { aucode = 'ABCDEFGHIJ'; } else { aucode = randomstring.generate(10); }
                 var auinfor = {
                   'email': email,
                   'aucode': aucode,
@@ -242,9 +239,7 @@ exports.sendemail = function (req, res) {
 
             if (process.argv.length > 2 && process.argv[2] === 'test') {
               res.status(250).send('Email not sent; in testing mode');
-              console.log(info);
-            }
-            else {
+            } else {
               transporter.sendMail(themail, function (err, info) {
                 if (err) {
                   console.log(err);
