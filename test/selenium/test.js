@@ -9,73 +9,103 @@ var chromeOptions = {
 chromeCapabilities.set('chromeOptions', chromeOptions);
 var driver = new webdriver.Builder().withCapabilities(chromeCapabilities).build();
 
-function findLoginPageButton () {
+function findLoginPageButton() {
   return driver.findElements(webdriver.By.css('.loginButton a')).then(function (result) {
     return result[0];
   });
 }
 
-function findRegisterButton () {
+function findRegisterButton() {
   return driver.findElements(webdriver.By.linkText('register now!')).then(function (result) {
     return result[0];
   });
 }
 
-function findLoginButton () {
+function findLoginButton() {
   return driver.findElements(webdriver.By.css('.login-form-button')).then(function (result) {
     return result[0];
   });
 }
 
-function findLogoutButton () {
+function findButton(index) {
+  return driver.findElements(webdriver.By.css('.login-form-button')).then(function (result) {
+    return result[index];
+  });
+}
+
+function findLogoutButton() {
   return driver.findElements(webdriver.By.css('.logoutButton')).then(function (result) {
     return result[0];
   });
 }
 
-function findYesButton () {
+function findYesButton() {
   return driver.findElements(webdriver.By.css('.ant-btn-danger')).then(function (result) {
     return result[0];
   });
 }
 
-function findErrorText (index) {
+function findErrorText(index) {
   return driver.findElements(webdriver.By.css('.ant-form-explain')).then(function (result) {
     return result[index];
   });
 }
 
-function findErrorMessage (index) {
+function findErrorMessage(index) {
   return driver.findElements(webdriver.By.css('.ant-message-error span')).then(function (result) {
     return result[index];
   });
 }
 
-function findEmailEntry () {
+function findEmailEntry() {
   return driver.findElements(webdriver.By.css('#email')).then(function (result) {
     return result[0];
   });
 }
 
-function findUsernameEntry () {
+function findUsernameEntry() {
   return driver.findElements(webdriver.By.css('#username')).then(function (result) {
     return result[0];
   });
 }
 
-function findPasswordEntry () {
+function findPasswordEntry() {
   return driver.findElements(webdriver.By.css('#password')).then(function (result) {
     return result[0];
   });
 }
 
-function findTitleText () {
+function findTitleText() {
   return driver.findElements(webdriver.By.css('.intro h1')).then(function (result) {
     return result[0];
   });
 }
 
-function goToLoginPage () {
+function findResetPassword() {
+  return driver.findElements(webdriver.By.css('.login-form-forgot')).then(function (result) {
+    return result[0];
+  });
+}
+
+function findAuCodeEntry() {
+  return driver.findElements(webdriver.By.css('#aucode')).then(function (result) {
+    return result[0];
+  });
+}
+
+function findNewPasswordEntry() {
+  return driver.findElements(webdriver.By.css('#password1')).then(function (result) {
+    return result[0];
+  });
+}
+
+function findConfirmPasswordEntry() {
+  return driver.findElements(webdriver.By.css('#password2')).then(function (result) {
+    return result[0];
+  });
+}
+
+function goToLoginPage() {
   return driver.get('http://localhost:3000/')
     .then(() => driver.wait(findLoginPageButton, 2000))
     .then(button => button.click());
@@ -215,70 +245,116 @@ describe('Home and Login Tests', function () {
       .then(() => done())
       .catch(error => done(error));
   });
+
+  it('Reset Password', function (done) {
+    this.timeout(20000);
+    goToLoginPage()
+      .then(() => driver.wait(findResetPassword(), 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(() => driver.wait(findButton(0), 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findAuCodeEntry(), 2000))
+      .then(input => input.sendKeys('ABCDEFGHIJ'))
+      .then(() => driver.wait(findNewPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test2'))
+      .then(() => driver.wait(findConfirmPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test2'))
+      .then(() => driver.wait(findButton(1), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.equal('http://localhost:3000/#/'))
+      .then(() => driver.wait(findTitleText(), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(titleText => titleText.should.equal('Hello, \nadmin!'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Successful Login After Reset', function (done) {
+    this.timeout(20000);
+    goToLoginPage()
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(() => driver.wait(findPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test2'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.equal('http://localhost:3000/#/'))
+      .then(() => driver.wait(findTitleText(), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(titleText => titleText.should.equal('Hello, \nadmin!'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
 });
 
-function findSelectClassButton () {
+function findSelectClassButton() {
   return driver.findElements(webdriver.By.linkText('Select Class')).then(function (result) {
     return result[0];
   });
 }
 
-function findSemesterDropdown () {
+function findSemesterDropdown() {
   return driver.findElements(webdriver.By.css('.ant-cascader-input')).then(function (result) {
     return result[0];
   });
 }
 
-function findElementByTitle (title) {
+function findElementByTitle(title) {
   return driver.findElements(webdriver.By.css('*[title="' + title + '"]')).then(function (result) {
     return result[0];
   });
 }
 
-function findNextButton () {
+function findNextButton() {
   return driver.findElements(webdriver.By.linkText('Next')).then(function (result) {
     return result[0];
   });
 }
 
-function findAddOrGenerateButton (index) {
+function findAddOrGenerateButton(index) {
   return driver.findElements(webdriver.By.css('.nextButton')).then(function (result) {
     return result[index];
   });
 }
 
-function findSelectedSemester () {
+function findSelectedSemester() {
   return driver.findElements(webdriver.By.css('.contentContainer div')).then(function (result) {
     return result[0];
   });
 }
 
-function findHomeButton () {
+function findHomeButton() {
   return driver.findElements(webdriver.By.linkText('HOME')).then(function (result) {
     return result[0];
   });
 }
 
-function findGenerateScheduleButton () {
+function findGenerateScheduleButton() {
   return driver.findElements(webdriver.By.linkText('Generate Schedule')).then(function (result) {
     return result[0];
   });
 }
 
-function findSectionsText () {
+function findSectionsText() {
   return driver.findElements(webdriver.By.css('.sectionsContainer div')).then(function (result) {
     return result[0];
   });
 }
 
-function selectSemester () {
+function selectSemester() {
   return driver.get('http://localhost:3000/')
     .then(() => driver.wait(findLoginPageButton, 2000))
     .then(button => button.click())
     .then(() => driver.wait(findEmailEntry(), 2000))
     .then(input => input.sendKeys('admin@gmail.com'))
     .then(() => driver.wait(findPasswordEntry(), 2000))
-    .then(input => input.sendKeys('test'))
+    .then(input => input.sendKeys('test2'))
     .then(() => driver.wait(findLoginButton, 2000))
     .then(button => button.click())
     .then(() => driver.sleep(2000))
@@ -337,7 +413,7 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findEmailEntry(), 2000))
       .then(input => input.sendKeys('admin@gmail.com'))
       .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test'))
+      .then(input => input.sendKeys('test2'))
       .then(() => driver.wait(findLoginButton, 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
