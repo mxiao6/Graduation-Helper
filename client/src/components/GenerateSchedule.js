@@ -4,7 +4,12 @@ import _ from 'lodash';
 import randomColor from 'randomcolor';
 import { Link } from 'react-router-dom';
 import WindowSizeListener from 'react-window-size-listener';
-import { GET_SUBJECT, GET_COURSE, POST_GENERATE_SCHEDULE } from 'api';
+import {
+  GET_SUBJECT,
+  GET_COURSE,
+  POST_GENERATE_SCHEDULE,
+  POST_SAVE_SCHEDULE,
+} from 'api';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
@@ -14,12 +19,13 @@ import 'styles/ClassSelection.css';
 
 import BigCalendar from 'modules/react-big-calendar';
 
-class ClassSelection extends React.Component {
+class GenerateSchedule extends React.Component {
   state = {
     options: undefined,
     selected: undefined,
     schedule: [],
     generated: [],
+    generatedRaw: [],
     generating: false,
     smallArray: undefined,
     scheduleIdx: 0,
@@ -28,10 +34,15 @@ class ClassSelection extends React.Component {
   };
 
   componentWillMount() {
-    console.log(this.props.semester);
+    const { semester, user, history } = this.props;
+    console.log('semester', this.props.semester);
+    console.log('user', this.props.user);
+
+    if (!user) history.push('/');
+
     axios
       .get(GET_SUBJECT, {
-        params: this.props.semester,
+        params: semester,
       })
       .then(res => {
         console.log(res.data);
@@ -135,6 +146,7 @@ class ClassSelection extends React.Component {
       .then(res => {
         console.log('raw data', res.data);
         this.setState({
+          generatedRaw: res.data,
           generated: this._parseSchedules(res.data),
           smallArray: this._parseSmallArray(res.data),
           generating: false,
@@ -313,10 +325,45 @@ class ClassSelection extends React.Component {
   };
 
   _handleSave = () => {
+    const { user, semester } = this.props;
+    const { scheduleIdx, generatedRaw: { schedules } } = this.state;
     this.setState({ saving: true });
-    setTimeout(() => {
-      this.setState({ saving: false, modalVisible: false });
-    }, 3000);
+
+    console.log('saving schedule', schedules[scheduleIdx]);
+
+    let sections = schedules[scheduleIdx].sections;
+
+    axios
+      .post(POST_SAVE_SCHEDULE, {
+        ...semester,
+        userId: user.userId,
+        subjects: _.chain(sections)
+          .map(s => s.subjectId)
+          .uniq()
+          .value(),
+        courseNumbers: _.chain(sections)
+          .map(s => s.courseId)
+          .uniq()
+          .value(),
+        crns: _.chain(sections)
+          .map(s => s.sectionId)
+          .uniq()
+          .value(),
+      })
+      .then(res => {
+        console.log(res.data);
+        this.setState({
+          saving: false,
+          modalVisible: false,
+        });
+        message.success(res.data);
+      })
+      .catch(e => {
+        console.error(e.response);
+        this.setState({
+          saving: false,
+        });
+      });
   };
 
   _handleCancel = () => {
@@ -446,6 +493,7 @@ const _default = { year: '2018', semester: 'fall' };
 function mapStateToProps(state, ownProps) {
   return {
     semester: state.classes.semester ? state.classes.semester : _default,
+    user: state.auth.user,
   };
 }
 
@@ -455,4 +503,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ClassSelection);
+export default connect(mapStateToProps, mapDispatchToProps)(GenerateSchedule);
