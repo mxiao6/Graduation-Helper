@@ -166,7 +166,7 @@ exports.login = function (req, res) {
 *   }
 */
 exports.sendemail = function (req, res) {
-// first check if email exist and send authentication code to that email and to response
+  // first check if email exist and send authentication code to that email and to response
   var email = req.body.email;
   pool.getConnection(function (err, connection) {
     if (err) {
@@ -206,7 +206,10 @@ exports.sendemail = function (req, res) {
                   });
                 }
               } else {
-                aucode = randomstring.generate(10);
+                if (process.argv.length > 2 && process.argv[2] === 'test')
+                  aucode = "ABCDEFGHIJ";
+                else
+                  aucode = randomstring.generate(10);
                 var auinfor = {
                   'email': email,
                   'aucode': aucode,
@@ -233,18 +236,24 @@ exports.sendemail = function (req, res) {
               to: email, // receiver
               subject: 'Reset information from GRH', // Subject line
               text: 'Your are receiving this because you try to reset password for your account on Graduation Helper. \n' +
-        'The reset authentication code is ：     ' + aucode + '. The code will expired in 30 minutes.\n' +
-        "If you didn't request this, please ignore and nothing will be changed in your account."
+                'The reset authentication code is ：     ' + aucode + '. The code will expired in 30 minutes.\n' +
+                "If you didn't request this, please ignore and nothing will be changed in your account."
             };
 
-            transporter.sendMail(themail, function (err, info) {
-              if (err) {
-                console.log(err);
-              } else {
-                res.status(250).send('Email sended successfully');
-                console.log(info);
-              }
-            });
+            if (process.argv.length > 2 && process.argv[2] === 'test') {
+              res.status(250).send('Email not sent; in testing mode');
+              console.log(info);
+            }
+            else {
+              transporter.sendMail(themail, function (err, info) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  res.status(250).send('Email sended successfully');
+                  console.log(info);
+                }
+              });
+            }
           });
         } else {
           res.status(422).send('Email does not exist');
