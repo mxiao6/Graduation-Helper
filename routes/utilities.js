@@ -9,7 +9,7 @@ function getElements (query, myCallback) {
       parseString(body, function (err, result) {
         if (err) {
           myCallback(500, {
-            'error': 'Could not parse xml data ' + err
+            error: 'Could not parse xml data ' + err
           });
         } else {
           myCallback(null, result);
@@ -17,10 +17,10 @@ function getElements (query, myCallback) {
       });
     } else if (response.statusCode !== 200) {
       myCallback(response.statusCode, {
-        'error': 'Could not retrieve data from course website. ' + response.body
+        error: 'Could not retrieve data from course website. ' + response.body
       });
     } else {
-      myCallback(500, {'error': 'Could not make request to the course website'});
+      myCallback(500, {error: 'Could not make request to the course website'});
     }
   }).end();
 }
@@ -57,51 +57,69 @@ function getSectionDetails (context, sectionId, doneCallBack) {
   let url = context.partialURL + sectionId;
   getElements(url, function (error, result) {
     if (error) {
-      return doneCallBack(error, {apple: 'apple'});
+      return doneCallBack(error, result);
     }
 
-    let sectionNumber = result['ns2:section']['sectionNumber'];
-    if (sectionNumber != null) {
-      sectionNumber = sectionNumber[0].trim();
-    } else {
-      sectionNumber = '0';
-    }
+    let sectionDetails = parseSectionDetails(result);
+    sectionDetails.subjectId = context.subjectId;
+    sectionDetails.courseId = context.courseId;
+    sectionDetails.sectionId = sectionId;
+    // let sectionDetails = {
+    //   subjectId: context.subjectId,
+    //   courseId: context.courseId,
+    //   sectionId: sectionId,
+    //   sectionNumber: sectionNumber,
+    //   enrollmentStatus: enrollmentStatus,
+    //   type: type,
+    //   startTime: startTime,
+    //   endTime: endTime,
+    //   daysOfWeek: daysOfWeek
+    // };
 
-    let enrollmentStatus = result['ns2:section']['enrollmentStatus'];
-    if (enrollmentStatus != null) {
-      enrollmentStatus = enrollmentStatus[0];
-    } else {
-      enrollmentStatus = 'UNKNOWN';
-    }
-
-    let type = result['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
-
-    let startTime = result['ns2:section']['meetings'][0]['meeting'][0]['start'];
-    if (startTime != null) {
-      startTime = startTime[0];
-    }
-    let endTime = result['ns2:section']['meetings'][0]['meeting'][0]['end'];
-    if (endTime != null) {
-      endTime = endTime[0];
-    }
-    let daysOfWeek = result['ns2:section']['meetings'][0]['meeting'][0]['daysOfTheWeek'];
-    if (daysOfWeek != null) {
-      daysOfWeek = daysOfWeek[0].trim();
-    }
-
-    let sectionDetails = {
-      subjectId: context.subjectId,
-      courseId: context.courseId,
-      sectionId: sectionId,
-      sectionNumber: sectionNumber,
-      enrollmentStatus: enrollmentStatus,
-      type: type,
-      startTime: startTime,
-      endTime: endTime,
-      daysOfWeek: daysOfWeek
-    };
     return doneCallBack(null, sectionDetails);
   });
+}
+
+function parseSectionDetails (jsonInfo) {
+  let sectionNumber = jsonInfo['ns2:section']['sectionNumber'];
+  if (sectionNumber != null) {
+    sectionNumber = sectionNumber[0].trim();
+  } else {
+    sectionNumber = '0';
+  }
+
+  let enrollmentStatus = jsonInfo['ns2:section']['enrollmentStatus'];
+  if (enrollmentStatus != null) {
+    enrollmentStatus = enrollmentStatus[0];
+  } else {
+    enrollmentStatus = 'UNKNOWN';
+  }
+
+  let type = jsonInfo['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
+
+  let startTime = jsonInfo['ns2:section']['meetings'][0]['meeting'][0]['start'];
+  if (startTime != null) {
+    startTime = startTime[0];
+  }
+  let endTime = jsonInfo['ns2:section']['meetings'][0]['meeting'][0]['end'];
+  if (endTime != null) {
+    endTime = endTime[0];
+  }
+  let daysOfWeek = jsonInfo['ns2:section']['meetings'][0]['meeting'][0]['daysOfTheWeek'];
+  if (daysOfWeek != null) {
+    daysOfWeek = daysOfWeek[0].trim();
+  }
+
+  let sectionDetails = {
+    sectionNumber: sectionNumber,
+    enrollmentStatus: enrollmentStatus,
+    type: type,
+    startTime: startTime,
+    endTime: endTime,
+    daysOfWeek: daysOfWeek
+  };
+
+  return sectionDetails;
 }
 
 // Iterates through list of sections for class and gets its specific details
@@ -143,5 +161,6 @@ function getAllDetails (partialURL, selectedClasses, callback) {
 
 module.exports = {
   getElements: getElements,
-  getAllDetails: getAllDetails
+  getAllDetails: getAllDetails,
+  parseSectionDetails: parseSectionDetails
 };
