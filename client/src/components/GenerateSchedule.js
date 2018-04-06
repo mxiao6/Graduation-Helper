@@ -1,13 +1,14 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
+import randomColor from 'randomcolor';
 import { Link } from 'react-router-dom';
 import { GET_SUBJECT, GET_COURSE, POST_GENERATE_SCHEDULE } from 'api';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
 
-import { Cascader, Spin, Button, Tag, message, Row, Col } from 'antd';
+import { Cascader, Spin, Button, Tag, message } from 'antd';
 import 'styles/ClassSelection.css';
 
 import BigCalendar from 'modules/react-big-calendar';
@@ -141,8 +142,8 @@ class ClassSelection extends React.Component {
   };
 
   _parseTime = time => {
-    let hour = parseInt(time.substr(0, 2));
-    let mins = parseInt(time.substr(3, 2));
+    let hour = parseInt(time.substr(0, 2), 10);
+    let mins = parseInt(time.substr(3, 2), 10);
 
     if (time.slice(-2) === 'PM' && hour !== 12) hour += 12;
 
@@ -167,6 +168,7 @@ class ClassSelection extends React.Component {
       let oneImg = this._generateEmptyArray();
       for (let section of schedule.sections) {
         if (!section.daysOfWeek) continue;
+        let color = randomColor();
         for (let day of section.daysOfWeek) {
           let colIdx = daysMap[day] - 1; // 0 - 4
           let startTime = this._parseTime(section.startTime);
@@ -174,7 +176,7 @@ class ClassSelection extends React.Component {
           let rowStart = (startTime.hour - 8) * 2;
           let rowEnd = (endTime.hour + 1 - 8) * 2;
           for (let r = rowStart; r < rowEnd; r++) {
-            oneImg[r][colIdx] = true;
+            oneImg[r][colIdx] = color;
           }
         }
       }
@@ -275,33 +277,40 @@ class ClassSelection extends React.Component {
   };
 
   _renderSmallGrids = () => {
-    const { smallArray } = this.state;
-    return !smallArray ? (
+    const { generating, smallArray } = this.state;
+    return generating ? (
       <Spin />
     ) : (
-      <div style={{ width: 250, height: 240 }}>
-        {_.map(smallArray[0], row => {
-          return (
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-              {_.map(row, col => {
-                return col ? (
-                  <div
-                    style={{
-                      width: 50,
-                      height: 10,
-                      backgroundColor: 'skyblue',
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{ width: 50, height: 10, backgroundColor: 'white' }}
-                  />
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
+      <Link
+        to={{
+          pathname: '/',
+        }}
+      >
+        <div className="gridsContainer">
+          {_.map(smallArray, smallGrid => {
+            return (
+              <div className="smallGrid">
+                {_.map(smallGrid, row => {
+                  return (
+                    <div className="smallRow">
+                      {_.map(row, col => {
+                        return col ? (
+                          <div
+                            className="smallColActive"
+                            style={{ backgroundColor: col }}
+                          />
+                        ) : (
+                          <div className="smallCol" />
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </Link>
     );
   };
 
@@ -377,7 +386,6 @@ class ClassSelection extends React.Component {
 
   _renderContent = () => {
     const { semester } = this.props;
-    const { schedule } = this.state;
     return (
       <div className="contentContainer">
         <div>

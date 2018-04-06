@@ -27,3 +27,38 @@
 .rbc-header > a {
   pointer-events: none;
 }
+
+.gridsContainer {
+  width: 80%;
+  margin: auto;
+  text-align: center;
+
+  .smallGrid {
+    display: inline-block;
+    margin: 10px;
+
+    width: 260px;
+    height: 250px;
+    padding: 5px;
+    border-width: 1px;
+    border-color: lightgrey;
+    border-style: solid;
+    border-radius: 5px;
+
+    .smallRow {
+      display: flex;
+      flex-direction: row;
+
+      .smallCol {
+        width: 50px;
+        height: 10px;
+        background-color: white;
+      }
+
+      .smallColActive {
+        width: 50px;
+        height: 10px;
+      }
+    }
+  }
+}
