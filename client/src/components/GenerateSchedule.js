@@ -152,7 +152,7 @@ class ClassSelection extends React.Component {
 
   _generateEmptyArray = () => {
     let array = [];
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 26; i++) {
       let row = [];
       for (let j = 0; j < 5; j++) {
         row.push(false);
@@ -180,7 +180,10 @@ class ClassSelection extends React.Component {
           }
         }
       }
-      parsed.push(oneImg);
+      parsed.push({
+        schedule,
+        array: oneImg,
+      });
     }
     return parsed;
   };
@@ -281,36 +284,39 @@ class ClassSelection extends React.Component {
     return generating ? (
       <Spin />
     ) : (
-      <Link
-        to={{
-          pathname: '/',
-        }}
-      >
-        <div className="gridsContainer">
-          {_.map(smallArray, smallGrid => {
-            return (
-              <div className="smallGrid">
-                {_.map(smallGrid, row => {
+      <div className="gridsContainer">
+        {_.map(smallArray, (smallGrid, gIdx) => {
+          return (
+            <Link
+              to={{
+                pathname: '/',
+                state: { schedule: smallGrid.schedule },
+              }}
+              key={gIdx}
+            >
+              <div className="smallGrid" key={gIdx}>
+                {_.map(smallGrid.array, (row, rIdx) => {
                   return (
-                    <div className="smallRow">
-                      {_.map(row, col => {
+                    <div className="smallRow" key={rIdx}>
+                      {_.map(row, (col, cIdx) => {
                         return col ? (
                           <div
                             className="smallColActive"
                             style={{ backgroundColor: col }}
+                            key={cIdx}
                           />
                         ) : (
-                          <div className="smallCol" />
+                          <div className="smallCol" key={cIdx} />
                         );
                       })}
                     </div>
                   );
                 })}
               </div>
-            );
-          })}
-        </div>
-      </Link>
+            </Link>
+          );
+        })}
+      </div>
     );
   };
 
