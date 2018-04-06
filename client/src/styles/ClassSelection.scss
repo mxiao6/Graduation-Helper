@@ -1,5 +1,5 @@
-@import "Variables.scss";
-@import "Shared.scss";
+@import 'Variables.scss';
+@import 'Shared.scss';
 
 .contentContainer {
   display: flex;
@@ -22,4 +22,57 @@
   .nextButton {
     margin: 0 0.5rem;
   }
+}
+
+.rbc-header > a {
+  pointer-events: none;
+}
+
+.tagsContainer {
+  height: 30px;
+}
+
+.gridsContainer {
+  width: 80%;
+  margin: auto;
+  text-align: center;
+
+  .smallGrid {
+    display: inline-block;
+    margin: 10px;
+
+    width: 260px;
+    height: 270px;
+    padding: 5px;
+    border-width: 1px;
+    border-color: lightgrey;
+    border-style: solid;
+    border-radius: 5px;
+
+    .smallRow {
+      display: flex;
+      flex-direction: row;
+
+      .smallCol {
+        width: 50px;
+        height: 10px;
+        background-color: white;
+      }
+
+      .smallColActive {
+        width: 50px;
+        height: 10px;
+      }
+    }
+  }
+}
+
+.scheduleModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scheduleModal .ant-modal {
+  top: 0;
 }

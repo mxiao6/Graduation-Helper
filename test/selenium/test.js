@@ -317,11 +317,11 @@ function findNextButton () {
   });
 }
 
-function findAddOrGenerateButton (index) {
-  return driver.findElements(webdriver.By.css('.nextButton')).then(function (result) {
-    return result[index];
-  });
-}
+// function findAddOrGenerateButton (index) {
+//   return driver.findElements(webdriver.By.css('.nextButton')).then(function (result) {
+//     return result[index];
+//   });
+// }
 
 function findSelectedSemester () {
   return driver.findElements(webdriver.By.css('.contentContainer div')).then(function (result) {
@@ -341,11 +341,11 @@ function findGenerateScheduleButton () {
   });
 }
 
-function findSectionsText () {
-  return driver.findElements(webdriver.By.css('.sectionsContainer div')).then(function (result) {
-    return result[0];
-  });
-}
+// function findSectionsText () {
+//   return driver.findElements(webdriver.By.css('.sectionsContainer div')).then(function (result) {
+//     return result[0];
+//   });
+// }
 
 function selectSemester () {
   return driver.get('http://localhost:3000/')
@@ -432,19 +432,6 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.sleep(2000))
       .then(() => driver.wait(findSemesterDropdown(), 2000))
       .then(dropdown => dropdown.click())
-      .then(() => driver.wait(findElementByTitle('Asian American Studies'), 2000))
-      .then(element => element.click())
-      .then(() => driver.sleep(2000))
-      .then(() => driver.wait(findElementByTitle('200: U.S. Race and Empire'), 2000))
-      .then(element => element.click())
-      .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
-      .then(button => button.click())
-      .then(() => driver.wait(findAddOrGenerateButton(1), 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(2000))
-      .then(() => driver.wait(findSectionsText(), 2000))
-      .then(textElem => textElem.getAttribute('innerText'))
-      .then(sectionText => sectionText.should.contain('67473'))
       .then(() => done())
       .catch(error => done(error));
   });
