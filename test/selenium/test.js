@@ -27,6 +27,12 @@ function findLoginButton () {
   });
 }
 
+function findButton (index) {
+  return driver.findElements(webdriver.By.css('.login-form-button')).then(function (result) {
+    return result[index];
+  });
+}
+
 function findLogoutButton () {
   return driver.findElements(webdriver.By.css('.logoutButton')).then(function (result) {
     return result[0];
@@ -71,6 +77,30 @@ function findPasswordEntry () {
 
 function findTitleText () {
   return driver.findElements(webdriver.By.css('.intro h1')).then(function (result) {
+    return result[0];
+  });
+}
+
+function findResetPassword () {
+  return driver.findElements(webdriver.By.css('.login-form-forgot')).then(function (result) {
+    return result[0];
+  });
+}
+
+function findAuCodeEntry () {
+  return driver.findElements(webdriver.By.css('#aucode')).then(function (result) {
+    return result[0];
+  });
+}
+
+function findNewPasswordEntry () {
+  return driver.findElements(webdriver.By.css('#password1')).then(function (result) {
+    return result[0];
+  });
+}
+
+function findConfirmPasswordEntry () {
+  return driver.findElements(webdriver.By.css('#password2')).then(function (result) {
     return result[0];
   });
 }
@@ -215,6 +245,52 @@ describe('Home and Login Tests', function () {
       .then(() => done())
       .catch(error => done(error));
   });
+
+  it('Reset Password', function (done) {
+    this.timeout(20000);
+    goToLoginPage()
+      .then(() => driver.wait(findResetPassword(), 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(() => driver.wait(findButton(0), 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findAuCodeEntry(), 2000))
+      .then(input => input.sendKeys('ABCDEFGHIJ'))
+      .then(() => driver.wait(findNewPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test2'))
+      .then(() => driver.wait(findConfirmPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test2'))
+      .then(() => driver.wait(findButton(1), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.equal('http://localhost:3000/#/'))
+      .then(() => driver.wait(findTitleText(), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(titleText => titleText.should.equal('Hello, \nadmin!'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Successful Login After Reset', function (done) {
+    this.timeout(20000);
+    goToLoginPage()
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(() => driver.wait(findPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test2'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.equal('http://localhost:3000/#/'))
+      .then(() => driver.wait(findTitleText(), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(titleText => titleText.should.equal('Hello, \nadmin!'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
 });
 
 function findSelectClassButton () {
@@ -278,7 +354,7 @@ function selectSemester () {
     .then(() => driver.wait(findEmailEntry(), 2000))
     .then(input => input.sendKeys('admin@gmail.com'))
     .then(() => driver.wait(findPasswordEntry(), 2000))
-    .then(input => input.sendKeys('test'))
+    .then(input => input.sendKeys('test2'))
     .then(() => driver.wait(findLoginButton, 2000))
     .then(button => button.click())
     .then(() => driver.sleep(2000))
@@ -337,7 +413,7 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findEmailEntry(), 2000))
       .then(input => input.sendKeys('admin@gmail.com'))
       .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test'))
+      .then(input => input.sendKeys('test2'))
       .then(() => driver.wait(findLoginButton, 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
