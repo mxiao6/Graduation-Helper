@@ -167,13 +167,13 @@ describe('schedule test', function () {
       });
   });
 });
-/*
-describe('save schedule tests', function() {
-    it('save schedule', function (done) {
+
+describe('save and get schedule tests', function() {
+    /**it('save schedule', function (done) {
         chai.request(server)
             .post('/saveschedule')
             .send({
-                userId: 'admin@gmail.com',
+                userId: 1,
                 semester: 'Spring',
                 year: '2018',
                 crns: ['31187', '31152'],
@@ -181,14 +181,30 @@ describe('save schedule tests', function() {
                 courseNumbers: ["173", "125"]
             })
             .end((err, res) => {
-              res.should.have.status(200);
+              res.should.have.status(400);
               done();
               if (err) {
                 console.log(err);
               }
             });
     });
-}); */
+    it('get schedule', function (done) {
+        chai.request(server)
+            .post('/saveschedule')
+            .send({
+                userId: 0,
+                semester: 'Spring',
+                year: '2018',
+            })
+            .end((err, res) => {
+            res.should.have.status(400);
+        done();
+        if (err) {
+            console.log(err);
+        }
+    });
+    });*/
+});
 
 describe('API tests', function () {
   this.timeout(10000);
@@ -260,6 +276,7 @@ describe('API tests', function () {
     chai.request(server)
       .get('/api/section')
       .query({
+          user_id: 0,
         year: '2018',
         semester: 'spring',
         course: 'AAS',

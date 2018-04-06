@@ -106,22 +106,7 @@ router.post('/generate', function (req, res) {
     if (error) {
       return res.status(500).json({error: 'Could not generate schedules'});
     }
-    // console.log('Generating Schedules');
-    // console.time('generate');
-    let generatedSchedules = genPrototype(result, preferences);
-    // console.timeEnd('generate');
-    // console.log('Number of schedules: ', generatedSchedules.numOfSchedules);
 
-    // checkDuplicates(generatedSchedules);
-
-    // console.log('Generated Schedules. Sending Data back');
-    // if (generatedSchedules.numOfSchedules > 100) {
-    //   generatedSchedules.schedules = generatedSchedules.schedules.slice(0, 150);
-    //   generatedSchedules.numOfSchedules = 150;
-    //   res.status(200).json(generatedSchedules)
-    // } else {
-    //   res.status(200).json(generatedSchedules);
-    // }
     return res.status(200).json(generatedSchedules);
   });
 });
