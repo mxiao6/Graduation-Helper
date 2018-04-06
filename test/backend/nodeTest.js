@@ -145,7 +145,7 @@ describe('schedule test', function () {
           console.log(err);
         }
       });
-  });*/ 
+  });*/
   it('should not give us a schedule', function (done) {
     chai.request(server)
       .post('/schedule/generate')
