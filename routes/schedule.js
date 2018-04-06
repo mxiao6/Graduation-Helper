@@ -17,12 +17,12 @@ var pool = userLogin.pool;
  *
  */
 exports.save = function (req, res) {
-  let userId = req.query.userId;
-  let semester = req.query.semester;
-  let year = req.query.year;
-  let crns = req.query.crns;
-  let subjects = req.query.subjects;
-  let courseNumbers = req.query.courseNumbers;
+  let userId = req.body.userId;
+  let semester = req.body.semester;
+  let year = req.body.year;
+  let crns = req.body.crns;
+  let subjects = req.body.subjects;
+  let courseNumbers = req.body.courseNumbers;
   if (userId == null || semester == null || year == null || crns == null || subjects == null || courseNumbers == null) {
     res.status(400).send('ERROR : missing parameters');
   }
@@ -49,7 +49,7 @@ exports.save = function (req, res) {
       }
     });
   });
-  res.status(200);
+  res.status(200).send('Save Schedule Successful!');
 };
 
 /**
