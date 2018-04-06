@@ -3,12 +3,13 @@ import axios from 'axios';
 import _ from 'lodash';
 import randomColor from 'randomcolor';
 import { Link } from 'react-router-dom';
+import WindowSizeListener from 'react-window-size-listener';
 import { GET_SUBJECT, GET_COURSE, POST_GENERATE_SCHEDULE } from 'api';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
 
-import { Cascader, Spin, Button, Tag, message } from 'antd';
+import { Cascader, Spin, Button, Tag, message, Modal } from 'antd';
 import 'styles/ClassSelection.css';
 
 import BigCalendar from 'modules/react-big-calendar';
@@ -21,6 +22,9 @@ class ClassSelection extends React.Component {
     generated: [],
     generating: false,
     smallArray: undefined,
+    scheduleIdx: 0,
+    modalVisible: false,
+    saving: false,
   };
 
   componentWillMount() {
@@ -40,8 +44,8 @@ class ClassSelection extends React.Component {
         });
       })
       .catch(e => {
-        message.error(e.response.data);
-        console.error(e.response);
+        // message.error(e.response.data);
+        console.error(e);
       });
   }
 
@@ -213,19 +217,6 @@ class ClassSelection extends React.Component {
     return parsed;
   };
 
-  /**
-   * fake data
-   * @type {[Object]}
-   */
-  events = [
-    {
-      id: 1,
-      title: 'Birthday Party',
-      start: new Date(2018, 3, 1, 7, 0, 0),
-      end: new Date(2018, 3, 1, 10, 30, 0),
-    },
-  ];
-
   _resetSemester = () => {
     this.props.actions.resetSemester();
     this.props.history.push({
@@ -287,13 +278,7 @@ class ClassSelection extends React.Component {
       <div className="gridsContainer">
         {_.map(smallArray, (smallGrid, gIdx) => {
           return (
-            <Link
-              to={{
-                pathname: '/',
-                state: { schedule: smallGrid.schedule },
-              }}
-              key={gIdx}
-            >
+            <a onClick={() => this._showBigSchedule(gIdx)} key={gIdx}>
               <div className="smallGrid" key={gIdx}>
                 {_.map(smallGrid.array, (row, rIdx) => {
                   return (
@@ -313,80 +298,104 @@ class ClassSelection extends React.Component {
                   );
                 })}
               </div>
-            </Link>
+            </a>
           );
         })}
       </div>
     );
   };
 
-  _renderGenerated = () => {
-    const { generating, generated } = this.state;
+  _showBigSchedule = scheduleIdx => {
+    this.setState({
+      scheduleIdx,
+      modalVisible: true,
+    });
+  };
+
+  _handleSave = () => {
+    this.setState({ saving: true });
+    setTimeout(() => {
+      this.setState({ saving: false, modalVisible: false });
+    }, 3000);
+  };
+
+  _handleCancel = () => {
+    this.setState({ modalVisible: false });
+  };
+
+  _renderModal = () => {
+    const { modalVisible, saving, height, width } = this.state;
     return (
-      <div className="sectionsContainer">
-        {generating ? (
-          <Spin />
-        ) : (
-          generated.length !== 0 && (
-            <div style={{ width: 1200, height: 600 }}>
-              <BigCalendar
-                min={new Date(2018, 3, 1, 8, 0, 0)}
-                max={new Date(2018, 3, 1, 21, 0, 0)}
-                toolbar={false}
-                selectable
-                events={generated[0].sections}
-                step={30}
-                timeslots={2}
-                defaultView="week"
-                defaultDate={new Date(2018, 3, 1)}
-                onSelectEvent={event => alert(event.title)}
-                onSelectSlot={slotInfo =>
-                  alert(
-                    `selected slot: \n\nstart ${slotInfo.start.toLocaleString()} ` +
-                      `\nend: ${slotInfo.end.toLocaleString()}` +
-                      `\naction: ${slotInfo.action}`
-                  )
-                }
-              />
-            </div>
-          )
-        )}
-      </div>
+      <Modal
+        visible={modalVisible}
+        title="Generated Schedule"
+        onOk={this._handleSave}
+        onCancel={this._handleCancel}
+        wrapClassName="scheduleModal"
+        width={width * 0.7}
+        footer={[
+          <Button key="cancel" onClick={this._handleCancel}>
+            Cancel
+          </Button>,
+          <Button
+            key="save"
+            type="primary"
+            loading={saving}
+            onClick={this._handleSave}
+          >
+            Save
+          </Button>,
+        ]}
+      >
+        {this._renderGenerated()}
+      </Modal>
     );
   };
 
-  // _renderGenerated = () => {
-  //   const { generating, generated } = this.state;
-  //   return (
-  //     <div className="sectionsContainer">
-  //       {generating ? (
-  //         <Spin />
-  //       ) : (
-  //         generated.length !== 0 && <div>{JSON.stringify(generated)}</div>
-  //       )}
-  //     </div>
-  //   );
-  // };
+  _renderGenerated = () => {
+    const { scheduleIdx, generated } = this.state;
+    return (
+      generated.length !== 0 && (
+        <BigCalendar
+          min={new Date(2018, 3, 1, 8, 0, 0)}
+          max={new Date(2018, 3, 1, 21, 0, 0)}
+          toolbar={false}
+          selectable
+          events={generated[scheduleIdx].sections}
+          step={30}
+          timeslots={2}
+          defaultView="week"
+          defaultDate={new Date(2018, 3, 1)}
+          onSelectEvent={event => alert(event.title)}
+          onSelectSlot={slotInfo =>
+            alert(
+              `selected slot: \n\nstart ${slotInfo.start.toLocaleString()} ` +
+                `\nend: ${slotInfo.end.toLocaleString()}` +
+                `\naction: ${slotInfo.action}`
+            )
+          }
+        />
+      )
+    );
+  };
 
   _renderSchedule = () => {
     const { schedule } = this.state;
     return (
-      schedule.length !== 0 && (
-        <div className="tagsContainer">
-          {schedule.map((tag, index) => {
-            return (
-              <Tag
-                color="blue"
-                closable
-                key={tag}
-                afterClose={() => this._closeTag(tag)}
-              >
-                {tag}
-              </Tag>
-            );
-          })}
-        </div>
-      )
+      <div className="tagsContainer">
+        {schedule.map((tag, index) => {
+          return (
+            <Tag
+              color="blue"
+              closable
+              key={tag}
+              afterClose={() => this._closeTag(tag)}
+            >
+              {tag}
+            </Tag>
+          );
+        })}
+      </div>
     );
   };
 
@@ -394,6 +403,14 @@ class ClassSelection extends React.Component {
     const { semester } = this.props;
     return (
       <div className="contentContainer">
+        <WindowSizeListener
+          onResize={windowSize => {
+            this.setState({
+              height: windowSize.windowHeight,
+              width: windowSize.windowWidth,
+            });
+          }}
+        />
         <div>
           Selected Semester: {semester.semester} {semester.year}
           &nbsp; &nbsp;
@@ -402,7 +419,7 @@ class ClassSelection extends React.Component {
         {this._renderCascader()}
         {this._renderSchedule()}
         {this._renderSmallGrids()}
-        {this._renderGenerated()}
+        {this._renderModal()}
       </div>
     );
   };

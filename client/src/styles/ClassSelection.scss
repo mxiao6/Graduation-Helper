@@ -28,6 +28,10 @@
   pointer-events: none;
 }
 
+.tagsContainer {
+  height: 30px;
+}
+
 .gridsContainer {
   width: 80%;
   margin: auto;
@@ -61,4 +65,14 @@
       }
     }
   }
+}
+
+.scheduleModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scheduleModal .ant-modal {
+  top: 0;
 }
