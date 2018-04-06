@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const getElements = require('./utilities.js').getElements;
+const parseSectionDetails = require('./utilities.js').parseSectionDetails;
 
 // TODO: write api call to retrieve section details from crn
 // moment js for time parsing
@@ -29,7 +30,7 @@ const getElements = require('./utilities.js').getElements;
 */
 router.get('/years', function (req, res) {
   getElements('schedule', function (errorStatus, result) {
-    if (errorStatus) return res.status(errorStatus).json(result);
+    if (errorStatus) { return res.status(errorStatus).json(result); }
 
     let calendarYears = result['ns2:schedule']['calendarYears'][0]['calendarYear'];
     if (calendarYears == null) {
@@ -70,7 +71,7 @@ router.get('/years', function (req, res) {
 router.get('/semester', function (req, res) {
   let year = req.query.year;
   getElements('schedule/' + year, function (errorStatus, result) {
-    if (errorStatus) return res.status(errorStatus).json(result);
+    if (errorStatus) { return res.status(errorStatus).json(result); }
 
     let calendarSemester = result['ns2:calendarYear']['terms'][0]['term'];
     if (calendarSemester == null) {
@@ -123,7 +124,7 @@ router.get('/subject', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
   getElements('schedule/' + year + '/' + semester, function (errorStatus, result) {
-    if (errorStatus) return res.status(errorStatus).json(result);
+    if (errorStatus) { return res.status(errorStatus).json(result); }
 
     let major = result['ns2:term']['subjects'][0]['subject'];
     if (major == null) {
@@ -180,7 +181,7 @@ router.get('/course', function (req, res) {
   let semester = req.query.semester;
   let course = req.query.course;
   getElements('schedule/' + year + '/' + semester + '/' + course, function (errorStatus, result) {
-    if (errorStatus) return res.status(errorStatus).json(result);
+    if (errorStatus) { return res.status(errorStatus).json(result); }
 
     let courses = result['ns2:subject']['courses'][0]['course'];
     if (courses == null) {
@@ -243,7 +244,7 @@ router.get('/section', function (req, res) {
   let course = req.query.course;
   let courseId = req.query.courseId;
   getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseId, function (errorStatus, result) {
-    if (errorStatus) return res.status(errorStatus).json(result);
+    if (errorStatus) { return res.status(errorStatus).json(result); }
 
     let section = result['ns2:course']['sections'][0]['section'];
     if (section == null) {
@@ -303,34 +304,22 @@ router.get('/sectionDetails', function (req, res) {
   let course = req.query.course;
   let courseId = req.query.courseId;
   let sectionId = req.query.sectionId;
-  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '/' + sectionId, function (errorStatus, result) {
-    if (errorStatus) return res.status(errorStatus).json(result);
+  let url = 'schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '/' + sectionId;
+  getElements(url, function (errorStatus, result) {
+    if (errorStatus) { return res.status(errorStatus).json(result); }
 
-    let sectionNumber = result['ns2:section']['sectionNumber'][0];
-    let enrollmentStatus = result['ns2:section']['enrollmentStatus'][0];
-    let type = result['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
+    let sectionDetails = parseSectionDetails(result);
+    sectionDetails.sectionId = sectionId;
 
-    let startTime = result['ns2:section']['meetings'][0]['meeting'][0]['start'];
-    if (startTime != null) {
-      startTime = startTime[0];
-    }
-    let endTime = result['ns2:section']['meetings'][0]['meeting'][0]['end'];
-    if (endTime != null) {
-      endTime = endTime[0];
-    }
-    let daysOfWeek = result['ns2:section']['meetings'][0]['meeting'][0]['daysOfTheWeek'];
-    if (daysOfWeek != null) {
-      daysOfWeek = daysOfWeek[0];
-    }
-    let sectionDetails = {
-      sectionId: sectionId,
-      sectionNumber: sectionNumber,
-      enrollmentStatus: enrollmentStatus,
-      type: type,
-      startTime: startTime,
-      endTime: endTime,
-      daysOfWeek: daysOfWeek
-    };
+    // let sectionDetails = {
+    //   sectionId: sectionId,
+    //   sectionNumber: sectionNumber,
+    //   enrollmentStatus: enrollmentStatus,
+    //   type: type,
+    //   startTime: startTime,
+    //   endTime: endTime,
+    //   daysOfWeek: daysOfWeek
+    // };
     res.status(200).json(sectionDetails);
   });
 });
