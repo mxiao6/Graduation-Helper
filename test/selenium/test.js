@@ -317,11 +317,11 @@ function findNextButton () {
   });
 }
 
-// function findAddOrGenerateButton (index) {
-//   return driver.findElements(webdriver.By.css('.nextButton')).then(function (result) {
-//     return result[index];
-//   });
-// }
+function findAddOrGenerateButton (index) {
+  return driver.findElements(webdriver.By.css('.nextButton')).then(function (result) {
+    return result[index];
+  });
+}
 
 function findSelectedSemester () {
   return driver.findElements(webdriver.By.css('.contentContainer div')).then(function (result) {
@@ -341,11 +341,23 @@ function findGenerateScheduleButton () {
   });
 }
 
-// function findSectionsText () {
-//   return driver.findElements(webdriver.By.css('.sectionsContainer div')).then(function (result) {
-//     return result[0];
-//   });
-// }
+function findSmallSchedule () {
+  return driver.findElements(webdriver.By.css('.smallGrid')).then(function (result) {
+    return result[0];
+  });
+}
+
+function findSectionElement () {
+  return driver.findElements(webdriver.By.css('.rbc-event-content')).then(function (result) {
+    return result[2];
+  });
+}
+
+function findSaveButton () {
+  return driver.findElements(webdriver.By.css('.ant-modal-footer > .ant-btn-primary')).then(function (result) {
+    return result[0];
+  });
+}
 
 function selectSemester () {
   return driver.get('http://localhost:3000/')
@@ -362,12 +374,12 @@ function selectSemester () {
     .then(button => button.click())
     .then(() => driver.getCurrentUrl())
     .then(url => url.should.contain('SemesterSelection'))
-    .then(() => driver.sleep(2000))
+    .then(() => driver.sleep(4000))
     .then(() => driver.wait(findSemesterDropdown(), 2000))
     .then(dropdown => dropdown.click())
     .then(() => driver.wait(findElementByTitle('2018'), 2000))
     .then(element => element.click())
-    .then(() => driver.sleep(2000))
+    .then(() => driver.sleep(4000))
     .then(() => driver.wait(findElementByTitle('Fall 2018'), 2000))
     .then(element => element.click())
     .then(() => driver.wait(findNextButton(), 2000))
@@ -405,7 +417,7 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
-  it('Generate Schedule', function (done) {
+  it('Generate and Save Schedule', function (done) {
     this.timeout(30000);
     driver.get('http://localhost:3000/')
       .then(() => driver.wait(findLoginPageButton, 2000))
@@ -432,6 +444,24 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.sleep(2000))
       .then(() => driver.wait(findSemesterDropdown(), 2000))
       .then(dropdown => dropdown.click())
+      .then(() => driver.wait(findElementByTitle('Asian American Studies'), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findElementByTitle('100: Intro Asian American Studies'), 2000))
+      .then(element => element.click())
+      .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findAddOrGenerateButton(1), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(5000))
+      .then(() => driver.wait(findSmallSchedule(), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSectionElement(), 2000))
+      .then(className => className.getAttribute('innerText'))
+      .then(innerText => innerText.should.equal('AAS100'))
+      .then(() => driver.wait(findSaveButton(), 2000))
+      .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
   });

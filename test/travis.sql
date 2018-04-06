@@ -8,7 +8,7 @@ CREATE TABLE testDatabase.users (
   PRIMARY KEY (user_id)
 );
 
-CREATE TABLE testDatabase.course(
+CREATE TABLE testDatabase.courses(
   course_id INT NOT NULL AUTO_INCREMENT,
   subject VARCHAR(4) NOT NULL,
   course_number INT NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE testDatabase.course(
   PRIMARY KEY (course_id)
 );
 
-CREATE TABLE testDatabase.schedule(
+CREATE TABLE testDatabase.schedules(
   schedule_id INT NOT NULL AUTO_INCREMENT,
   semester VARCHAR(8) NOT NULL,
   user_id INT NOT NULL,

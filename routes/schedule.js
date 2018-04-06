@@ -25,31 +25,32 @@ exports.save = function (req, res) {
   let courseNumbers = req.body.courseNumbers;
   if (userId == null || semester == null || year == null || crns == null || subjects == null || courseNumbers == null) {
     res.status(400).send('ERROR : missing parameters');
+  } else {
+    pool.getConnection(function (err, connection) {
+      if (err) {
+        res.status(400).send('Get pool connection error');
+      }
+      connection.query('INSERT INTO schedules (semester,user_id) VALUES (?,?);', [semester + '' + year, userId], function (err, results) {
+        if (err) { throw err; }
+      });
+      connection.query('SELECT schedule_id FROM schedules WHERE user_id = ? AND semester = ?;', [userId, semester + '' + year], function (err, results) {
+        if (err) { throw err; }
+        let scheduleId = results[0].schedule_id;
+
+        if (crns.length !== subjects.length || crns.length !== courseNumbers.length || subjects.length !== courseNumbers.length) {
+          res.status(400).send('input error : Course count is not uniform across inputs');
+        } else {
+          // start adding the courses
+          for (let i = 0; i < crns.length; i++) {
+            connection.query('INSERT INTO courses (subject,course_number,crn,schedule_id,semester,year) VALUES (?,?,?,?,?,?);', [subjects[i], courseNumbers[i], crns[i], scheduleId, semester, year], function (err, results) {
+              if (err) { throw err; }
+            });
+          }
+          res.status(200).send('Save Schedule Successful!');
+        }
+      });
+    });
   }
-  pool.getConnection(function (err, connection) {
-    if (err) {
-      res.status(400).send('Get pool connection error');
-    }
-    connection.query('INSERT INTO Schedules (semester,user_id) VALUES (?,?);', [semester + '' + year, userId], function (err, res) {
-      if (err) { throw err; }
-    });
-    connection.query('SELECT schedule_id FROM Schedules WHERE user_id = ? AND semester = ?;', [userId, semester + '' + year], function (err, res) {
-      if (err) { throw err; }
-      let scheduleId = res[0].schedule_id;
-
-      if (crns.length !== subjects.length || crns.length !== courseNumbers.length || subjects.length !== courseNumbers.length) {
-        res.status(400).send('input error : Course count is not uniform across inputs');
-      }
-
-      // start adding the courses
-      for (let i = 0; i < crns.length; i++) {
-        connection.query('INSERT INTO Courses (subject,course_number,crn,schedule_id,semester,year) VALUES (?,?,?,?,?,?);', [subjects[i], courseNumbers[i], crns[i], scheduleId, semester, year], function (err, res) {
-          if (err) { throw err; }
-        });
-      }
-    });
-  });
-  res.status(200).send('Save Schedule Successful!');
 };
 
 /**
@@ -102,13 +103,13 @@ exports.get = function (req, res) {
     if (err) {
       res.status(400).send('Get pool connection error');
     }
-    connection.query('SELECT schedule_id FROM Schedules WHERE user_id = ? AND semester = ?;', [userId, semester + '' + year], function (err, qres) {
+    connection.query('SELECT schedule_id FROM schedules WHERE user_id = ? AND semester = ?;', [userId, semester + '' + year], function (err, qres) {
       if (err) { throw err; }
       if (qres.length === 0) {
         res.status(500).send('ERROR : no schedule exists for the user and semester combination');
       }
       let scheduleId = qres[0].schedule_id;
-      connection.query('SELECT * FROM Courses WHERE schedule_id = ?;', [scheduleId], function (err, qres) {
+      connection.query('SELECT * FROM courses WHERE schedule_id = ?;', [scheduleId], function (err, qres) {
         if (err) { throw err; }
         schedule = {};
         schedule.term = semester + '' + year;
