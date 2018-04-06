@@ -668,7 +668,7 @@ describe('parameterized tests', function () {
       .end((err, res) => {
         res.should.have.status(500);
         res.body.error.should.be.equal('Could not generate schedules');
-        done();
+        // done();
         if (err) {
           console.log(err);
         }
