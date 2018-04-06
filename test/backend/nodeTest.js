@@ -1,6 +1,7 @@
-let chai = require('chai');
-let chaiHttp = require('chai-http');
-let server = require('../../server');
+var chai = require('chai');
+var chaiHttp = require('chai-http');
+var server = require('../../server');
+var itParam = require('mocha-param');
 chai.use(chaiHttp);
 require('chai').should();
 
@@ -93,6 +94,32 @@ describe('API tests', function () {
     });
   });
   */
+});
+
+describe('parameterized tests', function () {
+
+    var data = [{year: "-1", semester: "blah", courses: ["CS125", "CS173"]},{year: "1950", semester: "Spring", courses: ["CS125", "CS173"]},
+        {year: "2010", semester: "Summer", courses: ["CS999", "CS2232"]},{year: "0", semester: "blah", courses: ["BAD000", "BAD111"]}]
+
+    itParam("reject all", data, function(schedule){
+        chai.request(server)
+            .post('/schedule/generate')
+            .send({
+                'year': schedule.year,
+                'semester': schedule.semester,
+                'courses': [
+                    schedule.courses
+                ]
+            })
+            .end((err, res) => {
+                res.should.have.status(500);
+                res.body.error.should.be.equal('Could not generate schedules');
+                done();
+                if (err) {
+                    console.log(err);
+                }
+        });
+    })
 });
 
 describe('schedule test', function () {

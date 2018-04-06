@@ -65,7 +65,8 @@
   },
   "proxy": "http://localhost:5000/",
   "devDependencies": {
-    "babel-plugin-module-resolver": "^3.1.0"
+    "babel-plugin-module-resolver": "^3.1.0",
+    "mocha-param": "^2.0.0"
   },
   "jest": {
     "collectCoverageFrom": [
