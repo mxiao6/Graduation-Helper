@@ -123,7 +123,7 @@ describe('parameterized tests', function () {
 });
 
 describe('schedule test', function () {
-  it('should give us a schedule', function (done) {
+  /**it('should give us a schedule', function (done) {
     this.timeout(20000);
     chai.request(server)
       .post('/schedule/generate')
@@ -145,7 +145,7 @@ describe('schedule test', function () {
           console.log(err);
         }
       });
-  });
+  });*/ 
   it('should not give us a schedule', function (done) {
     chai.request(server)
       .post('/schedule/generate')
