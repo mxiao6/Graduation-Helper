@@ -45,11 +45,11 @@ exports.save = function (req, res) {
       for (let i = 0; i < crns.length; i++) {
         connection.query('INSERT INTO courses (subject,course_number,crn,schedule_id,semester,year) VALUES (?,?,?,?,?,?);', [subjects[i], courseNumbers[i], crns[i], scheduleId, semester, year], function (err, results) {
           if (err) { throw err; }
+          res.status(200).send('Save Schedule Successful!');
         });
       }
     });
   });
-  res.status(200).send('Save Schedule Successful!');
 };
 
 /**
