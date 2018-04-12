@@ -332,23 +332,13 @@ class GenerateSchedule extends React.Component {
     console.log('saving schedule', schedules[scheduleIdx]);
 
     let sections = schedules[scheduleIdx].sections;
+    console.log(sections);
 
     axios
       .post(POST_SAVE_SCHEDULE, {
         ...semester,
         userId: user.userId,
-        subjects: _.chain(sections)
-          .map(s => s.subjectId)
-          .uniq()
-          .value(),
-        courseNumbers: _.chain(sections)
-          .map(s => s.courseId)
-          .uniq()
-          .value(),
-        crns: _.chain(sections)
-          .map(s => s.sectionId)
-          .uniq()
-          .value(),
+        sections: sections
       })
       .then(res => {
         console.log(res.data);
