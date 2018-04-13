@@ -125,7 +125,6 @@ describe('Home and Login Tests', function () {
 
   it('Login Button on Home Page', function (done) {
     this.timeout(10000);
-    driver.get('http://localhost:3000/');
     goToLoginPage()
       .then(() => driver.getCurrentUrl())
       .then(curUrl => curUrl.should.include('Login'))
@@ -178,6 +177,11 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.equal('Hello, \nadmin!'))
+      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findYesButton(), 2000))
+      .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
   });
@@ -226,13 +230,7 @@ describe('Home and Login Tests', function () {
 
   it('Successful Logout', function (done) {
     this.timeout(20000);
-    goToLoginPage()
-      .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@gmail.com'))
-      .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test'))
-      .then(() => driver.wait(findLoginButton, 2000))
-      .then(button => button.click())
+    driver.get('http://localhost:3000/')
       .then(() => driver.sleep(2000))
       .then(() => driver.wait(findLogoutButton(), 2000))
       .then(button => button.click())
@@ -269,6 +267,11 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.equal('Hello, \nadmin!'))
+      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findYesButton(), 2000))
+      .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
   });
@@ -288,6 +291,11 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.equal('Hello, \nadmin!'))
+      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findYesButton(), 2000))
+      .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
   });
@@ -329,12 +337,6 @@ function findSelectedSemester () {
   });
 }
 
-function findHomeButton () {
-  return driver.findElements(webdriver.By.linkText('HOME')).then(function (result) {
-    return result[0];
-  });
-}
-
 function findGenerateScheduleButton () {
   return driver.findElements(webdriver.By.linkText('Generate Schedule')).then(function (result) {
     return result[0];
@@ -360,9 +362,7 @@ function findSaveButton () {
 }
 
 function selectSemester () {
-  return driver.get('http://localhost:3000/')
-    .then(() => driver.wait(findLoginPageButton, 2000))
-    .then(button => button.click())
+  return goToLoginPage()
     .then(() => driver.wait(findEmailEntry(), 2000))
     .then(input => input.sendKeys('admin@gmail.com'))
     .then(() => driver.wait(findPasswordEntry(), 2000))
@@ -396,32 +396,18 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findSelectedSemester(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.contain('Selected Semester: Fall 2018'))
+      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findYesButton(), 2000))
+      .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
   });
 
   it('Semester Already Selected', function (done) {
     this.timeout(20000);
-    selectSemester()
-      .then(() => driver.wait(findHomeButton(), 2000))
-      .then(button => button.click())
-      .then(() => driver.wait(findGenerateScheduleButton(), 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(2000))
-      .then(() => driver.getCurrentUrl())
-      .then(url => url.should.contain('GenerateSchedule'))
-      .then(() => driver.wait(findSelectedSemester(), 2000))
-      .then(textElem => textElem.getAttribute('innerText'))
-      .then(titleText => titleText.should.contain('Selected Semester: Fall 2018'))
-      .then(() => done())
-      .catch(error => done(error));
-  });
-
-  it('Generate and Save Schedule', function (done) {
-    this.timeout(30000);
-    driver.get('http://localhost:3000/')
-      .then(() => driver.wait(findLoginPageButton, 2000))
-      .then(button => button.click())
+    goToLoginPage()
       .then(() => driver.wait(findEmailEntry(), 2000))
       .then(input => input.sendKeys('admin@gmail.com'))
       .then(() => driver.wait(findPasswordEntry(), 2000))
@@ -432,14 +418,31 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findGenerateScheduleButton(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
-      .then(() => driver.wait(findSemesterDropdown(), 2000))
-      .then(dropdown => dropdown.click())
-      .then(() => driver.wait(findElementByTitle('2018'), 2000))
-      .then(element => element.click())
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.contain('GenerateSchedule'))
+      .then(() => driver.wait(findSelectedSemester(), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(titleText => titleText.should.contain('Selected Semester: Fall 2018'))
+      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findYesButton(), 2000))
+      .then(button => button.click())
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Generate and Save Schedule', function (done) {
+    this.timeout(30000);
+    goToLoginPage()
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(() => driver.wait(findPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test2'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
       .then(() => driver.sleep(2000))
-      .then(() => driver.wait(findElementByTitle('Fall 2018'), 2000))
-      .then(element => element.click())
-      .then(() => driver.wait(findNextButton(), 2000))
+      .then(() => driver.wait(findGenerateScheduleButton(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
       .then(() => driver.wait(findSemesterDropdown(), 2000))
@@ -461,6 +464,12 @@ describe('Schedule Generation Tests', function () {
       .then(className => className.getAttribute('innerText'))
       .then(innerText => innerText.should.equal('AAS100'))
       .then(() => driver.wait(findSaveButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(5000))
+      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findYesButton(), 2000))
       .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
