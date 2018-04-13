@@ -9,21 +9,25 @@ CREATE TABLE testDatabase.users (
 );
 
 CREATE TABLE testDatabase.courses(
-  course_id INT NOT NULL AUTO_INCREMENT,
-  subject VARCHAR(4) NOT NULL,
-  course_number INT NOT NULL,
-  crn INT NOT NULL,
-  schedule_id INT NOT NULL,
+  id INT NOT NULL AUTO_INCREMENT,
+  scheduleId INT NOT NULL,
+  subjectId VARCHAR(4) NOT NULL,
+  courseId VARCHAR(4) NOT NULL,
+  sectionId VARCHAR(6) NOT NULL,
+  type VARCHAR(4) NOT NULL,
+  startTime VARCHAR(10) NOT NULL,
+  endTime VARCHAR(10) NOT NULL,
+  daysOfWeek VARCHAR(7) NOT NULL,
   semester VARCHAR(6) NOT NULL,
   year INT NOT NULL,
-  PRIMARY KEY (course_id)
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE testDatabase.schedules(
-  schedule_id INT NOT NULL AUTO_INCREMENT,
+  scheduleId INT NOT NULL AUTO_INCREMENT,
   semester VARCHAR(8) NOT NULL,
   user_id INT NOT NULL,
-  PRIMARY KEY (schedule_id)
+  PRIMARY KEY (scheduleId)
 );
 
 CREATE TABLE testDatabase.authentication(
