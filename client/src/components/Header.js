@@ -72,8 +72,6 @@ class Header extends Component {
           <Modal
             title="Logout"
             visible={this.state.visible}
-            onOk={this.handleOk}
-            onCancel={this.handleCancel}
           >
             <p>Are you sure?</p>
           </Modal>
