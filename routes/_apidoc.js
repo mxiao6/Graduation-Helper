@@ -74,3 +74,18 @@
 *     "error": "Could not generate schedules"
 *   }
 */
+
+/**
+ *@api{post}/saveschedule save the user schedule to the database
+ *@apiName saveschedule
+ *@apiGroup Schedule
+ *@apiVersion 0.1.0
+ *
+ *@apiParam {int} userId user ID that the schedule is to be associated with
+ *@apiParam {String} semester The specific semester
+ *@apiParam {String} year The school year
+ *@apiParam {String[]} crns List of the course CRN values from schedule
+ *@apiParam {String[]} subjects List of the course subject codes from schedule
+ *@apiParam {String[]} courseNumbers List of the course numbers from schedule
+ *
+ */

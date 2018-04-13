@@ -4,7 +4,7 @@ password: Cs428grh!
 DB SCHEMA:
 * = PRIMARY_KEY
 
-TABLES: 
+TABLES:
 
 users:
 user_id* (INT)
@@ -13,16 +13,20 @@ email (VARCHAR(32))
 password (VARCHAR(32))
 
 schedules:
-schedule_id* (INT)
+scheduleId* (INT)
 semester (VARCHAR(16))
 user_id (UNSIGNED INT)
 
 courses:
-course_id* (INT)
-subject (VARCHAR(4))
-course_number (INT)
-crn (INT)
-schedule_id (INT)
+id* (INT)
+scheduleId (INT)
+subjectId (VARCHAR(4))
+courseId (VARCHAR(4))
+sectionId (VARCHAR(6))
+type (VARCHAR(4))
+startTime (VARCHAR(10))
+endTime (VARCHAR(10))
+daysOfWeek (VARCHAR(7))
 semester (VARCHAR(6))
 year (YEAR(4))
 
