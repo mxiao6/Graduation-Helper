@@ -27,6 +27,10 @@ function getElements (query, myCallback) {
 
 // Given course i.e. "CS428" gets the list of sections
 function getListOfsectionsFromCourseNum (context, course, doneCallBack) {
+  if (context == null || course == null) {
+    return doneCallBack('Missing parameters', {});
+  }
+
   let params = course.split(/(\d+)/);
   let url = context.partialURL + params[0] + '/' + params[1];
   getElements(url, function (error, result) {

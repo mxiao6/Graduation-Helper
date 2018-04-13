@@ -1,128 +1,221 @@
 // functions related to schedule objects
+const async = require('async');
 var userLogin = require('./userlogin');
 var pool = userLogin.pool;
 
 /**
- *@api{post}/saveschedule save the user schedule to the database
- *@apiName saveschedule
- *@apiGroup Schedule
- *@apiVersion 0.2.0
- *
- *@apiParam {int} userId user ID that the schedule is to be associated with
- *@apiParam {String} semester The specific semester
- *@apiParam {String} year The school year
- *@apiParam {String[]} crns List of the course CRN values from schedule
- *@apiParam {String[]} subjects List of the course subject codes from schedule
- *@apiParam {String[]} courseNumbers List of the course numbers from schedule
- *
- */
+*@api{post}/saveschedule Save user schedule
+*@apiName saveschedule
+*@apiGroup Schedule
+*@apiVersion 0.2.0
+*
+*@apiParam {int} userId user ID that the schedule is to be associated with
+*@apiParam {String} semester The specific semester
+*@apiParam {String} year The school year
+*@apiParam {Object[]} sections List of class sections to save
+*
+*@apiParamExample {json} Request-Example:
+*   {
+*     "year": "2017",
+*     "semester": "Spring",
+*     "sections": [
+*       {
+*         "subjectId": "CS",
+*         "courseId": "425",
+*         "sectionId": "31384",
+*         "type": "LCD",
+*         "startTime": "09:30 AM",
+*         "endTime": "10:45 AM",
+*         "daysOfWeek": "TR",
+*         "semester": "Spring",
+*         "year": 2018
+*       },
+*       {
+*         "subjectId": "CS",
+*         "courseId": "429",
+*         "sectionId": "41483",
+*         "type": "LCD",
+*         "startTime": "02:00 PM",
+*         "endTime": "03:15 PM",
+*         "daysOfWeek": "TR",
+*         "semester": "Spring",
+*         "year": 2018
+*       }
+*     ]
+*   }
+*
+*@apiErrorExample Error-Response:
+* HTTP/1.1 400 Bad Request
+* {
+*    "error": "Incorrect parameters"
+* }
+*
+*/
 exports.save = function (req, res) {
   let userId = req.body.userId;
   let semester = req.body.semester;
   let year = req.body.year;
-  let crns = req.body.crns;
-  let subjects = req.body.subjects;
-  let courseNumbers = req.body.courseNumbers;
-  if (userId == null || semester == null || year == null || crns == null || subjects == null || courseNumbers == null) {
-    res.status(400).send('ERROR : missing parameters');
-  } else {
-    pool.getConnection(function (err, connection) {
-      if (err) {
-        res.status(400).send('Get pool connection error');
-      }
-      connection.query('INSERT INTO schedules (semester,user_id) VALUES (?,?);', [semester + '' + year, userId], function (err, results) {
-        if (err) { throw err; }
-      });
-      connection.query('SELECT schedule_id FROM schedules WHERE user_id = ? AND semester = ?;', [userId, semester + '' + year], function (err, results) {
-        if (err) { throw err; }
-        let scheduleId = results[0].schedule_id;
+  let sections = req.body.sections;
+  console.log(req.body);
 
-        if (crns.length !== subjects.length || crns.length !== courseNumbers.length || subjects.length !== courseNumbers.length) {
-          res.status(400).send('input error : Course count is not uniform across inputs');
-        } else {
-          // start adding the courses
-          for (let i = 0; i < crns.length; i++) {
-            connection.query('INSERT INTO courses (subject,course_number,crn,schedule_id,semester,year) VALUES (?,?,?,?,?,?);', [subjects[i], courseNumbers[i], crns[i], scheduleId, semester, year], function (err, results) {
-              if (err) { throw err; }
+  if (userId == null || semester == null || year == null || sections == null) {
+    return res.status(400).json({error: 'Incorrect parameters'});
+  }
+
+  for (let i = 0; i < sections.length; i++) {
+    if (sections[i].subjectId == null || sections[i].courseId == null || sections[i].sectionId == null) {
+      return res.status(400).json({error: 'Incorrect parameters'});
+    }
+  }
+
+  pool.getConnection(function (err, connection) {
+    if (err) {
+      return res.status(500).json({error: 'Connection Error'});
+    }
+
+    connection.beginTransaction(function (err) {
+      if (err) {
+        throw err;
+      }
+      connection.query('INSERT INTO schedules (semester,user_id) VALUES (?,?);', [
+        semester + '' + year,
+        userId
+      ], function (err, results) {
+        console.log(err);
+        let scheduleId = results.insertId;
+
+        async.each(sections, function (section, callback) {
+          connection.query('INSERT INTO courses (scheduleId, subjectId,courseId,sectionId,type, startTime, endTime, daysOfWeek,semester,year) VALUES (?,?,?,?,?,?,?,?,?,?);', [
+            scheduleId,
+            section.subjectId,
+            section.courseId,
+            section.sectionId,
+            section.type,
+            section.startTime,
+            section.endTime,
+            section.daysOfWeek,
+            semester,
+            year
+          ], function (err, results) {
+            if (err) {
+              callback(err);
+            } else {
+              callback(null);
+            }
+          });
+        }, function (err) {
+          if (err) {
+            return connection.rollback(function () {
+              return res.status(500).json({error: 'Could not save schedules'});
+            });
+          } else {
+            connection.commit(function (err) {
+              if (err) {
+                return connection.rollback(function () {
+                  return res.status(500).json({error: 'Save commit Error'});
+                });
+              } else {
+                connection.release();
+                return res.status(200).send('Save successfully');
+              }
             });
           }
-          res.status(200).send('Save Schedule Successful!');
-        }
+        });
       });
     });
-  }
+  });
 };
 
 /**
- *@api{get}/getschedule get a user schedule from the database
- *@apiName getschedule
- *@apiGroup Schedule
- *@apiVersion 0.1.0
- *
- *@apiParam {int} userId user ID that the schedule is associated with
- *@apiParam {String} semester The specific semester
- *@apiParam {String} year The school year
- *
- *@apiSuccessExample {json} Success-Response
- * HTTP/1.1 200 OK
- * {
- *   "term": "FALL2018",
- *   "courses": [
- *       {
- *           "subject": "CS",
- *           "courseNumber": 125,
- *           "crn": 123456
- *       },
- *       {
- *           "subject": "ARCH",
- *           "courseNumber": 101,
- *           "crn": 789123
- *       }
- *   ]
- * }
- *@apiErrorExample Error-Response:
- * HTTP/1.1 400 Bad Request
- * {
- *    "ERROR : missing parameters"
- * }
- *@apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *    "ERROR : no schedule exists for the user and semester combination"
- * }
- **/
+*@api{get}/getschedule Get saved user schedules
+*@apiName getschedule
+*@apiGroup Schedule
+*@apiVersion 0.1.0
+*
+*@apiParam {int} userId user ID that the schedule is associated with
+*@apiParam {String} [semester] The specific semester
+*@apiParam {String} [year] The specific school year
+*
+*@apiParamExample {json} Request-Example:
+*   {
+*     "userId": 9,
+*     "year": "2018",
+*     "semester": "Spring",
+*   }
+*
+*@apiSuccessExample {json} Success-Response
+* HTTP/1.1 200 OK
+*  [
+*    [
+*      {
+*          "subjectId": "CS",
+*          "courseId": "425",
+*          "sectionId": "31384",
+*          "type": "LCD",
+*          "startTime": "09:30 AM",
+*          "endTime": "10:45 AM",
+*          "daysOfWeek": "TR",
+*          "semester": "Spring",
+*          "year": 2018
+*      },
+*      {
+*          "subjectId": "CS",
+*          "courseId": "429",
+*          "sectionId": "41483",
+*          "type": "LCD",
+*          "startTime": "02:00 PM",
+*          "endTime": "03:15 PM",
+*          "daysOfWeek": "TR",
+*          "semester": "Spring",
+*          "year": 2018
+*      }
+*    ]
+* ]
+*
+*@apiErrorExample Error-Response:
+* HTTP/1.1 400 Bad Request
+* {
+*    "error": "Incorrect parameters"
+* }
+*
+*/
 exports.get = function (req, res) {
   let userId = req.query.userId;
   let semester = req.query.semester;
   let year = req.query.year;
-  let schedule = null;
-  if (userId == null || semester == null || year == null) {
-    res.status(400).send('ERROR : missing parameters');
+  if (userId == null) {
+    return res.status(400).json({error: 'Incorrect parameters'});
   }
+
   pool.getConnection(function (err, connection) {
     if (err) {
-      res.status(400).send('Get pool connection error');
+      return res.status(500).json({error: 'Connection Error'});
     }
-    connection.query('SELECT schedule_id FROM schedules WHERE user_id = ? AND semester = ?;', [userId, semester + '' + year], function (err, qres) {
-      if (err) { throw err; }
-      if (qres.length === 0) {
-        res.status(500).send('ERROR : no schedule exists for the user and semester combination');
-      }
-      let scheduleId = qres[0].schedule_id;
-      connection.query('SELECT * FROM courses WHERE schedule_id = ?;', [scheduleId], function (err, qres) {
-        if (err) { throw err; }
-        schedule = {};
-        schedule.term = semester + '' + year;
-        schedule.courses = [];
-        for (let i = 0; i < qres.length; i++) {
-          let c = {};
-          c.subject = qres[i].subject;
-          c.courseNumber = qres[i].course_number;
-          c.crn = qres[i].crn;
-          schedule.courses.push(c);
+
+    connection.query('SELECT courses.* FROM courses, schedules WHERE schedules.user_id = ? AND schedules.scheduleId = courses.scheduleId AND (? is null OR ? = courses.year) AND (? is null OR ? = courses.semester)', [
+      userId,
+      year,
+      year,
+      semester,
+      semester
+    ], function (err, results, fields) {
+      connection.release();
+      if (err) {
+        return res.status(500).send({error: 'Could not get saved schedules'});
+      } else {
+        let schedules = {};
+        for (let i = 0; i < results.length; i++) {
+          let {id, scheduleId, ...section} = results[i];
+          if (schedules.hasOwnProperty(scheduleId)) {
+            schedules[scheduleId].push(section);
+          } else {
+            schedules[scheduleId] = [section];
+          }
         }
-        res.status(200).send(schedule);
-      });
+
+        schedules = Object.values(schedules);
+        return res.status(200).json(schedules);
+      }
     });
   });
 };

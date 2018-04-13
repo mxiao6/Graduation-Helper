@@ -590,7 +590,7 @@
   {
     "type": "get",
     "url": "/getschedule",
-    "title": "get a user schedule from the database",
+    "title": "Get saved user schedules",
     "name": "getschedule",
     "group": "Schedule",
     "version": "0.1.0",
@@ -607,6 +607,68 @@
           {
             "group": "Parameter",
             "type": "String",
+            "optional": true,
+            "field": "semester",
+            "description": "<p>The specific semester</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "year",
+            "description": "<p>The specific school year</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"userId\": 9,\n  \"year\": \"2018\",\n  \"semester\": \"Spring\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n [\n   [\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"425\",\n         \"sectionId\": \"31384\",\n         \"type\": \"LCD\",\n         \"startTime\": \"09:30 AM\",\n         \"endTime\": \"10:45 AM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     },\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"429\",\n         \"sectionId\": \"41483\",\n         \"type\": \"LCD\",\n         \"startTime\": \"02:00 PM\",\n         \"endTime\": \"03:15 PM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     }\n   ]\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n   \"error\": \"Incorrect parameters\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/schedule.js",
+    "groupTitle": "Schedule"
+  },
+  {
+    "type": "post",
+    "url": "/saveschedule",
+    "title": "Save user schedule",
+    "name": "saveschedule",
+    "group": "Schedule",
+    "version": "0.2.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>user ID that the schedule is to be associated with</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
             "optional": false,
             "field": "semester",
             "description": "<p>The specific semester</p>"
@@ -617,15 +679,20 @@
             "optional": false,
             "field": "year",
             "description": "<p>The school year</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": false,
+            "field": "sections",
+            "description": "<p>List of class sections to save</p>"
           }
         ]
-      }
-    },
-    "success": {
+      },
       "examples": [
         {
-          "title": "Success-Response",
-          "content": "HTTP/1.1 200 OK\n{\n  \"term\": \"FALL2018\",\n  \"courses\": [\n      {\n          \"subject\": \"CS\",\n          \"courseNumber\": 125,\n          \"crn\": 123456\n      },\n      {\n          \"subject\": \"ARCH\",\n          \"courseNumber\": 101,\n          \"crn\": 789123\n      }\n  ]\n}",
+          "title": "Request-Example:",
+          "content": "{\n  \"year\": \"2017\",\n  \"semester\": \"Spring\",\n  \"sections\": [\n    {\n      \"subjectId\": \"CS\",\n      \"courseId\": \"425\",\n      \"sectionId\": \"31384\",\n      \"type\": \"LCD\",\n      \"startTime\": \"09:30 AM\",\n      \"endTime\": \"10:45 AM\",\n      \"daysOfWeek\": \"TR\",\n      \"semester\": \"Spring\",\n      \"year\": 2018\n    },\n    {\n      \"subjectId\": \"CS\",\n      \"courseId\": \"429\",\n      \"sectionId\": \"41483\",\n      \"type\": \"LCD\",\n      \"startTime\": \"02:00 PM\",\n      \"endTime\": \"03:15 PM\",\n      \"daysOfWeek\": \"TR\",\n      \"semester\": \"Spring\",\n      \"year\": 2018\n    }\n  ]\n}",
           "type": "json"
         }
       ]
@@ -634,12 +701,7 @@
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n   \"ERROR : missing parameters\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n   \"ERROR : no schedule exists for the user and semester combination\"\n}",
+          "content": "HTTP/1.1 400 Bad Request\n{\n   \"error\": \"Incorrect parameters\"\n}",
           "type": "json"
         }
       ]
@@ -653,7 +715,7 @@
     "title": "save the user schedule to the database",
     "name": "saveschedule",
     "group": "Schedule",
-    "version": "0.2.0",
+    "version": "0.1.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -702,7 +764,7 @@
         ]
       }
     },
-    "filename": "routes/schedule.js",
+    "filename": "routes/_apidoc.js",
     "groupTitle": "Schedule"
   },
   {
