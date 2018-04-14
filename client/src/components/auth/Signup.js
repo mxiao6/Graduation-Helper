@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import WindowSizeListener from "react-window-size-listener";
-import "styles/Login.css";
+import React, { Component } from 'react';
+import WindowSizeListener from 'react-window-size-listener';
+import 'styles/Login.css';
 
-import { Card } from "antd";
+import { Card } from 'antd';
 
-import LoginForm from "components/LoginForm";
+import SignupForm from './SignupForm';
 
-class Login extends Component {
+class Signup extends Component {
   constructor(props) {
     super(props);
 
@@ -24,8 +24,8 @@ class Login extends Component {
           <div
             className="formContainer" /*style={{ marginTop: this.state.height/10 }}*/
           >
-            <Card title="Login" bordered={true} className="cardStyle">
-              <LoginForm history={this.props.history} />
+            <Card title="Sign Up" bordered={true} className="cardStyle">
+              <SignupForm history={this.props.history} />
             </Card>
           </div>
         </div>
@@ -34,4 +34,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default Signup;

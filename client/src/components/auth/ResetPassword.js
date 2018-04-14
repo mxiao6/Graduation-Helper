@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import WindowSizeListener from "react-window-size-listener";
-import "styles/Login.css";
+import React, { Component } from 'react';
+import WindowSizeListener from 'react-window-size-listener';
+import 'styles/Login.css';
 
-import { Card } from "antd";
+import { Card } from 'antd';
 
-import ResetPWForm from "components/ResetPWForm";
+import ResetPWForm from './ResetPWForm';
 
 class ResetPassword extends Component {
   constructor(props) {
