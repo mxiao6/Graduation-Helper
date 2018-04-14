@@ -3,14 +3,16 @@ import { HashRouter as Router, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import configureStore from 'redux/configureStore';
 import { PersistGate } from 'redux-persist/integration/react';
-import Header from 'components/Header';
-import Home from 'components/Home';
-import Login from 'components/Login';
-import Signup from 'components/Signup';
-import ResetPassword from 'components/ResetPassword';
-import SemesterSelection from 'components/SemesterSelection';
-import ClassSelection from 'components/ClassSelection';
-import GenerateSchedule from 'components/GenerateSchedule';
+
+import Header from 'components/home/Header';
+import Home from 'components/home/Home';
+import Login from 'components/auth/Login';
+import Signup from 'components/auth/Signup';
+import ResetPassword from 'components/auth/ResetPassword';
+import SemesterSelection from 'components/schedules/SemesterSelection';
+import ClassSelection from 'components/schedules/ClassSelection';
+import GenerateSchedule from 'components/schedules/GenerateSchedule';
+
 import 'styles/App.css';
 
 const { store, persistor } = configureStore();
