@@ -2,6 +2,8 @@ var mysql = require('mysql');
 var nodemailer = require('nodemailer');
 var randomstring = require('randomstring');
 var moment = require('moment');
+var passport = require(passport);
+var localstrategy = require('passport-local').Strategy;
 var pool;
 
 if (process.argv.length > 2 && process.argv[2] === 'test') {
