@@ -97,7 +97,6 @@ router.post('/generate', function (req, res) {
   if (!hasProperties(req)) {
     return res.status(422).json({error: 'Incorrect Parameters'});
   }
-  // let url = 'schedule/' + req.body.year + '/' + req.body.semester + '/';
   let year = req.body.year;
   let semester = req.body.semester;
   let selectedClasses = req.body.courses;
@@ -121,8 +120,7 @@ router.post('/generate', function (req, res) {
     // }
     return res.status(200).json(generatedSchedules);
   }).catch(function (err) {
-    console.log(err);
-    return res.status(500).json({error: 'Could not generate schedules'});
+    return res.status(500).json({error: err});
   });
 });
 
