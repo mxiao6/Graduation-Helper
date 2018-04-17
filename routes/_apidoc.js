@@ -89,3 +89,41 @@
  *@apiParam {String[]} courseNumbers List of the course numbers from schedule
  *
  */
+
+/**
+*@api{get}/sectionDetails Get section details
+*@apiName GetSectionDetails
+*@apiGroup Class
+*@apiVersion 0.1.0
+*
+*@apiParam {String} year The school year
+*@apiParam {String} semester The specific semester
+*@apiParam {String} course The course abbreviation
+*@apiParam {String} courseId The specific course ID
+*@apiParam {String} sectionId The specific section ID
+*
+*@apiSuccess {String} sectionId         The section ID
+*@apiSuccess {String} sectionNumber     The section number
+*@apiSuccess {String} enrollmentStatus  Enrollment Status
+*@apiSuccess {String} type              Section Type
+*@apiSuccess {String} startTime         Section Start Time
+*@apiSuccess {String} endTime           Section End Time
+*@apiSuccess {String} daysOfWeek        The days the classes occur
+*@apiSuccessExample {Object[]} Success-Response:
+*   HTTP/1.1 200 OK
+*   {
+*     "sectionId": "30107",
+*     "sectionNumber": "AD1",
+*     "enrollmentStatus": "Open",
+*     "type": "DIS",
+*     "startTime": "09:00 AM",
+*     "endTime": "09:50 AM",
+*     "daysOfWeek": "F      "
+*   }
+*
+*@apiErrorExample Error-Response:
+*   HTTP/1.1 500 Internal Server Error
+*   {
+*     "error": "Could not make request to the course website"
+*   }
+*/

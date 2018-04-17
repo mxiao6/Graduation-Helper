@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const getElements = require('./utilities.js').getElements;
 const parseSectionDetails = require('./utilities.js').parseSectionDetails;
+const getParsedRequest = require('./utilities.js').getParsedRequest;
 
 // TODO: write api call to retrieve section details from crn
 // moment js for time parsing
@@ -23,15 +23,14 @@ const parseSectionDetails = require('./utilities.js').parseSectionDetails;
 *   ]
 *
 *@apiErrorExample Error-Response:
-*   HTTP/1.1 500 Internal Server Error
+*   HTTP/1.1 404 Internal Server Error
 *   {
-*     "error": "Could not make request to the course website"
+*     "error": "Could not get years"
 *   }
 */
 router.get('/years', function (req, res) {
-  getElements('schedule', function (errorStatus, result) {
-    if (errorStatus) { return res.status(errorStatus).json(result); }
-
+  let url = 'https://courses.illinois.edu/cisapp/explorer/schedule.xml';
+  getParsedRequest(url).then(function (result) {
     let calendarYears = result['ns2:schedule']['calendarYears'][0]['calendarYear'];
     if (calendarYears == null) {
       res.status(404).json({'error': 'Could not get years'});
@@ -42,6 +41,8 @@ router.get('/years', function (req, res) {
       }
       res.status(200).json(years);
     }
+  }).catch(function (err) {
+    return res.status(500).json({'error': err});
   });
 });
 
@@ -63,19 +64,19 @@ router.get('/years', function (req, res) {
 *   ]
 *
 *@apiErrorExample Error-Response:
-*   HTTP/1.1 500 Internal Server Error
+*   HTTP/1.1 404 Internal Server Error
 *   {
-*     "error": "Could not make request to the course website"
+*     "error": "No semesters found for year"
 *   }
 */
 router.get('/semester', function (req, res) {
   let year = req.query.year;
-  getElements('schedule/' + year, function (errorStatus, result) {
-    if (errorStatus) { return res.status(errorStatus).json(result); }
+  let url = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '.xml';
 
+  getParsedRequest(url).then(function (result) {
     let calendarSemester = result['ns2:calendarYear']['terms'][0]['term'];
     if (calendarSemester == null) {
-      res.status(404).json({'error': 'No Semesters Found for year'});
+      res.status(404).json({'error': 'No semesters found for year'});
     } else {
       let semester = [];
       for (let i = 0; i < calendarSemester.length; i++) {
@@ -83,6 +84,8 @@ router.get('/semester', function (req, res) {
       }
       res.status(200).json(semester);
     }
+  }).catch(function (err) {
+    return res.status(500).json({'error': err});
   });
 });
 
@@ -115,20 +118,19 @@ router.get('/semester', function (req, res) {
 *   ]
 *
 *@apiErrorExample Error-Response:
-*   HTTP/1.1 500 Internal Server Error
+*   HTTP/1.1 404 Internal Server Error
 *   {
-*     "error": "Could not make request to the course website"
+*     "error": "No subjects found"
 *   }
 */
 router.get('/subject', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
-  getElements('schedule/' + year + '/' + semester, function (errorStatus, result) {
-    if (errorStatus) { return res.status(errorStatus).json(result); }
-
+  let url = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '.xml';
+  getParsedRequest(url).then(function (result) {
     let major = result['ns2:term']['subjects'][0]['subject'];
     if (major == null) {
-      res.status(404).json({'error': 'No majors found'});
+      res.status(404).json({'error': 'No subjects found'});
     } else {
       let majorList = [];
       for (let i = 0; i < major.length; i++) {
@@ -138,6 +140,8 @@ router.get('/subject', function (req, res) {
       }
       res.status(200).json(majorList);
     }
+  }).catch(function (err) {
+    return res.status(500).json({'error': err});
   });
 });
 
@@ -171,18 +175,17 @@ router.get('/subject', function (req, res) {
 *   ]
 *
 *@apiErrorExample Error-Response:
-*   HTTP/1.1 500 Internal Server Error
+*   HTTP/1.1 404 Internal Server Error
 *   {
-*     "error": "Could not make request to the course website"
+*     "error": "No courses found"
 *   }
 */
 router.get('/course', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
   let course = req.query.course;
-  getElements('schedule/' + year + '/' + semester + '/' + course, function (errorStatus, result) {
-    if (errorStatus) { return res.status(errorStatus).json(result); }
-
+  let url = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '.xml';
+  getParsedRequest(url).then(function (result) {
     let courses = result['ns2:subject']['courses'][0]['course'];
     if (courses == null) {
       res.status(404).json({'error': 'No courses found'});
@@ -191,10 +194,17 @@ router.get('/course', function (req, res) {
       for (let i = 0; i < courses.length; i++) {
         let course = courses[i]['_'];
         let id = courses[i]['$']['id'];
+
+        if (id === '498') {
+          console.log('498', courses[i]['$'].href);
+        }
+
         courseList.push({course: course, id: id});
       }
       res.status(200).json(courseList);
     }
+  }).catch(function (err) {
+    return res.status(500).json({'error': err});
   });
 });
 
@@ -233,9 +243,9 @@ router.get('/course', function (req, res) {
 *   ]
 *
 *@apiErrorExample Error-Response:
-*   HTTP/1.1 500 Internal Server Error
+*   HTTP/1.1 404 Internal Server Error
 *   {
-*     "error": "Could not make request to the course website"
+*     "error": "No sections found"
 *   }
 */
 router.get('/section', function (req, res) {
@@ -243,9 +253,8 @@ router.get('/section', function (req, res) {
   let semester = req.query.semester;
   let course = req.query.course;
   let courseId = req.query.courseId;
-  getElements('schedule/' + year + '/' + semester + '/' + course + '/' + courseId, function (errorStatus, result) {
-    if (errorStatus) { return res.status(errorStatus).json(result); }
-
+  let url = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '.xml';
+  getParsedRequest(url).then(function (result) {
     let section = result['ns2:course']['sections'][0]['section'];
     if (section == null) {
       res.status(404).json({'error': 'No sections found'});
@@ -258,6 +267,8 @@ router.get('/section', function (req, res) {
       }
       res.status(200).json(sectionList);
     }
+  }).catch(function (err) {
+    return res.status(500).json({'error': err});
   });
 });
 
@@ -284,6 +295,8 @@ router.get('/section', function (req, res) {
 *   HTTP/1.1 200 OK
 *   {
 *     "sectionId": "30107",
+*     "subjectId": "AAS",
+*     "courseId": "100",
 *     "sectionNumber": "AD1",
 *     "enrollmentStatus": "Open",
 *     "type": "DIS",
@@ -304,23 +317,13 @@ router.get('/sectionDetails', function (req, res) {
   let course = req.query.course;
   let courseId = req.query.courseId;
   let sectionId = req.query.sectionId;
-  let url = 'schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '/' + sectionId;
-  getElements(url, function (errorStatus, result) {
-    if (errorStatus) { return res.status(errorStatus).json(result); }
+  let url = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '/' + sectionId + '.xml';
 
+  getParsedRequest(url).then(function (result) {
     let sectionDetails = parseSectionDetails(result);
-    sectionDetails.sectionId = sectionId;
-
-    // let sectionDetails = {
-    //   sectionId: sectionId,
-    //   sectionNumber: sectionNumber,
-    //   enrollmentStatus: enrollmentStatus,
-    //   type: type,
-    //   startTime: startTime,
-    //   endTime: endTime,
-    //   daysOfWeek: daysOfWeek
-    // };
     res.status(200).json(sectionDetails);
+  }).catch(function (err) {
+    return res.status(500).json({'error': err});
   });
 });
 
