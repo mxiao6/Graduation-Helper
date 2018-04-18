@@ -224,34 +224,15 @@ exports.edit = function (req,res) {
   let scheduleId = req.query.scheduleId;
   let sections = req.body.sections;
 
-  //TODO: perform null checks on scheduleId
-    //TODO: perform null checks on sections
-
-  /*let sections = [
-        {
-            subjectId: "MATH",
-            courseId: "415",
-            sectionId: "11111",
-            type: "LEC",
-            startTime: "12:00 PM",
-            endTime: "01:00 PM",
-            daysOfWeek: "MWF",
-            semester: "Spring",
-            year: 2017
-        },
-        {
-            subjectId: "PHYS",
-            courseId: "211",
-            sectionId: "33333",
-            type: "LEC",
-            startTime: "03:00 PM",
-            endTime: "04:00 PM",
-            daysOfWeek: "MWF",
-            semester: "Spring",
-            year: 2017
-          }
-      ];*/
-
+  if(scheduleId === null || sections === null) {
+    return res.status(400).json({error: 'Incorrect parameters'});
+  }
+  for (let i = 0; i < sections.length; i++) {
+    if (sections[i].subjectId == null || sections[i].courseId == null || sections[i].sectionId == null) {
+      return res.status(400).json({error: 'Incorrect parameters'});
+      }
+  }
+  
   pool.getConnection(function (err,connection) {
       if (err) {
           return res.status(500).json({error: 'Connection Error'});
