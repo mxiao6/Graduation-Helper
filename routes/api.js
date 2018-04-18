@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const Promise = require('bluebird');
 const parseSectionDetails = require('./utilities.js').parseSectionDetails;
 const getParsedRequest = require('./utilities.js').getParsedRequest;
-
-// TODO: write api call to retrieve section details from crn
-// moment js for time parsing
 
 /**
 *@api{get}/years Get all years
@@ -185,28 +183,67 @@ router.get('/course', function (req, res) {
   let semester = req.query.semester;
   let course = req.query.course;
   let url = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '.xml';
-  getParsedRequest(url).then(function (result) {
+  getParsedRequest(url).then(async function (result) {
     let courses = result['ns2:subject']['courses'][0]['course'];
     if (courses == null) {
       res.status(404).json({'error': 'No courses found'});
     } else {
       let courseList = [];
       for (let i = 0; i < courses.length; i++) {
-        let course = courses[i]['_'];
+        let courseName = courses[i]['_'];
         let id = courses[i]['$']['id'];
 
-        if (id === '498') {
-          console.log('498', courses[i]['$'].href);
+        // Check if the courses are special topics and split them up
+        if (courseName === 'Special Topics') {
+          let specialTopicsUrl = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '/' + id + '.xml';
+          let topics = await getSpecialTopics(specialTopicsUrl);
+          if(topics && topics.size != 0){
+            topics.forEach(function(topic){
+              courseList.push({course: topic, id: id});
+            });
+            continue;
+          }
         }
 
-        courseList.push({course: course, id: id});
+        courseList.push({course: courseName, id: id});
       }
-      res.status(200).json(courseList);
+      return res.status(200).json(courseList);
     }
   }).catch(function (err) {
-    return res.status(500).json({'error': err});
+    return res.status(500).json({'error': err.message});
   });
 });
+
+function getSpecialTopics(specialTopicsUrl){
+  return getParsedRequest(specialTopicsUrl).then(function(result){
+    let section = result['ns2:course']['sections'][0]['section'];
+    if (section == null) {
+      return [];
+    } else {
+      let sectionListUrls = [];
+      for (let i = 0; i < section.length; i++) {
+        let sectionUrl = section[i]['$'].href;
+        sectionListUrls.push(sectionUrl);
+      }
+      return sectionListUrls;
+    }
+  }).then(function(urls){
+    return Promise.map(urls, url => getParsedRequest(url), {concurrency: 3}).then(function(result){
+      let topicsSet = new Set([]);
+      for (let i = 0; i < result.length; i++){
+        let sectionTitle = result[i]['ns2:section']['sectionTitle'];
+        if (sectionTitle == null){
+          return topicsSet;
+        }
+        // console.log(sectionTitle[0]);
+        topicsSet.add(sectionTitle[0]);
+      }
+      return topicsSet;
+    }).catch(function(err){
+      throw err;
+    });
+  });
+}
 
 /**
 *@api{get}/section Get sections in a specific course
