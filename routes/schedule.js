@@ -220,6 +220,7 @@ exports.get = function (req, res) {
   });
 };
 
+//TODO: generate docs
 exports.edit = function (req, res) {
   let scheduleId = req.query.scheduleId;
   let sections = req.body.sections;
@@ -291,5 +292,48 @@ exports.edit = function (req, res) {
         });
       });
     });
+  });
+};
+
+//TODO: generate docs
+exports.delete = function(req, res) {
+  let scheduleId = req.query.scheduleId;
+
+  pool.getConnection(function(err,connection) {
+      if (err) {
+          return res.status(500).json({error: 'Connection Error'});
+      }
+      connection.beginTransaction(function(err) {
+          if (err) {
+              throw err;
+          }
+          //delete the courses
+          connection.query('DELETE FROM courses WHERE scheduleId = ?', [scheduleId], function (err, results, fields) {
+            if (err) {
+              return connection.rollback(function () {
+                return res.status(500).json({error: 'Could not delete courses'});
+                });
+            }
+              //delete the schedule
+              connection.query('DELETE FROM schedules WHERE scheduleId = ?', [scheduleId], function (err, results, fields) {
+                  if (err) {
+                      return connection.rollback(function() {
+                          return res.status(500).json({error: 'Could not delete schedule'});
+                      });
+                  }
+                  connection.commit(function(err) {
+                    if(err) {
+                      return connection.rollback(function() {
+                        return res.status(500).json({error: 'Delete commit error'});
+                      });
+                    }
+                    else {
+                        connection.release();
+                        return res.status(200).send('Delete Successful');
+                    }
+                  });
+              });
+          });
+      });
   });
 };
