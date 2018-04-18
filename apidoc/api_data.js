@@ -593,6 +593,68 @@ define({ "api": [
     "title": "Get saved user schedules",
     "name": "getschedule",
     "group": "Schedule",
+    "version": "0.2.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>user ID that the schedule is associated with</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "semester",
+            "description": "<p>The specific semester</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "year",
+            "description": "<p>The specific school year</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"userId\": 9,\n  \"year\": \"2018\",\n  \"semester\": \"Spring\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n {\n   \"6\": [\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"425\",\n         \"sectionId\": \"31384\",\n         \"type\": \"LCD\",\n         \"startTime\": \"09:30 AM\",\n         \"endTime\": \"10:45 AM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     },\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"429\",\n         \"sectionId\": \"41483\",\n         \"type\": \"LCD\",\n         \"startTime\": \"02:00 PM\",\n         \"endTime\": \"03:15 PM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     }\n   ],\n   \"14\": [\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"425\",\n         \"sectionId\": \"31384\",\n         \"type\": \"LCD\",\n         \"startTime\": \"09:30 AM\",\n         \"endTime\": \"10:45 AM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     }\n   ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n   \"error\": \"Incorrect parameters\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/schedule.js",
+    "groupTitle": "Schedule"
+  },
+  {
+    "type": "get",
+    "url": "/getschedule",
+    "title": "Get saved user schedules",
+    "name": "getschedule",
+    "group": "Schedule",
     "version": "0.1.0",
     "parameter": {
       "fields": {
@@ -632,7 +694,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response",
-          "content": "HTTP/1.1 200 OK\n {\n   \"6\": [\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"425\",\n         \"sectionId\": \"31384\",\n         \"type\": \"LCD\",\n         \"startTime\": \"09:30 AM\",\n         \"endTime\": \"10:45 AM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     },\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"429\",\n         \"sectionId\": \"41483\",\n         \"type\": \"LCD\",\n         \"startTime\": \"02:00 PM\",\n         \"endTime\": \"03:15 PM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     }\n   ]\n}",
+          "content": "HTTP/1.1 200 OK\n [\n   [\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"425\",\n         \"sectionId\": \"31384\",\n         \"type\": \"LCD\",\n         \"startTime\": \"09:30 AM\",\n         \"endTime\": \"10:45 AM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     },\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"429\",\n         \"sectionId\": \"41483\",\n         \"type\": \"LCD\",\n         \"startTime\": \"02:00 PM\",\n         \"endTime\": \"03:15 PM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     }\n   ]\n]",
           "type": "json"
         }
       ]
@@ -646,7 +708,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "routes/schedule.js",
+    "filename": "routes/_apidoc.js",
     "groupTitle": "Schedule"
   },
   {

@@ -127,7 +127,7 @@ exports.save = function (req, res) {
 };
 
 /**
-*@api{get}/getschedule Get saved schedules
+*@api{get}/getschedule Get saved user schedules
 *@apiName getschedule
 *@apiGroup Schedule
 *@apiVersion 0.2.0
