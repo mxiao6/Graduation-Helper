@@ -127,10 +127,10 @@ exports.save = function (req, res) {
 };
 
 /**
-*@api{get}/getschedule Get saved user schedules
+*@api{get}/getschedule Get saved schedules
 *@apiName getschedule
 *@apiGroup Schedule
-*@apiVersion 0.1.0
+*@apiVersion 0.2.0
 *
 *@apiParam {int} userId user ID that the schedule is associated with
 *@apiParam {String} [semester] The specific semester
@@ -145,8 +145,8 @@ exports.save = function (req, res) {
 *
 *@apiSuccessExample {json} Success-Response
 * HTTP/1.1 200 OK
-*  [
-*    [
+*  {
+*    "6": [
 *      {
 *          "subjectId": "CS",
 *          "courseId": "425",
@@ -169,8 +169,22 @@ exports.save = function (req, res) {
 *          "semester": "Spring",
 *          "year": 2018
 *      }
+*    ],
+*    "14": [
+*      {
+*          "subjectId": "CS",
+*          "courseId": "425",
+*          "sectionId": "31384",
+*          "type": "LCD",
+*          "startTime": "09:30 AM",
+*          "endTime": "10:45 AM",
+*          "daysOfWeek": "TR",
+*          "semester": "Spring",
+*          "year": 2018
+*      }
 *    ]
-* ]
+* }
+*
 *
 *@apiErrorExample Error-Response:
 * HTTP/1.1 400 Bad Request
@@ -212,8 +226,6 @@ exports.get = function (req, res) {
             schedules[scheduleId] = [section];
           }
         }
-
-        schedules = Object.values(schedules);
         return res.status(200).json(schedules);
       }
     });

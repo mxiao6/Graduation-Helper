@@ -632,7 +632,7 @@
       "examples": [
         {
           "title": "Success-Response",
-          "content": "HTTP/1.1 200 OK\n [\n   [\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"425\",\n         \"sectionId\": \"31384\",\n         \"type\": \"LCD\",\n         \"startTime\": \"09:30 AM\",\n         \"endTime\": \"10:45 AM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     },\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"429\",\n         \"sectionId\": \"41483\",\n         \"type\": \"LCD\",\n         \"startTime\": \"02:00 PM\",\n         \"endTime\": \"03:15 PM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     }\n   ]\n]",
+          "content": "HTTP/1.1 200 OK\n {\n   \"6\": [\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"425\",\n         \"sectionId\": \"31384\",\n         \"type\": \"LCD\",\n         \"startTime\": \"09:30 AM\",\n         \"endTime\": \"10:45 AM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     },\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"429\",\n         \"sectionId\": \"41483\",\n         \"type\": \"LCD\",\n         \"startTime\": \"02:00 PM\",\n         \"endTime\": \"03:15 PM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     }\n   ]\n}",
           "type": "json"
         }
       ]
