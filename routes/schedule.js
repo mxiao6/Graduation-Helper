@@ -299,6 +299,9 @@ exports.edit = function (req, res) {
 exports.delete = function (req, res) {
   let scheduleId = req.query.scheduleId;
 
+  if (scheduleId === null) {
+    return res.status(400).json({error: 'Incorrect parameters'});
+  }
   pool.getConnection(function (err, connection) {
     if (err) {
       return res.status(500).json({error: 'Connection Error'});
