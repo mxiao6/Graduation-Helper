@@ -16,7 +16,7 @@ describe('User tests', function () {
       done();
     });
   });
-/*
+  /*
   it('it should login successfully', function (done) {
     chai.request(server).post('/login').send({'email': 'admin@gmail.com', 'password': 'cs428'}).end((err, res) => {
       res.should.have.status(422);
