@@ -13,6 +13,7 @@
     "style": "semistandard --fix \"routes/**/*.js\" \"*.js\" && semistandard --fix --env mocha \"test/**/*.js\""
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "chai-http": "^3.0.0",
     "chromedriver": "^2.35.0",

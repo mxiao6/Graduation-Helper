@@ -2,9 +2,9 @@ var mysql = require('mysql');
 var nodemailer = require('nodemailer');
 var randomstring = require('randomstring');
 var moment = require('moment');
-var passport = require(passport);
-var localstrategy = require('passport-local').Strategy;
-var bcrypt = require('bcrypt');
+// var passport = require('passport');
+// var localstrategy = require('passport-local').Strategy;
+var bcrypt = require('bcryptjs');
 var pool;
 
 if (process.argv.length > 2 && process.argv[2] === 'test') {
@@ -48,43 +48,45 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
 */
 exports.register = function (req, res) {
   var inputpassword = req.body.password;
-  var hashed = '';
-  bcrypt.hash(inputpassword, 10, function (err, results){
-    hashed = results;
-  });
-  var users = {
-    'username': req.body.username,
-    'email': req.body.email,
-    'password': hashed,
-    'act':false
-  };
-  pool.getConnection(function (err, connection) {
+  bcrypt.hash(inputpassword, 10, function (err, results) {
     if (err) {
-      res.status(500).send('Database pool connection error');
+      res.status(500).send('hash error');
     }
-
-    connection.query('SELECT * FROM users WHERE email = ?', [req.body.email], function (error, results, fields) {
-      // Done with connection
-      connection.release();
-
-      // check for duplicate register
-      if (error) {
-        res.status(500).send('Database query error ocurred');
-      } else {
-        if (results.length > 0) {
-          res.status(422).send('Email already registered!');
-        } else {
-          connection.query('INSERT INTO users SET ?', users, function (error, results, fields) {
-            if (error) {
-              // console.log("error ocurred",error);
-              res.status(500).send('Database query error ocurred');
-            } else {
-              // console.log('The solution is: ', results);
-              res.status(250).send('user registered sucessfully');
-            }
-          });
-        }
+    var hashed = results;
+    var users = {
+      'username': req.body.username,
+      'email': req.body.email,
+      'password': hashed,
+      'act': false
+    };
+    pool.getConnection(function (err, connection) {
+      if (err) {
+        res.status(500).send('Database pool connection error');
       }
+
+      connection.query('SELECT * FROM users WHERE email = ?', [req.body.email], function (error, results, fields) {
+      // Done with connection
+        connection.release();
+
+        // check for duplicate register
+        if (error) {
+          res.status(500).send('Database query error ocurred');
+        } else {
+          if (results.length > 0) {
+            res.status(422).send('Email already registered!');
+          } else {
+            connection.query('INSERT INTO users SET ?', users, function (error, results, fields) {
+              if (error) {
+              // console.log("error ocurred",error);
+                res.status(500).send('Database query error ocurred');
+              } else {
+              // console.log('The solution is: ', results);
+                res.status(250).send('user registered sucessfully');
+              }
+            });
+          }
+        }
+      });
     });
   });
 };
@@ -140,21 +142,28 @@ exports.login = function (req, res) {
       } else {
         if (results.length > 0) {
           var hashedpass = results[0].password;
-          var valid = false;
-          bcrypt.compare(password, hashedpass, function (err, results){
-            valid = results;
+          bcrypt.compare(password, hashedpass, function (err, result) {
+            if (err) {
+              res.status(500).send('hash error');
+            }
+            var valid = result;
+            /*
+            if (!results[0].act) {
+              res.status(422).send('account not activate');
+            } else
+            */
+            if (valid) {
+              let userInfo = {
+                userId: results[0].user_id,
+                username: results[0].username,
+                email: results[0].email,
+                message: 'login successful'
+              };
+              res.status(250).send(userInfo);
+            } else {
+              res.status(422).send('Email and password does not match');
+            }
           });
-          if (valid && results[0].act) {
-            let userInfo = {
-              userId: results[0].user_id,
-              username: results[0].username,
-              email: results[0].email,
-              message: 'login successful'
-            };
-            res.status(250).send(userInfo);
-          } else {
-            res.status(422).send('Email and password does not match');
-          }
         } else {
           res.status(422).send('Email does not exist');
         }
@@ -319,9 +328,6 @@ exports.resetpassword = function (req, res) {
   var Uaucode = req.body.aucode;
   var aucode;
   var sendtime;
-  bcrypt.hash(password, 10, function (err, results){
-    password = results;
-  });
   pool.getConnection(function (err, connection) {
     if (err) {
       res.status(500).send('Database pool connection error');
@@ -347,14 +353,20 @@ exports.resetpassword = function (req, res) {
       } else if (aucode !== Uaucode) {
         res.status(422).send('aucode unmatched!');
       } else {
-        connection.query('UPDATE users SET password = ? WHERE email = ?', [
-          password, email
-        ], function (error, results, fields) {
-          if (error) {
-            res.status(500).send('Database query error ocurred');
-          } else {
-            res.status(250).send('Reset successfully!');
+        bcrypt.hash(password, 10, function (err, results) {
+          if (err) {
+            res.status(500).send('hash error');
           }
+          var password = results;
+          connection.query('UPDATE users SET password = ? WHERE email = ?', [
+            password, email
+          ], function (error, results, fields) {
+            if (error) {
+              res.status(500).send('Database query error ocurred');
+            } else {
+              res.status(250).send('Reset successfully!');
+            }
+          });
         });
       }
     });
