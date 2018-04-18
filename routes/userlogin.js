@@ -119,6 +119,12 @@ exports.activate = function (req, res) {
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 422
 *   {
+*     "Account hasn't activate"
+*   }
+*
+*@apiErrorExample Error-Response:
+*   HTTP/1.1 422
+*   {
 *     "Email and password does not match"
 *   }
 */
@@ -149,7 +155,7 @@ exports.login = function (req, res) {
             var valid = result;
             /*
             if (!results[0].act) {
-              res.status(422).send('account not activate');
+              res.status(422).send('Account hasn't activate');
             } else
             */
             if (valid) {
