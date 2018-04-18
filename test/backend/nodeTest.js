@@ -16,15 +16,13 @@ describe('User tests', function () {
       done();
     });
   });
-  /*
   it('it should login successfully', function (done) {
     chai.request(server).post('/login').send({'email': 'admin@gmail.com', 'password': 'cs428'}).end((err, res) => {
-      res.should.have.status(422);
+      res.should.have.status(250);
       (err === null).should.equal(true);
       done();
     });
   });
-*/
   it('it should not login wrong password', function (done) {
     chai.request(server).post('/login').send({'email': 'admin@gmail.com', 'password': 'wrong_pass'}).end((err, res) => {
       res.should.have.status(422);
