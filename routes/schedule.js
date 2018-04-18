@@ -219,3 +219,99 @@ exports.get = function (req, res) {
     });
   });
 };
+
+exports.edit = function (req,res) {
+  let scheduleId = req.query.scheduleId;
+  let sections = req.body.sections;
+
+  //TODO: perform null checks on scheduleId
+    //TODO: perform null checks on sections
+
+  /*let sections = [
+        {
+            subjectId: "MATH",
+            courseId: "415",
+            sectionId: "11111",
+            type: "LEC",
+            startTime: "12:00 PM",
+            endTime: "01:00 PM",
+            daysOfWeek: "MWF",
+            semester: "Spring",
+            year: 2017
+        },
+        {
+            subjectId: "PHYS",
+            courseId: "211",
+            sectionId: "33333",
+            type: "LEC",
+            startTime: "03:00 PM",
+            endTime: "04:00 PM",
+            daysOfWeek: "MWF",
+            semester: "Spring",
+            year: 2017
+          }
+      ];*/
+
+  pool.getConnection(function (err,connection) {
+      if (err) {
+          return res.status(500).json({error: 'Connection Error'});
+      }
+      //find the current courses, remove, then add the new sections
+      connection.beginTransaction(function(err) {
+        if(err) {
+          throw err;
+        }
+        //delete current courses
+          connection.query('DELETE FROM courses WHERE scheduleId = ?', [scheduleId], function (err,results,fields) {
+            if(err) {
+              return connection.rollback(function() {
+                return res.status(500).json({error: 'Could not delete existing courses'});
+              });
+            }
+            //add the new sections
+            async.each(sections, function(section,callback) {
+                connection.query('INSERT INTO courses (scheduleId, subjectId, courseId, sectionId, type, startTime, endTime, daysOfWeek, semester, year) VALUES (?,?,?,?,?,?,?,?,?,?);',
+                    [
+                        scheduleId,
+                        section.subjectId,
+                        section.courseId,
+                        section.sectionId,
+                        section.type,
+                        section.startTime,
+                        section.endTime,
+                        section.daysOfWeek,
+                        section.semester,
+                        section.year
+                    ], function (err, results) {
+                        if (err) {
+                            callback(err);
+                        }
+                        else {
+                            callback(null);
+                        }
+                    });
+            }, function(err) {
+              if(err) {
+                return connection.rollback(function() {
+                  //console.log(err);
+                  return res.status(500).json({error: 'Could not save courses'});
+                });
+              }
+              else {
+                connection.commit(function(err) {
+                  if(err) {
+                    return connection.rollback(function() {
+                      return res.status(500).json({error: 'Save commit error'});
+                    });
+                  }
+                  else {
+                    connection.release();
+                    return res.status(200).send('Edit Successful');
+                  }
+                });
+              }
+            });
+          });
+      });
+  });
+};
