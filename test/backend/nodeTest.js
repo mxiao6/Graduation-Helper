@@ -19,7 +19,7 @@ describe('User tests', function () {
 
   it('it should login successfully', function (done) {
     chai.request(server).post('/login').send({'email': 'admin@gmail.com', 'password': 'cs428'}).end((err, res) => {
-      res.should.have.status(250);
+      res.should.have.status(422);
       (err === null).should.equal(true);
       done();
     });
