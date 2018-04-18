@@ -4,6 +4,7 @@ var randomstring = require('randomstring');
 var moment = require('moment');
 var passport = require(passport);
 var localstrategy = require('passport-local').Strategy;
+var bcrypt = require('bcrypt');
 var pool;
 
 if (process.argv.length > 2 && process.argv[2] === 'test') {
@@ -46,10 +47,16 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
 *   }
 */
 exports.register = function (req, res) {
+  var inputpassword = req.body.password;
+  var hashed = '';
+  bcrypt.hash(inputpassword, 10, function (err, results){
+    hashed = results;
+  });
   var users = {
     'username': req.body.username,
     'email': req.body.email,
-    'password': req.body.password
+    'password': hashed,
+    'act':false
   };
   pool.getConnection(function (err, connection) {
     if (err) {
@@ -80,6 +87,10 @@ exports.register = function (req, res) {
       }
     });
   });
+};
+
+exports.activate = function (req, res) {
+
 };
 
 /**
@@ -128,7 +139,12 @@ exports.login = function (req, res) {
         res.status(500).send('Database query error ocurred');
       } else {
         if (results.length > 0) {
-          if (results[0].password === password) {
+          var hashedpass = results[0].password;
+          var valid = false;
+          bcrypt.compare(password, hashedpass, function (err, results){
+            valid = results;
+          });
+          if (valid && results[0].act) {
             let userInfo = {
               userId: results[0].user_id,
               username: results[0].username,
@@ -303,7 +319,9 @@ exports.resetpassword = function (req, res) {
   var Uaucode = req.body.aucode;
   var aucode;
   var sendtime;
-
+  bcrypt.hash(password, 10, function (err, results){
+    password = results;
+  });
   pool.getConnection(function (err, connection) {
     if (err) {
       res.status(500).send('Database pool connection error');
