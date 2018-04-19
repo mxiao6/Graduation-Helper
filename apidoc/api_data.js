@@ -588,6 +588,109 @@ define({ "api": [
     "groupTitle": "Schedule"
   },
   {
+    "type": "post",
+    "url": "/deleteschedule",
+    "title": "Delete user schedule",
+    "name": "deleteschedule",
+    "group": "Schedule",
+    "version": "0.1.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "scheduleId",
+            "description": "<p>Schedule ID to be deleted</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n   \"scheduleId\": 5\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "SuccessResponse:",
+          "content": "\"Delete Successful\"",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n   \"error\": \"Incorrect parameters\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/schedule.js",
+    "groupTitle": "Schedule"
+  },
+  {
+    "type": "post",
+    "url": "/editschedule",
+    "title": "Edit saved user schedules",
+    "name": "editschedule",
+    "group": "Schedule",
+    "version": "0.1.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "scheduleId",
+            "description": "<p>specific schedule ID to be edited</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": false,
+            "field": "sections",
+            "description": "<p>List of new class sections</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"scheduleId\": 5,\n  \"sections\": [\n     {\n       \"subjectId\": \"CS\",\n       \"courseId\": \"425\",\n       \"sectionId\": \"31384\",\n       \"type\": \"LCD\",\n       \"startTime\": \"09:30 AM\",\n       \"endTime\": \"10:45 AM\",\n       \"daysOfWeek\": \"TR\",\n       \"semester\": \"Spring\",\n       \"year\": 2018\n     },\n     {\n       \"subjectId\": \"CS\",\n       \"courseId\": \"429\",\n       \"sectionId\": \"41483\",\n       \"type\": \"LCD\",\n       \"startTime\": \"02:00 PM\",\n       \"endTime\": \"03:15 PM\",\n       \"daysOfWeek\": \"TR\",\n       \"semester\": \"Spring\",\n       \"year\": 2018\n     }\n   ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n 'Edit successful'\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n   \"error\": \"Incorrect parameters\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/schedule.js",
+    "groupTitle": "Schedule"
+  },
+  {
     "type": "get",
     "url": "/getschedule",
     "title": "Get saved user schedules",
