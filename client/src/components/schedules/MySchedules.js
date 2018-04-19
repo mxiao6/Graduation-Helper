@@ -80,7 +80,10 @@ class MySchedules extends Component {
     const { user } = this.props;
     return (
       <div>
-        <div className="bodyContainer">{this._renderSmallGrids()}</div>
+        <div className="bodyContainer">
+          <h1>My Schedules</h1>
+          {this._renderSmallGrids()}
+        </div>
       </div>
     );
   }
