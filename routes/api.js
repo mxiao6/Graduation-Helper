@@ -236,7 +236,7 @@ function getSpecialTopics (specialTopicsUrl) {
         let sectionTitle = result[i]['ns2:section']['sectionTitle'];
         if (sectionTitle == null) {
           sectionTitle = result[i]['ns2:section']['parents'][0]['course'][0]['_'];
-        }else{
+        } else {
           sectionTitle = sectionTitle[0];
         }
         topicsSet.add(sectionTitle);
