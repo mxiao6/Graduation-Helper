@@ -4,7 +4,8 @@ CREATE TABLE testDatabase.users (
   user_id INT NOT NULL AUTO_INCREMENT,
   username VARCHAR(16) NOT NULL,
   email VARCHAR(32) NOT NULL,
-  password VARCHAR(32) NOT NULL,
+  password VARCHAR(64) NOT NULL,
+  act BOOL NOT NULL,
   PRIMARY KEY (user_id)
 );
 
