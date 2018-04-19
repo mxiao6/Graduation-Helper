@@ -20,6 +20,7 @@ describe('User tests', function () {
         done();
       });
   });
+
   it('it should login successfully', function (done) {
     chai
       .request(server)
@@ -31,6 +32,7 @@ describe('User tests', function () {
         done();
       });
   });
+
   it('it should not login wrong password', function (done) {
     chai
       .request(server)
