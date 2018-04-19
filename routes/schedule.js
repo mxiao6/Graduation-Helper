@@ -220,7 +220,56 @@ exports.get = function (req, res) {
   });
 };
 
-// TODO: generate docs
+/**
+ *@api{post}/editschedule Edit saved user schedules
+ *@apiName editschedule
+ *@apiGroup Schedule
+ *@apiVersion 0.1.0
+ *
+ *@apiParam {int} scheduleId specific schedule ID to be edited
+ *@apiParam {Object[]} sections List of new class sections
+ *
+ *@apiParamExample {json} Request-Example:
+ *  {
+ *    "scheduleId": 5,
+ *    "sections": [
+*       {
+*         "subjectId": "CS",
+*         "courseId": "425",
+*         "sectionId": "31384",
+*         "type": "LCD",
+*         "startTime": "09:30 AM",
+*         "endTime": "10:45 AM",
+*         "daysOfWeek": "TR",
+*         "semester": "Spring",
+*         "year": 2018
+*       },
+*       {
+*         "subjectId": "CS",
+*         "courseId": "429",
+*         "sectionId": "41483",
+*         "type": "LCD",
+*         "startTime": "02:00 PM",
+*         "endTime": "03:15 PM",
+*         "daysOfWeek": "TR",
+*         "semester": "Spring",
+*         "year": 2018
+*       }
+*     ]
+ *  }
+ *
+ *@apiSuccessExample {json} Success-Response
+ * HTTP/1.1 200 OK
+ *{
+ *  'Edit successful'
+ *}
+ *
+ *@apiErrorExample Error-Response:
+ * HTTP/1.1 400 Bad Request
+ * {
+ *    "error": "Incorrect parameters"
+ * }
+ */
 exports.edit = function (req, res) {
   let scheduleId = req.query.scheduleId;
   let sections = req.body.sections;
