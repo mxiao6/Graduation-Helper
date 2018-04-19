@@ -156,8 +156,10 @@ exports.activate = function (req, res) {
       if (error) {
         res.status(500).send('Database query error ocurred');
       } else {
+        res.redirect('http://grhlinux.azurewebsites.net/');
         res.status(250).send('user account activate!!!');
       }
+      
     });
   });
 };
@@ -239,7 +241,7 @@ exports.login = function (req, res) {
                 to: req.body.email, // receiver
                 subject: 'Activate your Account in GRH!!!', // Subject line
                 text: 'Your are receiving this because you just registered an account and ' +
-           'please use this URL to activate your account\n' + 'http://localhost:5000/act?inf=' + cipher + '\n If you did not request this, please ignore'
+           'please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore'
               };
               transporter.sendMail(themail, function (err, info) {
                 if (err) {
