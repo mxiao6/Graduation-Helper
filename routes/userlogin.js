@@ -156,7 +156,7 @@ exports.activate = function (req, res) {
       if (error) {
         res.status(500).send('Database query error ocurred');
       } else {
-        res.redirect('http://grhlinux.azurewebsites.net/');
+        res.redirect('http://grhlinux.azurewebsites.net/#/Login');
         res.status(250).send('user account activate!!!');
       }
       
