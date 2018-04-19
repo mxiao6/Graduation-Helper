@@ -5,8 +5,9 @@
 
   position: relative;
 
-  height: $nav-height * $ratio;
-  padding: 0 $nav-height / 2 * $ratio;
+  height: $nav-height;
+  width: 80%;
+  margin: auto;
   background: white;
   display: flex;
   flex-direction: row;
@@ -30,9 +31,10 @@
       flex-direction: row;
       justify-content: flex-start;
       align-items: center;
+      margin: 0 3rem;
 
       a {
-        margin: 0 80px / 2 * $ratio;
+        margin: 0 80px / 2;
         letter-spacing: 0.3em;
         color: skyblue;
 
@@ -48,7 +50,9 @@
     }
   }
 
-  .logoutButton {
+  .buttonContainer {
+    display: flex;
+    flex-direction: row;
   }
 
   .loginButton {

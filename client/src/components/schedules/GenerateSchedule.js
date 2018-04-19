@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
-import randomColor from 'randomcolor';
 import { Link } from 'react-router-dom';
 import WindowSizeListener from 'react-window-size-listener';
 import {
@@ -16,8 +15,13 @@ import * as classActions from 'containers/Classes';
 
 import { Cascader, Spin, Button, Tag, message, Modal } from 'antd';
 import 'styles/ClassSelection.css';
+import { daysMap, _parseTime } from 'utils';
 
 import BigCalendar from 'modules/react-big-calendar';
+import {
+  _parseSmallArray,
+  _renderSmallSchedules,
+} from 'components/schedules/SmallSchedules';
 
 class GenerateSchedule extends React.Component {
   state = {
@@ -148,60 +152,13 @@ class GenerateSchedule extends React.Component {
         this.setState({
           generatedRaw: res.data,
           generated: this._parseSchedules(res.data),
-          smallArray: this._parseSmallArray(res.data),
+          smallArray: _parseSmallArray(res.data),
           generating: false,
         });
       })
       .catch(e => {
         console.error('_generateSchedule', e);
       });
-  };
-
-  _parseTime = time => {
-    let hour = parseInt(time.substr(0, 2), 10);
-    let mins = parseInt(time.substr(3, 2), 10);
-
-    if (time.slice(-2) === 'PM' && hour !== 12) hour += 12;
-
-    return { hour, mins };
-  };
-
-  _generateEmptyArray = () => {
-    let array = [];
-    for (let i = 0; i < 26; i++) {
-      let row = [];
-      for (let j = 0; j < 5; j++) {
-        row.push(false);
-      }
-      array.push(row);
-    }
-    return array;
-  };
-
-  _parseSmallArray = data => {
-    let parsed = [];
-    for (let schedule of data.schedules) {
-      let oneImg = this._generateEmptyArray();
-      for (let section of schedule.sections) {
-        if (!section.daysOfWeek) continue;
-        let color = randomColor();
-        for (let day of section.daysOfWeek) {
-          let colIdx = daysMap[day] - 1; // 0 - 4
-          let startTime = this._parseTime(section.startTime);
-          let endTime = this._parseTime(section.endTime);
-          let rowStart = (startTime.hour - 8) * 2;
-          let rowEnd = (endTime.hour + 1 - 8) * 2;
-          for (let r = rowStart; r < rowEnd; r++) {
-            oneImg[r][colIdx] = color;
-          }
-        }
-      }
-      parsed.push({
-        schedule,
-        array: oneImg,
-      });
-    }
-    return parsed;
   };
 
   _parseSchedules = data => {
@@ -213,8 +170,8 @@ class GenerateSchedule extends React.Component {
           if (!section.daysOfWeek) return retval;
           for (let day of section.daysOfWeek) {
             let date = 1 + daysMap[day];
-            let startTime = this._parseTime(section.startTime);
-            let endTime = this._parseTime(section.endTime);
+            let startTime = _parseTime(section.startTime);
+            let endTime = _parseTime(section.endTime);
             retval.push({
               title: section.subjectId + section.courseId,
               start: new Date(2018, 3, date, startTime.hour, startTime.mins, 0),
@@ -287,33 +244,7 @@ class GenerateSchedule extends React.Component {
     return generating ? (
       <Spin />
     ) : (
-      <div className="gridsContainer">
-        {_.map(smallArray, (smallGrid, gIdx) => {
-          return (
-            <a onClick={() => this._showBigSchedule(gIdx)} key={gIdx}>
-              <div className="smallGrid" key={gIdx}>
-                {_.map(smallGrid.array, (row, rIdx) => {
-                  return (
-                    <div className="smallRow" key={rIdx}>
-                      {_.map(row, (col, cIdx) => {
-                        return col ? (
-                          <div
-                            className="smallColActive"
-                            style={{ backgroundColor: col }}
-                            key={cIdx}
-                          />
-                        ) : (
-                          <div className="smallCol" key={cIdx} />
-                        );
-                      })}
-                    </div>
-                  );
-                })}
-              </div>
-            </a>
-          );
-        })}
-      </div>
+      _renderSmallSchedules(smallArray, this._showBigSchedule)
     );
   };
 
@@ -338,7 +269,7 @@ class GenerateSchedule extends React.Component {
       .post(POST_SAVE_SCHEDULE, {
         ...semester,
         userId: user.userId,
-        sections: sections
+        sections,
       })
       .then(res => {
         console.log(res.data);
@@ -469,14 +400,6 @@ class GenerateSchedule extends React.Component {
     );
   }
 }
-
-const daysMap = {
-  M: 1,
-  T: 2,
-  W: 3,
-  R: 4,
-  F: 5,
-};
 
 const _default = { year: '2018', semester: 'fall' };
 

@@ -1,15 +1,15 @@
-import React, { Component } from "react";
-import { NavLink, Link } from "react-router-dom";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as logoutActions from "containers/Logout";
+import React, { Component } from 'react';
+import { NavLink, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as logoutActions from 'containers/Logout';
 
-import "styles/Header.css";
-import { Button, Modal } from "antd";
+import 'styles/Header.css';
+import { Button, Modal, Menu, Dropdown, Icon } from 'antd';
 const confirm = Modal.confirm;
 
 class Header extends Component {
-  routes = [{ link: "/", title: "Home" }];
+  routes = [{ link: '/', title: 'Home' }];
 
   state = { visible: false };
 
@@ -23,30 +23,43 @@ class Header extends Component {
 
   showConfirm = () => {
     const config = {
-      title: "Are you sure to logout?",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
+      title: 'Are you sure to logout?',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
       onOk: () => {
-        console.log("logout successful");
+        console.log('logout successful');
         this.props.actions.logout();
       },
       onCancel: () => {
-        console.log("Cancel logout");
-      }
+        console.log('Cancel logout');
+      },
     };
     confirm(config);
   };
 
+  menu = (
+    <Menu>
+      <Menu.Item>
+        <Link to={'/MySchedules'}>My Schedules</Link>
+      </Menu.Item>
+      <Menu.Divider />
+      <Menu.Item>
+        <a onClick={this.showConfirm}>Logout</a>
+      </Menu.Item>
+    </Menu>
+  );
+
   render() {
+    const { user, loggedIn } = this.props;
+
     return (
       <div>
         <div className="nav">
           <div className="menuContainer">
             <NavLink to="/">
-              <h1>Graduation Helper</h1>
+              <h1 style={{ margin: 0 }}>Graduation Helper</h1>
             </NavLink>
-
             <div className="menu">
               {this.routes.map(({ link, title }) => (
                 <NavLink
@@ -60,19 +73,20 @@ class Header extends Component {
               ))}
             </div>
           </div>
-          {this.props.loggedIn ? (
-            <Button onClick={this.showConfirm} className="logoutButton">
-              Logout
-            </Button>
+          {loggedIn ? (
+            <div className="buttonContainer">
+              <Dropdown overlay={this.menu}>
+                <a className="ant-dropdown-link" href="#">
+                  {user.username} <Icon type="down" />
+                </a>
+              </Dropdown>
+            </div>
           ) : (
             <Button type="primary" className="loginButton">
-              <Link to={"/Login"}>Login</Link>
+              <Link to={'/Login'}>Login</Link>
             </Button>
           )}
-          <Modal
-            title="Logout"
-            visible={this.state.visible}
-          >
+          <Modal title="Logout" visible={this.state.visible}>
             <p>Are you sure?</p>
           </Modal>
         </div>
@@ -83,13 +97,14 @@ class Header extends Component {
 
 function mapStateToProps(state, ownProps) {
   return {
-    loggedIn: state.auth.user !== undefined
+    loggedIn: state.auth.user !== undefined,
+    user: state.auth.user,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(logoutActions, dispatch)
+    actions: bindActionCreators(logoutActions, dispatch),
   };
 }
 
