@@ -33,9 +33,15 @@ function findButton (index) {
   });
 }
 
-function findLogoutButton () {
-  return driver.findElements(webdriver.By.css('.logoutButton')).then(function (result) {
+function findUserDropdown () {
+  return driver.findElements(webdriver.By.css('.ant-dropdown-trigger')).then(function (result) {
     return result[0];
+  });
+}
+
+function findLogoutItem () {
+  return driver.findElements(webdriver.By.css('.ant-dropdown-menu-item')).then(function (result) {
+    return result[1];
   });
 }
 
@@ -177,7 +183,10 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.equal('Hello, \nadmin!'))
-      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
       .then(() => driver.wait(findYesButton(), 2000))
@@ -232,7 +241,10 @@ describe('Home and Login Tests', function () {
     this.timeout(20000);
     driver.get('http://localhost:3000/')
       .then(() => driver.sleep(2000))
-      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
       .then(() => driver.wait(findYesButton(), 2000))
@@ -267,7 +279,10 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.equal('Hello, \nadmin!'))
-      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
       .then(() => driver.wait(findYesButton(), 2000))
@@ -291,7 +306,10 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.equal('Hello, \nadmin!'))
-      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
       .then(() => driver.wait(findYesButton(), 2000))
@@ -396,7 +414,10 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findSelectedSemester(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.contain('Selected Semester: Fall 2018'))
-      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
       .then(() => driver.wait(findYesButton(), 2000))
@@ -423,7 +444,10 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findSelectedSemester(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.contain('Selected Semester: Fall 2018'))
-      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
       .then(() => driver.wait(findYesButton(), 2000))
@@ -466,7 +490,10 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findSaveButton(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(5000))
-      .then(() => driver.wait(findLogoutButton(), 2000))
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
       .then(() => driver.wait(findYesButton(), 2000))
