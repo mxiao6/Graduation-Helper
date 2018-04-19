@@ -1,9 +1,9 @@
 export default {
   auth: {
     user: undefined,
-    statue: "good"
+    loginFailed: false,
   },
   classes: {
-    semester: undefined
-  }
+    semester: undefined,
+  },
 };
