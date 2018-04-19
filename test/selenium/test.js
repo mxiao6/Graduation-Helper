@@ -462,7 +462,7 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.sleep(2000))
       .then(() => driver.wait(findSectionElement(), 2000))
       .then(className => className.getAttribute('innerText'))
-      .then(innerText => innerText.should.equal('AAS100'))
+      .then(innerText => innerText.should.equal('AAS 100-AD1 41758'))
       .then(() => driver.wait(findSaveButton(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(5000))
