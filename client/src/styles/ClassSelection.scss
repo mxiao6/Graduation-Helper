@@ -67,6 +67,29 @@
   }
 }
 
+.prefContainer {
+  .prefRow > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .prefCascaderContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    .prefCascader {
+      z-index: 2;
+    }
+
+    .nextButton {
+      margin-left: -0.5rem;
+    }
+  }
+}
+
 .scheduleModal {
   display: flex;
   align-items: center;

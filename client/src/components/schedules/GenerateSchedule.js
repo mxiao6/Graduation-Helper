@@ -13,7 +13,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
 
-import { Cascader, Spin, Button, Tag, message, Modal } from 'antd';
+import { Cascader, Spin, Button, Tag, message, Modal, Row, Col } from 'antd';
 import 'styles/ClassSelection.css';
 import { daysMap, _parseTime } from 'utils';
 
@@ -35,6 +35,10 @@ class GenerateSchedule extends React.Component {
     scheduleIdx: 0,
     modalVisible: false,
     saving: false,
+    selectedDay: undefined,
+    noDaysList: [],
+    selectedOption: undefined,
+    noOptionsList: [],
   };
 
   componentWillMount() {
@@ -64,7 +68,7 @@ class GenerateSchedule extends React.Component {
       });
   }
 
-  onChange = (value, selectedOptions) => {
+  _onChangeTags = (value, selectedOptions) => {
     console.log(value, selectedOptions);
     if (value.length === 0) {
       console.log('clear selection');
@@ -215,7 +219,7 @@ class GenerateSchedule extends React.Component {
         <Cascader
           options={this.state.options}
           loadData={this.loadData}
-          onChange={this.onChange}
+          onChange={this._onChangeTags}
           displayRender={this._displayRender}
           placeholder="Select Class"
           changeOnSelect
@@ -349,7 +353,7 @@ class GenerateSchedule extends React.Component {
     );
   };
 
-  _renderSchedule = () => {
+  _renderTags = () => {
     const { schedule } = this.state;
     return (
       <div className="tagsContainer">
@@ -369,25 +373,112 @@ class GenerateSchedule extends React.Component {
     );
   };
 
+  _onChangeDays = value => {
+    console.log('no class days', value);
+    this.setState({
+      selectedDay: value,
+    });
+  };
+
+  _addDays = () => {
+    const { selectedDay, noDaysList } = this.state;
+    if (noDaysList.indexOf(selectedDay) !== -1) {
+      message.error('Day exists');
+      return;
+    }
+    let newDaysList = noDaysList.slice(0);
+    newDaysList.push(selectedDay);
+
+    this.setState({
+      noDaysList: newDaysList,
+    });
+  };
+
+  _onChangeOptions = () => {};
+
+  _addOptions = () => {};
+
+  _showSelectTimeModel = () => {};
+
+  daysList = [
+    {
+      value: 'M',
+      label: 'Monday',
+    },
+    {
+      value: 'T',
+      label: 'Tuesday',
+    },
+  ];
+
+  _renderPreference = () => {
+    const { width } = this.state;
+    return (
+      <div className="prefContainer">
+        <Row style={{ width: width * 0.8 }} className="prefRow">
+          <Col span={8}>
+            <div className="prefCascaderContainer">
+              <Cascader
+                className="prefCascader"
+                options={this.daysList}
+                onChange={this._onChangeDays}
+                placeholder="No Class Days"
+                changeOnSelect
+              />
+              <Button
+                type="primary"
+                className="nextButton"
+                onClick={this._addDays}
+                disabled={this.state.selectedDay === undefined}
+              >
+                Add
+              </Button>
+            </div>
+          </Col>
+          <Col span={8}>
+            <div className="prefCascaderContainer">
+              <Cascader
+                options={this.state.options}
+                onChange={this._onChangeOptions}
+                placeholder="No Class Options"
+                changeOnSelect
+              />
+              <Button
+                type="primary"
+                className="nextButton"
+                onClick={this._addOptions}
+                disabled={this.state.noOptionsList === undefined}
+              >
+                Add
+              </Button>
+            </div>
+          </Col>
+          <Col span={8}>
+            <Button
+              type="primary"
+              className="nextButton"
+              onClick={this._showSelectTimeModel}
+            >
+              Select No Class Time
+            </Button>
+          </Col>
+        </Row>
+      </div>
+    );
+  };
+
   _renderContent = () => {
     const { semester } = this.props;
     return (
       <div className="contentContainer">
-        <WindowSizeListener
-          onResize={windowSize => {
-            this.setState({
-              height: windowSize.windowHeight,
-              width: windowSize.windowWidth,
-            });
-          }}
-        />
         <div>
           Selected Semester: {semester.semester} {semester.year}
           &nbsp; &nbsp;
           <a onClick={this._resetSemester}>reset</a>
         </div>
         {this._renderCascader()}
-        {this._renderSchedule()}
+        {this._renderTags()}
+        {this._renderPreference()}
         {this._renderSmallGrids()}
         {this._renderModal()}
       </div>
@@ -397,6 +488,14 @@ class GenerateSchedule extends React.Component {
   render() {
     return (
       <div className="bodyContainer">
+        <WindowSizeListener
+          onResize={windowSize => {
+            this.setState({
+              height: windowSize.windowHeight,
+              width: windowSize.windowWidth,
+            });
+          }}
+        />
         {this.state.options ? this._renderContent() : <Spin />}
       </div>
     );
