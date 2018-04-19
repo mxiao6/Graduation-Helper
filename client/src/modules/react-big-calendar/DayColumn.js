@@ -321,11 +321,6 @@ var _initialiseProps = function _initialiseProps() {
           },
           _react2.default.createElement(
             'div',
-            { className: 'rbc-event-label' },
-            label
-          ),
-          _react2.default.createElement(
-            'div',
             { className: 'rbc-event-content' },
             EventComponent ? _react2.default.createElement(EventComponent, { event: event, title: title }) : title
           )
