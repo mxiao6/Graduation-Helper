@@ -13,6 +13,7 @@
     "style": "semistandard --fix \"routes/**/*.js\" \"*.js\" && semistandard --fix --env mocha \"test/**/*.js\""
   },
   "dependencies": {
+    "bluebird": "^3.5.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "chai-http": "^3.0.0",
@@ -28,6 +29,7 @@
     "randomstring": "^1.1.5",
     "redux-promise-middleware": "^5.0.0",
     "request": "^2.83.0",
+    "request-promise": "^4.2.2",
     "selenium-webdriver": "^4.0.0-alpha.1",
     "xml2js": "^0.4.19"
   },
