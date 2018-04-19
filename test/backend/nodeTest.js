@@ -1,6 +1,6 @@
 let chai = require('chai');
 let chaiHttp = require('chai-http');
-let server = require('../../server');
+let server = 'http://localhost:5000';
 var itParam = require('mocha-param');
 chai.use(chaiHttp);
 require('chai').should();
@@ -16,15 +16,15 @@ describe('User tests', function () {
       done();
     });
   });
-  /*
+
   it('it should login successfully', function (done) {
-    chai.request(server).post('/login').send({'email': 'admin@gmail.com', 'password': 'cs428'}).end((err, res) => {
-      res.should.have.status(422);
+    chai.request(server).post('/login').send({'email': 'admin@gmail.com', 'password': 'test2'}).end((err, res) => {
+      res.should.have.status(250);
       (err === null).should.equal(true);
       done();
     });
   });
-*/
+
   it('it should not login wrong password', function (done) {
     chai.request(server).post('/login').send({'email': 'admin@gmail.com', 'password': 'wrong_pass'}).end((err, res) => {
       res.should.have.status(422);

@@ -5,6 +5,8 @@ var moment = require('moment');
 // var passport = require('passport');
 // var localstrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
+var crypto = require('crypto-js');
+var querystring = require('querystring');
 var pool;
 
 if (process.argv.length > 2 && process.argv[2] === 'test') {
@@ -82,6 +84,32 @@ exports.register = function (req, res) {
               } else {
               // console.log('The solution is: ', results);
                 res.status(250).send('user registered sucessfully');
+                // console.log(req.body.email);
+                var cipher = crypto.AES.encrypt(req.body.email, 'Excalibur');
+                cipher = querystring.escape(cipher);
+                // console.log(cipher);
+                var transporter = nodemailer.createTransport({
+                  service: 'gmail',
+                  auth: {
+                    user: 'graduationhelper@gmail.com',
+                    pass: 'Grh12345'
+                  }
+                });
+                var themail = {
+                  from: 'sender@email.com', // sender address
+                  to: req.body.email, // receiver
+                  subject: 'Activate your Account in GRH!!!', // Subject line
+                  text: 'Your are receiving this because you just registered an account and ' +
+           'please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore'
+                };
+                transporter.sendMail(themail, function (err, info) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    res.status(250).send('Email sended successfully');
+                    console.log(info);
+                  }
+                });
               }
             });
           }
@@ -91,8 +119,49 @@ exports.register = function (req, res) {
   });
 };
 
+/**
+*@api{activate}/act account activate
+*@apiName act
+*@apiGroup User
+*@apiVersion 0.2.0
+*
+*@apiParam {String} inf encrypted user's email
+*
+*@apiSuccessExample Success-Response:
+*   HTTP/1.1 250 OK
+*   {
+      "user account activate!!!"
+    }
+*
+*
+*@apiErrorExample Error-Response:
+*   HTTP/1.1 500
+*   {
+*     "Database query error ocurred"
+*   }
+*
+*/
 exports.activate = function (req, res) {
-
+  var cipher = req.query.inf;
+  // console.log("got:") + cipher;
+  var bytes = crypto.AES.decrypt(cipher.toString(), 'Excalibur');
+  var recoveremail = bytes.toString(crypto.enc.Utf8);
+  // console.log("really>" + recoveremail);
+  // res.send('got it');
+  pool.getConnection(function (err, connection) {
+    if (err) {
+      res.status(500).send('Database pool connection error');
+    }
+    connection.query('UPDATE users SET act = ? WHERE email = ?', [1, recoveremail], function (error, results, fields) {
+      if (error) {
+        res.status(500).send('Database query error ocurred');
+      } else {
+        res.redirect('http://grhlinux.azurewebsites.net/#/Login');
+        res.status(250).send('user account activate!!!');
+      }
+      
+    });
+  });
 };
 
 /**
@@ -153,12 +222,36 @@ exports.login = function (req, res) {
               res.status(500).send('hash error');
             }
             var valid = result;
-            /*
+
             if (!results[0].act) {
-              res.status(422).send('Account hasn't activate');
-            } else
-            */
-            if (valid) {
+              res.status(422).send('Account has not activate');
+              // console.log("TO cipher is:" + req.body.email);
+              var cipher = crypto.AES.encrypt(req.body.email, 'Excalibur');
+              cipher = querystring.escape(cipher);
+              // console.log(cipher);
+              var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                  user: 'graduationhelper@gmail.com',
+                  pass: 'Grh12345'
+                }
+              });
+              var themail = {
+                from: 'sender@email.com', // sender address
+                to: req.body.email, // receiver
+                subject: 'Activate your Account in GRH!!!', // Subject line
+                text: 'Your are receiving this because you just registered an account and ' +
+           'please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore'
+              };
+              transporter.sendMail(themail, function (err, info) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  res.status(250).send('Activate email sended successfully');
+                  console.log(info);
+                }
+              });
+            } else if (valid) {
               let userInfo = {
                 userId: results[0].user_id,
                 username: results[0].username,
@@ -177,6 +270,33 @@ exports.login = function (req, res) {
     });
   });
 };
+
+// code for verification email
+/*
+  var cipher = crypto.AES.encrypt(email,"Excalibur");
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'graduationhelper@gmail.com',
+      pass: 'Grh12345'
+    }
+  });
+  var themail = {
+    from: 'sender@email.com', // sender address
+    to: email, // receiver
+    subject: 'Activate your Account in GRH!!!', // Subject line
+    text: 'Your are receiving this because you just registered an account.\n' +
+           'Please use this URL to activate your account'+ 'http://localhost:3000/schedule/act?in='+ cipher + '\n If you did not request this, please ignore'
+  };
+  transporter.sendMail(themail, function (err, info) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.status(250).send('Email sended successfully');
+      console.log(info);
+    }
+  });
+*/
 
 /**
 *@api{sendemail}/userlogin Send reset information and record verification information
@@ -266,7 +386,7 @@ exports.sendemail = function (req, res) {
               to: email, // receiver
               subject: 'Reset information from GRH', // Subject line
               text: 'Your are receiving this because you try to reset password for your account on Graduation Helper. \n' +
-                'The reset authentication code is ：     ' + aucode + '. The code will expired in 30 minutes.\n' +
+                'The reset authentication code is ：     ' + aucode + '\n The code will expired in 30 minutes.' +
                 "If you didn't request this, please ignore and nothing will be changed in your account."
             };
 

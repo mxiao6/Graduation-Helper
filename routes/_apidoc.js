@@ -76,16 +76,70 @@
 */
 
 /**
- *@api{post}/saveschedule save the user schedule to the database
- *@apiName saveschedule
- *@apiGroup Schedule
- *@apiVersion 0.1.0
- *
- *@apiParam {int} userId user ID that the schedule is to be associated with
- *@apiParam {String} semester The specific semester
- *@apiParam {String} year The school year
- *@apiParam {String[]} crns List of the course CRN values from schedule
- *@apiParam {String[]} subjects List of the course subject codes from schedule
- *@apiParam {String[]} courseNumbers List of the course numbers from schedule
- *
- */
+*@api{post}/saveschedule save the user schedule to the database
+*@apiName saveschedule
+*@apiGroup Schedule
+*@apiVersion 0.1.0
+*
+*@apiParam {int} userId user ID that the schedule is to be associated with
+*@apiParam {String} semester The specific semester
+*@apiParam {String} year The school year
+*@apiParam {String[]} crns List of the course CRN values from schedule
+*@apiParam {String[]} subjects List of the course subject codes from schedule
+*@apiParam {String[]} courseNumbers List of the course numbers from schedule
+*
+*/
+
+/**
+*@api{get}/getschedule Get saved user schedules
+*@apiName getschedule
+*@apiGroup Schedule
+*@apiVersion 0.1.0
+*
+*@apiParam {int} userId user ID that the schedule is associated with
+*@apiParam {String} [semester] The specific semester
+*@apiParam {String} [year] The specific school year
+*
+*@apiParamExample {json} Request-Example:
+*   {
+*     "userId": 9,
+*     "year": "2018",
+*     "semester": "Spring",
+*   }
+*
+*@apiSuccessExample {json} Success-Response
+* HTTP/1.1 200 OK
+*  [
+*    [
+*      {
+*          "subjectId": "CS",
+*          "courseId": "425",
+*          "sectionId": "31384",
+*          "type": "LCD",
+*          "startTime": "09:30 AM",
+*          "endTime": "10:45 AM",
+*          "daysOfWeek": "TR",
+*          "semester": "Spring",
+*          "year": 2018
+*      },
+*      {
+*          "subjectId": "CS",
+*          "courseId": "429",
+*          "sectionId": "41483",
+*          "type": "LCD",
+*          "startTime": "02:00 PM",
+*          "endTime": "03:15 PM",
+*          "daysOfWeek": "TR",
+*          "semester": "Spring",
+*          "year": 2018
+*      }
+*    ]
+* ]
+*
+*@apiErrorExample Error-Response:
+* HTTP/1.1 400 Bad Request
+* {
+*    "error": "Incorrect parameters"
+* }
+*
+*/
