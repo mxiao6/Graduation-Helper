@@ -167,13 +167,15 @@ class GenerateSchedule extends React.Component {
         score: schedule.score,
         sections: _.flatMap(schedule.sections, section => {
           let retval = [];
-          if (!section.daysOfWeek) return retval;
+          if (!section.daysOfWeek || !section.endTime) return retval;
           for (let day of section.daysOfWeek) {
             let date = 1 + daysMap[day];
             let startTime = _parseTime(section.startTime);
             let endTime = _parseTime(section.endTime);
             retval.push({
-              title: section.subjectId + section.courseId,
+              title: `${section.subjectId} ${section.courseId}-${
+                section.sectionNumber
+              }\n${section.sectionId}`,
               start: new Date(2018, 3, date, startTime.hour, startTime.mins, 0),
               end: new Date(2018, 3, date, endTime.hour, endTime.mins, 0),
             });
@@ -269,7 +271,11 @@ class GenerateSchedule extends React.Component {
       .post(POST_SAVE_SCHEDULE, {
         ...semester,
         userId: user.userId,
+<<<<<<< HEAD
         sections,
+=======
+        sections: sections,
+>>>>>>> master
       })
       .then(res => {
         console.log(res.data);
