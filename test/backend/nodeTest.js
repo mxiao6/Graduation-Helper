@@ -5,13 +5,13 @@ var itParam = require('mocha-param');
 chai.use(chaiHttp);
 require('chai').should();
 
-describe('User tests', function() {
-  it('it should not register since email already exists', function(done) {
+describe('User tests', function () {
+  it('it should not register since email already exists', function (done) {
     chai
       .request(server)
       .post('/register')
       .send({ username: 'admin', email: 'admin@gmail.com', password: 'cs428' })
-      .end(function(err, res) {
+      .end(function (err, res) {
         res.should.have.status(422);
         res.text.should.be.equal('Email already registered!');
         if (err) {
@@ -20,7 +20,7 @@ describe('User tests', function() {
         done();
       });
   });
-  it('it should login successfully', function(done) {
+  it('it should login successfully', function (done) {
     chai
       .request(server)
       .post('/login')
@@ -31,7 +31,7 @@ describe('User tests', function() {
         done();
       });
   });
-  it('it should not login wrong password', function(done) {
+  it('it should not login wrong password', function (done) {
     chai
       .request(server)
       .post('/login')
@@ -46,7 +46,7 @@ describe('User tests', function() {
       });
   });
 
-  it('it should not login no existing email', function(done) {
+  it('it should not login no existing email', function (done) {
     chai
       .request(server)
       .post('/login')
@@ -73,9 +73,9 @@ describe('User tests', function() {
   // });
 });
 
-describe('schedule test', function() {
-  describe('General schedule tests', function() {
-    it('should give us a schedule', function(done) {
+describe('schedule test', function () {
+  describe('General schedule tests', function () {
+    it('should give us a schedule', function (done) {
       this.timeout(20000);
       chai
         .request(server)
@@ -95,7 +95,7 @@ describe('schedule test', function() {
         });
     });
 
-    it('should give us a schedule animal science', function(done) {
+    it('should give us a schedule animal science', function (done) {
       this.timeout(20000);
       chai
         .request(server)
@@ -111,7 +111,7 @@ describe('schedule test', function() {
         });
     });
 
-    it('should not give us a schedule', function(done) {
+    it('should not give us a schedule', function (done) {
       chai
         .request(server)
         .post('/schedule/generate')
@@ -126,7 +126,7 @@ describe('schedule test', function() {
         });
     });
 
-    it('should not give us a schedule because of incorrect Parameters', function(done) {
+    it('should not give us a schedule because of incorrect Parameters', function (done) {
       chai
         .request(server)
         .post('/schedule/generate')
@@ -141,8 +141,8 @@ describe('schedule test', function() {
         });
     });
   });
-  describe('Schedule preferences tests', function() {
-    it('should give us a schedule that does not meet preferences for start and end time', function(done) {
+  describe('Schedule preferences tests', function () {
+    it('should give us a schedule that does not meet preferences for start and end time', function (done) {
       this.timeout(10000);
       chai
         .request(server)
@@ -174,7 +174,7 @@ describe('schedule test', function() {
         });
     });
 
-    it('should give us a schedule that meets preferences for start and end time', function(done) {
+    it('should give us a schedule that meets preferences for start and end time', function (done) {
       this.timeout(10000);
       chai
         .request(server)
@@ -206,7 +206,7 @@ describe('schedule test', function() {
         });
     });
 
-    it('should give us a schedule that does not meet preferences for class option', function(done) {
+    it('should give us a schedule that does not meet preferences for class option', function (done) {
       this.timeout(10000);
       chai
         .request(server)
@@ -233,7 +233,7 @@ describe('schedule test', function() {
         });
     });
 
-    it('should give us a schedule that meets preferences for class option', function(done) {
+    it('should give us a schedule that meets preferences for class option', function (done) {
       this.timeout(10000);
       chai
         .request(server)
@@ -260,7 +260,7 @@ describe('schedule test', function() {
         });
     });
 
-    it('should give us a schedule that does not meet preferences for class days', function(done) {
+    it('should give us a schedule that does not meet preferences for class days', function (done) {
       this.timeout(10000);
       chai
         .request(server)
@@ -287,7 +287,7 @@ describe('schedule test', function() {
         });
     });
 
-    it('should give us a schedule that meets preferences for class days', function(done) {
+    it('should give us a schedule that meets preferences for class days', function (done) {
       this.timeout(10000);
       chai
         .request(server)
@@ -314,8 +314,8 @@ describe('schedule test', function() {
         });
     });
 
-    describe('Few preferences test', function() {
-      it('should give us a schedule that meets a few preferences 1', function(done) {
+    describe('Few preferences test', function () {
+      it('should give us a schedule that meets a few preferences 1', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -351,7 +351,7 @@ describe('schedule test', function() {
           });
       });
 
-      it('should give us a schedule that meets a few preferences 2', function(done) {
+      it('should give us a schedule that meets a few preferences 2', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -383,7 +383,7 @@ describe('schedule test', function() {
           });
       });
 
-      it('should give us a schedule that meets a few preferences 3', function(done) {
+      it('should give us a schedule that meets a few preferences 3', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -410,7 +410,7 @@ describe('schedule test', function() {
           });
       });
 
-      it('should give us a schedule that does not meet a few preferences 1', function(done) {
+      it('should give us a schedule that does not meet a few preferences 1', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -437,7 +437,7 @@ describe('schedule test', function() {
           });
       });
 
-      it('should give us a schedule that does not meet a few preferences 2', function(done) {
+      it('should give us a schedule that does not meet a few preferences 2', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -469,7 +469,7 @@ describe('schedule test', function() {
           });
       });
 
-      it('should give us a schedule that does not meet a few preferences 3', function(done) {
+      it('should give us a schedule that does not meet a few preferences 3', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -502,8 +502,8 @@ describe('schedule test', function() {
       });
     });
 
-    describe('All preferences test', function() {
-      it('should give us a schedule that meets all preferences 1', function(done) {
+    describe('All preferences test', function () {
+      it('should give us a schedule that meets all preferences 1', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -535,7 +535,7 @@ describe('schedule test', function() {
           });
       });
 
-      it('should give us a schedule that meets all preferences 2', function(done) {
+      it('should give us a schedule that meets all preferences 2', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -571,7 +571,7 @@ describe('schedule test', function() {
           });
       });
 
-      it('should give us a schedule that meets all preferences 3', function(done) {
+      it('should give us a schedule that meets all preferences 3', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -607,7 +607,7 @@ describe('schedule test', function() {
           });
       });
 
-      it('should give us a schedule that does not meet all preferences 1', function(done) {
+      it('should give us a schedule that does not meet all preferences 1', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -639,7 +639,7 @@ describe('schedule test', function() {
           });
       });
 
-      it('should give us a schedule that does not meet all preferences 2', function(done) {
+      it('should give us a schedule that does not meet all preferences 2', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -675,7 +675,7 @@ describe('schedule test', function() {
           });
       });
 
-      it('should give us a schedule that does not meet all preferences 3', function(done) {
+      it('should give us a schedule that does not meet all preferences 3', function (done) {
         this.timeout(10000);
         chai
           .request(server)
@@ -743,7 +743,7 @@ describe('schedule test', function() {
 //   });
 // });
 
-describe('parameterized tests', function() {
+describe('parameterized tests', function () {
   var data = [
     {
       year: '-1',
@@ -767,7 +767,7 @@ describe('parameterized tests', function() {
     }
   ];
 
-  itParam('reject all', data, function(schedule) {
+  itParam('reject all', data, function (schedule) {
     chai
       .request(server)
       .post('/schedule/generate')
@@ -787,10 +787,10 @@ describe('parameterized tests', function() {
   });
 });
 
-describe('API tests', function() {
+describe('API tests', function () {
   this.timeout(10000);
 
-  it('it should get all years', function(done) {
+  it('it should get all years', function (done) {
     chai
       .request(server)
       .get('/api/years')
@@ -803,7 +803,7 @@ describe('API tests', function() {
       });
   });
 
-  it('it should get all semester for given year', function(done) {
+  it('it should get all semester for given year', function (done) {
     chai
       .request(server)
       .get('/api/semester')
@@ -816,7 +816,7 @@ describe('API tests', function() {
       });
   });
 
-  it('it should get all major for given year and semester', function(done) {
+  it('it should get all major for given year and semester', function (done) {
     chai
       .request(server)
       .get('/api/subject')
@@ -829,7 +829,7 @@ describe('API tests', function() {
       });
   });
 
-  it('it should get all course for given year, semester, major', function(done) {
+  it('it should get all course for given year, semester, major', function (done) {
     chai
       .request(server)
       .get('/api/course')
@@ -842,7 +842,7 @@ describe('API tests', function() {
       });
   });
 
-  it('it should get class section for given year, semester, major, course, courseNumber', function(done) {
+  it('it should get class section for given year, semester, major, course, courseNumber', function (done) {
     chai
       .request(server)
       .get('/api/section')
