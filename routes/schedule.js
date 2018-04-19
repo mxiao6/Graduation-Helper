@@ -258,7 +258,7 @@ exports.get = function (req, res) {
 *     ]
  *  }
  *
- *@apiSuccessExample {json} Success-Response
+ *@apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  *{
  *  'Edit successful'
@@ -344,7 +344,28 @@ exports.edit = function (req, res) {
   });
 };
 
-// TODO: generate docs
+/**
+ * @api{post}/deleteschedule Delete user schedule
+ * @apiName deleteschedule
+ * @apiGroup Schedule
+ * @apiVersion 0.1.0
+ *
+ * @apiParam {int} scheduleId Schedule ID to be deleted
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "scheduleId": 5
+ * }
+ *
+ * @apiSuccessExample SuccessResponse:
+ * "Delete Successful"
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 400 Bad Request
+ * {
+ *    "error": "Incorrect parameters"
+ * }
+ */
 exports.delete = function (req, res) {
   let scheduleId = req.query.scheduleId;
 
