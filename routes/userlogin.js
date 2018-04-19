@@ -6,6 +6,7 @@ var moment = require('moment');
 // var localstrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
 var crypto = require('crypto-js');
+var querystring = require("querystring");
 var pool;
 
 if (process.argv.length > 2 && process.argv[2] === 'test') {
@@ -83,7 +84,10 @@ exports.register = function (req, res) {
               } else {
               // console.log('The solution is: ', results);
                 res.status(250).send('user registered sucessfully');
+                //console.log(req.body.email);
                 var cipher = crypto.AES.encrypt(req.body.email, 'Excalibur');
+                var cipher = querystring.escape(cipher);
+                //console.log(cipher);
                 var transporter = nodemailer.createTransport({
                   service: 'gmail',
                   auth: {
@@ -121,7 +125,7 @@ exports.register = function (req, res) {
 *@apiGroup User
 *@apiVersion 0.2.0
 *
-*@apiParam {String} encrypted user's email
+*@apiParam {String} inf encrypted user's email
 *
 *@apiSuccessExample Success-Response:
 *   HTTP/1.1 250 OK
@@ -139,14 +143,16 @@ exports.register = function (req, res) {
 */
 exports.activate = function (req, res) {
   var cipher = req.query.inf;
+  //console.log("got:") + cipher;
   var bytes = crypto.AES.decrypt(cipher.toString(), 'Excalibur');
   var recoveremail = bytes.toString(crypto.enc.Utf8);
+  //console.log("really>" + recoveremail);
   // res.send('got it');
   pool.getConnection(function (err, connection) {
     if (err) {
       res.status(500).send('Database pool connection error');
     }
-    connection.query('UPDATE users SET password = ? WHERE email = ?', [true, recoveremail], function (error, results, fields) {
+    connection.query('UPDATE users SET act = ? WHERE email = ?', [1, recoveremail], function (error, results, fields) {
       if (error) {
         res.status(500).send('Database query error ocurred');
       } else {
@@ -217,7 +223,10 @@ exports.login = function (req, res) {
 
             if (!results[0].act) {
               res.status(422).send('Account has not activate');
+              //console.log("TO cipher is:" + req.body.email);
               var cipher = crypto.AES.encrypt(req.body.email, 'Excalibur');
+              var cipher = querystring.escape(cipher);
+              //console.log(cipher);
               var transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -236,7 +245,7 @@ exports.login = function (req, res) {
                 if (err) {
                   console.log(err);
                 } else {
-                  res.status(250).send('Email sended successfully');
+                  res.status(250).send('Activate email sended successfully');
                   console.log(info);
                 }
               });
