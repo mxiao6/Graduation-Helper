@@ -33,7 +33,14 @@ function getSectionParentInfo (jsonInfo) {
   return {sectionId: sectionId, subjectId: subjectId, courseId: courseId};
 }
 
-function parseSectionDetails (jsonInfo) {
+function getSectionOtherInfo (jsonInfo) {
+  let sectionTitle = jsonInfo['ns2:section']['sectionTitle'];
+  if (sectionTitle != null) {
+    sectionTitle = sectionTitle[0].trim();
+  } else {
+    sectionTitle = jsonInfo['ns2:section']['parents'][0]['course'][0]['_'];
+  }
+
   let sectionNumber = jsonInfo['ns2:section']['sectionNumber'];
   if (sectionNumber != null) {
     sectionNumber = sectionNumber[0].trim();
@@ -48,9 +55,16 @@ function parseSectionDetails (jsonInfo) {
     enrollmentStatus = 'UNKNOWN';
   }
 
+  return {sectionTitle: sectionTitle, sectionNumber: sectionNumber, enrollmentStatus: enrollmentStatus};
+}
+
+function parseSectionDetails (jsonInfo) {
+  let {sectionTitle, sectionNumber, enrollmentStatus} = getSectionOtherInfo(jsonInfo);
   let {type, startTime, endTime, daysOfWeek} = getSectionTimeInfo(jsonInfo);
   let {sectionId, subjectId, courseId} = getSectionParentInfo(jsonInfo);
+
   let sectionDetails = {
+    sectionTitle: sectionTitle,
     sectionId: sectionId,
     subjectId: subjectId,
     courseId: courseId,
@@ -66,7 +80,7 @@ function parseSectionDetails (jsonInfo) {
 }
 
 // Given course url get all the urls for its sections
-function getSectionListHelper (courseUrl) {
+function getSectionListHelper ([courseUrl, specialTopic]) {
   return getParsedRequest(courseUrl).then(function (result) {
     let hrefs = [];
     let sectionsInSemester = result['ns2:course']['sections'][0]['section'];
@@ -75,27 +89,34 @@ function getSectionListHelper (courseUrl) {
       let href = sectionsInSemester[i]['$'].href;
       hrefs.push(href);
     }
-    return hrefs;
+    return [hrefs, specialTopic];
   });
 }
 
 // Given a list of urls for courses get all the urls for its sections
-function getSectionList (courseUrls) {
-  return Promise.map(courseUrls, courseUrl => getSectionListHelper(courseUrl), {concurrency: 3}).then(function (result) {
-    let coursesHrefs = [];
+function getSectionList (courseUrlItems) {
+  return Promise.map(courseUrlItems, courseUrlItem => getSectionListHelper(courseUrlItem), {concurrency: 3}).then(function (result) {
+    let coursesSectionUrlsItems = [];
     for (let i = 0; i < result.length; i++) {
-      coursesHrefs.push(result[i]);
+      coursesSectionUrlsItems.push(result[i]);
     }
-    return coursesHrefs;
+    return coursesSectionUrlsItems;
   });
 }
 
 // Given a section url list for a course, get all the section details
-function getSectionDetailsHelper (sectionUrls) {
+function getSectionDetailsHelper ([sectionUrls, specialTopic]) {
   return Promise.map(sectionUrls, sectionUrl => getParsedRequest(sectionUrl), {concurrency: 3}).then(function (result) {
     let sections = [];
     for (let i = 0; i < result.length; i++) {
       let section = parseSectionDetails(result[i]);
+      // Checks if special topic class is defined
+      if (specialTopic != null) {
+        let acronym = section.sectionTitle.match(/\b(\w)/g).join('');
+        if (specialTopic !== acronym) {
+          continue;
+        }
+      }
       sections.push(section);
     }
     return sections;
@@ -103,8 +124,8 @@ function getSectionDetailsHelper (sectionUrls) {
 }
 
 // Given an array of course section url lists, get all of the section details for each course
-function getSectionDetails (coursesSectionUrls) {
-  return Promise.map(coursesSectionUrls, sectionUrls => getSectionDetailsHelper(sectionUrls), {concurrency: 3}).then(function (result) {
+function getSectionDetails (coursesSectionUrlsItems) {
+  return Promise.map(coursesSectionUrlsItems, sectionUrlsItem => getSectionDetailsHelper(sectionUrlsItem), {concurrency: 3}).then(function (result) {
     let sectionsForCourses = [];
     for (let i = 0; i < result.length; i++) {
       sectionsForCourses.push(result[i]);
@@ -116,12 +137,15 @@ function getSectionDetails (coursesSectionUrls) {
 // Given course list get all sections for those courses
 // input ['CS425','CS429']
 function getAllDetails (year, semester, selectedCourses) {
-  let courseUrls = selectedCourses.map(function (course) {
-    let params = course.split(/(\d+)/);
-    return 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + params[0] + '/' + params[1] + '.xml';
+  let courseUrlItems = selectedCourses.map(function (course) {
+    let courseTags = course.split('-');
+    let specialTopic = courseTags[1];
+    let params = courseTags[0].split(/(\d+)/);
+    let courseUrl = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + params[0] + '/' + params[1] + '.xml';
+    return [courseUrl, specialTopic];
   });
 
-  return getSectionList(courseUrls).then(getSectionDetails);
+  return getSectionList(courseUrlItems).then(getSectionDetails);
 }
 
 module.exports = {

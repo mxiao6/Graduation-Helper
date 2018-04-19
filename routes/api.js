@@ -40,7 +40,7 @@ router.get('/years', function (req, res) {
       res.status(200).json(years);
     }
   }).catch(function (err) {
-    return res.status(500).json({'error': err});
+    return res.status(500).json({'error': err.message});
   });
 });
 
@@ -83,7 +83,7 @@ router.get('/semester', function (req, res) {
       res.status(200).json(semester);
     }
   }).catch(function (err) {
-    return res.status(500).json({'error': err});
+    return res.status(500).json({'error': err.message});
   });
 });
 
@@ -139,7 +139,7 @@ router.get('/subject', function (req, res) {
       res.status(200).json(majorList);
     }
   }).catch(function (err) {
-    return res.status(500).json({'error': err});
+    return res.status(500).json({'error': err.message});
   });
 });
 
@@ -197,9 +197,11 @@ router.get('/course', function (req, res) {
         if (courseName === 'Special Topics') {
           let specialTopicsUrl = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '/' + id + '.xml';
           let topics = await getSpecialTopics(specialTopicsUrl);
-          if(topics && topics.size != 0){
-            topics.forEach(function(topic){
-              courseList.push({course: topic, id: id});
+          if (topics && topics.size !== 0) {
+            topics.forEach(function (topic) {
+              let acronym = topic.match(/\b(\w)/g).join('');
+              let specialId = id + '-' + acronym;
+              courseList.push({course: topic, id: specialId});
             });
             continue;
           }
@@ -214,8 +216,8 @@ router.get('/course', function (req, res) {
   });
 });
 
-function getSpecialTopics(specialTopicsUrl){
-  return getParsedRequest(specialTopicsUrl).then(function(result){
+function getSpecialTopics (specialTopicsUrl) {
+  return getParsedRequest(specialTopicsUrl).then(function (result) {
     let section = result['ns2:course']['sections'][0]['section'];
     if (section == null) {
       return [];
@@ -227,19 +229,18 @@ function getSpecialTopics(specialTopicsUrl){
       }
       return sectionListUrls;
     }
-  }).then(function(urls){
-    return Promise.map(urls, url => getParsedRequest(url), {concurrency: 3}).then(function(result){
+  }).then(function (urls) {
+    return Promise.map(urls, url => getParsedRequest(url), {concurrency: 3}).then(function (result) {
       let topicsSet = new Set([]);
-      for (let i = 0; i < result.length; i++){
+      for (let i = 0; i < result.length; i++) {
         let sectionTitle = result[i]['ns2:section']['sectionTitle'];
-        if (sectionTitle == null){
+        if (sectionTitle == null) {
           return topicsSet;
         }
-        // console.log(sectionTitle[0]);
         topicsSet.add(sectionTitle[0]);
       }
       return topicsSet;
-    }).catch(function(err){
+    }).catch(function (err) {
       throw err;
     });
   });
@@ -305,7 +306,7 @@ router.get('/section', function (req, res) {
       res.status(200).json(sectionList);
     }
   }).catch(function (err) {
-    return res.status(500).json({'error': err});
+    return res.status(500).json({'error': err.message});
   });
 });
 
@@ -331,6 +332,7 @@ router.get('/section', function (req, res) {
 *@apiSuccessExample {Object[]} Success-Response:
 *   HTTP/1.1 200 OK
 *   {
+*     "sectionTitle": "Applied Machine Learning",
 *     "sectionId": "30107",
 *     "subjectId": "AAS",
 *     "courseId": "100",
@@ -360,7 +362,7 @@ router.get('/sectionDetails', function (req, res) {
     let sectionDetails = parseSectionDetails(result);
     res.status(200).json(sectionDetails);
   }).catch(function (err) {
-    return res.status(500).json({'error': err});
+    return res.status(500).json({'error': err.message});
   });
 });
 
