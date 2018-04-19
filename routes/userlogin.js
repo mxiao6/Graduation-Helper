@@ -100,7 +100,7 @@ exports.register = function (req, res) {
                   to: req.body.email, // receiver
                   subject: 'Activate your Account in GRH!!!', // Subject line
                   text: 'Your are receiving this because you just registered an account and ' +
-           'please use this URL to activate your account\n' + 'http://localhost:5000/act?inf=' + cipher + '\n If you did not request this, please ignore'
+           'please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore'
                 };
                 transporter.sendMail(themail, function (err, info) {
                   if (err) {
