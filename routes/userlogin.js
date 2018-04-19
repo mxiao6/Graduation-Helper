@@ -6,7 +6,7 @@ var moment = require('moment');
 // var localstrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
 var crypto = require('crypto-js');
-var querystring = require("querystring");
+var querystring = require('querystring');
 var pool;
 
 if (process.argv.length > 2 && process.argv[2] === 'test') {
@@ -84,10 +84,10 @@ exports.register = function (req, res) {
               } else {
               // console.log('The solution is: ', results);
                 res.status(250).send('user registered sucessfully');
-                //console.log(req.body.email);
+                // console.log(req.body.email);
                 var cipher = crypto.AES.encrypt(req.body.email, 'Excalibur');
-                var cipher = querystring.escape(cipher);
-                //console.log(cipher);
+                cipher = querystring.escape(cipher);
+                // console.log(cipher);
                 var transporter = nodemailer.createTransport({
                   service: 'gmail',
                   auth: {
@@ -143,10 +143,10 @@ exports.register = function (req, res) {
 */
 exports.activate = function (req, res) {
   var cipher = req.query.inf;
-  //console.log("got:") + cipher;
+  // console.log("got:") + cipher;
   var bytes = crypto.AES.decrypt(cipher.toString(), 'Excalibur');
   var recoveremail = bytes.toString(crypto.enc.Utf8);
-  //console.log("really>" + recoveremail);
+  // console.log("really>" + recoveremail);
   // res.send('got it');
   pool.getConnection(function (err, connection) {
     if (err) {
@@ -223,10 +223,10 @@ exports.login = function (req, res) {
 
             if (!results[0].act) {
               res.status(422).send('Account has not activate');
-              //console.log("TO cipher is:" + req.body.email);
+              // console.log("TO cipher is:" + req.body.email);
               var cipher = crypto.AES.encrypt(req.body.email, 'Excalibur');
-              var cipher = querystring.escape(cipher);
-              //console.log(cipher);
+              cipher = querystring.escape(cipher);
+              // console.log(cipher);
               var transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
