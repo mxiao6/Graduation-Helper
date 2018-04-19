@@ -18,3 +18,5 @@ export const GET_SECTION_DETAILS = `${API_ROOT}/sectionDetails`;
 export const POST_GENERATE_SCHEDULE = `/schedule/generate`;
 export const POST_SAVE_SCHEDULE = `/saveschedule`;
 export const GET_SCHEDULE = `/getschedule`;
+export const POST_DELETE_SCHEDULE = `/deleteschedule`;
+export const POST_EDIT_SCHEDULE = `/editschedule`;

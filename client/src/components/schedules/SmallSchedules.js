@@ -42,12 +42,12 @@ export const _parseSmallArray = data => {
   return parsed;
 };
 
-export const _renderSmallSchedules = (smallArray, _showBigSchedule) => {
+export const _renderSmallSchedules = (smallArray, _onClickGrid) => {
   return (
     <div className="gridsContainer">
       {_.map(smallArray, (smallGrid, gIdx) => {
         return (
-          <a onClick={() => _showBigSchedule(gIdx)} key={gIdx}>
+          <a onClick={() => _onClickGrid(gIdx)} key={gIdx}>
             <div className="smallGrid" key={gIdx}>
               {_.map(smallGrid.array, (row, rIdx) => {
                 return (

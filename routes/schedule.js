@@ -283,7 +283,7 @@ exports.get = function (req, res) {
  * }
  */
 exports.edit = function (req, res) {
-  let scheduleId = req.query.scheduleId;
+  let scheduleId = req.body.scheduleId;
   let sections = req.body.sections;
 
   if (scheduleId === null || sections === null) {
@@ -379,7 +379,7 @@ exports.edit = function (req, res) {
  * }
  */
 exports.delete = function (req, res) {
-  let scheduleId = req.query.scheduleId;
+  let scheduleId = req.body.scheduleId;
 
   if (scheduleId === null) {
     return res.status(400).json({error: 'Incorrect parameters'});

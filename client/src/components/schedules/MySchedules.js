@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import axios from 'axios';
-import { Spin } from 'antd';
+import { Button, Spin } from 'antd';
 import 'styles/ClassSelection.css';
 
-import { GET_SCHEDULE } from 'api';
+import { GET_SCHEDULE, POST_DELETE_SCHEDULE } from 'api';
 import {
   _parseSmallArray,
   _renderSmallSchedules,
@@ -15,14 +15,9 @@ import {
 class MySchedules extends Component {
   state = {
     schedules: undefined,
-    loading: false,
   };
 
   componentWillMount() {
-    this.setState({
-      loading: true,
-    });
-
     axios
       .get(GET_SCHEDULE, {
         params: {
@@ -34,7 +29,6 @@ class MySchedules extends Component {
         this.setState({
           schedules: res.data,
           smallSchedules: this._parseSchedules(res.data),
-          loading: false,
         });
       })
       .catch(e => {
@@ -62,12 +56,25 @@ class MySchedules extends Component {
 
   _renderSmallGrids = () => {
     const { loading, smallSchedules } = this.state;
-    return loading ? (
+    return !smallSchedules ? (
       <Spin />
     ) : (
       _renderSmallSchedules(smallSchedules, this._showBigSchedule)
     );
   };
+
+  // _handleDelete = () => {
+  //   axios
+  //     .post(POST_DELETE_SCHEDULE, {
+  //       scheduleId: 4,
+  //     })
+  //     .then(res => {
+  //       console.log('POST_DELETE_SCHEDULE', res.data);
+  //     })
+  //     .catch(e => {
+  //       console.error('POST_DELETE_SCHEDULE', e.response);
+  //     });
+  // };
 
   render() {
     const { user } = this.props;
