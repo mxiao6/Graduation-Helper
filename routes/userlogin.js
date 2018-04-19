@@ -15,7 +15,6 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
     user: 'root',
     password: '',
     database: 'testDatabase'
-
   });
 } else {
   pool = mysql.createPool({
@@ -82,12 +81,8 @@ exports.register = function (req, res) {
               // console.log("error ocurred",error);
                 res.status(500).send('Database query error ocurred');
               } else {
-              // console.log('The solution is: ', results);
-                res.status(250).send('user registered sucessfully');
-                // console.log(req.body.email);
                 var cipher = crypto.AES.encrypt(req.body.email, 'Excalibur');
                 cipher = querystring.escape(cipher);
-                // console.log(cipher);
                 var transporter = nodemailer.createTransport({
                   service: 'gmail',
                   auth: {
@@ -106,7 +101,7 @@ exports.register = function (req, res) {
                   if (err) {
                     console.log(err);
                   } else {
-                    res.status(250).send('Email sended successfully');
+                    res.status(250).send('Account created successfully. Please check your email to activate your account.');
                     console.log(info);
                   }
                 });
@@ -159,7 +154,7 @@ exports.activate = function (req, res) {
         res.redirect('http://grhlinux.azurewebsites.net/#/Login');
         res.status(250).send('user account activate!!!');
       }
-      
+
     });
   });
 };

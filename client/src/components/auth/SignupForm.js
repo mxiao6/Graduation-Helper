@@ -30,10 +30,6 @@ class NormalSignupForm extends React.Component {
                 .then(res => {
                   console.log(res);
                   message.success(res.data);
-                  this.props.actions.login({
-                    email: values.email,
-                    password: values.password1
-                  });
                   this.props.history.push("/");
                 })
                 .catch(e => {
