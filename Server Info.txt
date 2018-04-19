@@ -10,7 +10,8 @@ users:
 user_id* (INT)
 username (VARCHAR(16))
 email (VARCHAR(32))
-password (VARCHAR(32))
+password (VARCHAR(64))
+act (BOOL)
 
 schedules:
 scheduleId* (INT)

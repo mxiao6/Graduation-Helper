@@ -183,7 +183,7 @@ class GenerateSchedule extends React.Component {
     for (let schedule of data.schedules) {
       let oneImg = this._generateEmptyArray();
       for (let section of schedule.sections) {
-        if (!section.daysOfWeek) continue;
+        if (!section.daysOfWeek || !section.endTime) continue;
         let color = randomColor();
         for (let day of section.daysOfWeek) {
           let colIdx = daysMap[day] - 1; // 0 - 4
@@ -210,13 +210,15 @@ class GenerateSchedule extends React.Component {
         score: schedule.score,
         sections: _.flatMap(schedule.sections, section => {
           let retval = [];
-          if (!section.daysOfWeek) return retval;
+          if (!section.daysOfWeek || !section.endTime) return retval;
           for (let day of section.daysOfWeek) {
             let date = 1 + daysMap[day];
             let startTime = this._parseTime(section.startTime);
             let endTime = this._parseTime(section.endTime);
             retval.push({
-              title: section.subjectId + section.courseId,
+              title: `${section.subjectId} ${section.courseId}-${
+                section.sectionNumber
+              }\n${section.sectionId}`,
               start: new Date(2018, 3, date, startTime.hour, startTime.mins, 0),
               end: new Date(2018, 3, date, endTime.hour, endTime.mins, 0),
             });
@@ -338,7 +340,7 @@ class GenerateSchedule extends React.Component {
       .post(POST_SAVE_SCHEDULE, {
         ...semester,
         userId: user.userId,
-        sections: sections
+        sections: sections,
       })
       .then(res => {
         console.log(res.data);

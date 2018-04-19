@@ -64,7 +64,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
+          "content": "HTTP/1.1 404 Internal Server Error\n{\n  \"error\": \"No courses found\"\n}",
           "type": "json"
         }
       ]
@@ -177,7 +177,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"sectionId\": \"30107\",\n  \"sectionNumber\": \"AD1\",\n  \"enrollmentStatus\": \"Open\",\n  \"type\": \"DIS\",\n  \"startTime\": \"09:00 AM\",\n  \"endTime\": \"09:50 AM\",\n  \"daysOfWeek\": \"F      \"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"sectionTitle\": \"Applied Machine Learning\",\n  \"sectionId\": \"30107\",\n  \"subjectId\": \"AAS\",\n  \"courseId\": \"100\",\n  \"sectionNumber\": \"AD1\",\n  \"enrollmentStatus\": \"Open\",\n  \"type\": \"DIS\",\n  \"startTime\": \"09:00 AM\",\n  \"endTime\": \"09:50 AM\",\n  \"daysOfWeek\": \"F      \"\n}",
           "type": "Object[]"
         }
       ]
@@ -192,6 +192,128 @@ define({ "api": [
       ]
     },
     "filename": "routes/api.js",
+    "groupTitle": "Class"
+  },
+  {
+    "type": "get",
+    "url": "/sectionDetails",
+    "title": "Get section details",
+    "name": "GetSectionDetails",
+    "group": "Class",
+    "version": "0.1.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "year",
+            "description": "<p>The school year</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "semester",
+            "description": "<p>The specific semester</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "course",
+            "description": "<p>The course abbreviation</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "courseId",
+            "description": "<p>The specific course ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "sectionId",
+            "description": "<p>The specific section ID</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "sectionId",
+            "description": "<p>The section ID</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "sectionNumber",
+            "description": "<p>The section number</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "enrollmentStatus",
+            "description": "<p>Enrollment Status</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "type",
+            "description": "<p>Section Type</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "startTime",
+            "description": "<p>Section Start Time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "endTime",
+            "description": "<p>Section End Time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "daysOfWeek",
+            "description": "<p>The days the classes occur</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"sectionId\": \"30107\",\n  \"sectionNumber\": \"AD1\",\n  \"enrollmentStatus\": \"Open\",\n  \"type\": \"DIS\",\n  \"startTime\": \"09:00 AM\",\n  \"endTime\": \"09:50 AM\",\n  \"daysOfWeek\": \"F      \"\n}",
+          "type": "Object[]"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/_apidoc.js",
     "groupTitle": "Class"
   },
   {
@@ -266,7 +388,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
+          "content": "HTTP/1.1 404 Internal Server Error\n{\n  \"error\": \"No sections found\"\n}",
           "type": "json"
         }
       ]
@@ -307,7 +429,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
+          "content": "HTTP/1.1 404 Internal Server Error\n{\n  \"error\": \"No semesters found for year\"\n}",
           "type": "json"
         }
       ]
@@ -373,7 +495,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
+          "content": "HTTP/1.1 404 Internal Server Error\n{\n  \"error\": \"No subjects found\"\n}",
           "type": "json"
         }
       ]
@@ -401,7 +523,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"error\": \"Could not make request to the course website\"\n}",
+          "content": "HTTP/1.1 404 Internal Server Error\n{\n  \"error\": \"Could not get years\"\n}",
           "type": "json"
         }
       ]
@@ -593,6 +715,68 @@ define({ "api": [
     "title": "Get saved user schedules",
     "name": "getschedule",
     "group": "Schedule",
+    "version": "0.2.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>user ID that the schedule is associated with</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "semester",
+            "description": "<p>The specific semester</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "year",
+            "description": "<p>The specific school year</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"userId\": 9,\n  \"year\": \"2018\",\n  \"semester\": \"Spring\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n {\n   \"6\": [\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"425\",\n         \"sectionId\": \"31384\",\n         \"type\": \"LCD\",\n         \"startTime\": \"09:30 AM\",\n         \"endTime\": \"10:45 AM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     },\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"429\",\n         \"sectionId\": \"41483\",\n         \"type\": \"LCD\",\n         \"startTime\": \"02:00 PM\",\n         \"endTime\": \"03:15 PM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     }\n   ],\n   \"14\": [\n     {\n         \"subjectId\": \"CS\",\n         \"courseId\": \"425\",\n         \"sectionId\": \"31384\",\n         \"type\": \"LCD\",\n         \"startTime\": \"09:30 AM\",\n         \"endTime\": \"10:45 AM\",\n         \"daysOfWeek\": \"TR\",\n         \"semester\": \"Spring\",\n         \"year\": 2018\n     }\n   ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n   \"error\": \"Incorrect parameters\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/schedule.js",
+    "groupTitle": "Schedule"
+  },
+  {
+    "type": "get",
+    "url": "/getschedule",
+    "title": "Get saved user schedules",
+    "name": "getschedule",
+    "group": "Schedule",
     "version": "0.1.0",
     "parameter": {
       "fields": {
@@ -646,7 +830,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "routes/schedule.js",
+    "filename": "routes/_apidoc.js",
     "groupTitle": "Schedule"
   },
   {
