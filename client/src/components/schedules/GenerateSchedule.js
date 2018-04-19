@@ -271,11 +271,7 @@ class GenerateSchedule extends React.Component {
       .post(POST_SAVE_SCHEDULE, {
         ...semester,
         userId: user.userId,
-<<<<<<< HEAD
         sections,
-=======
-        sections: sections,
->>>>>>> master
       })
       .then(res => {
         console.log(res.data);
