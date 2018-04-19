@@ -235,9 +235,11 @@ function getSpecialTopics (specialTopicsUrl) {
       for (let i = 0; i < result.length; i++) {
         let sectionTitle = result[i]['ns2:section']['sectionTitle'];
         if (sectionTitle == null) {
-          return topicsSet;
+          sectionTitle = result[i]['ns2:section']['parents'][0]['course'][0]['_'];
+        } else {
+          sectionTitle = sectionTitle[0];
         }
-        topicsSet.add(sectionTitle[0]);
+        topicsSet.add(sectionTitle);
       }
       return topicsSet;
     }).catch(function (err) {
