@@ -95,8 +95,8 @@ exports.register = function (req, res) {
                   from: 'sender@email.com', // sender address
                   to: req.body.email, // receiver
                   subject: 'Activate your Account in GRH!!!', // Subject line
-                  text: 'Your are receiving this because you just registered an account.\n' +
-           'Please use this URL to activate your account' + 'http://localhost:3000/act?inf=' + cipher + '\n If you did not request this, please ignore'
+                  text: 'Your are receiving this because you just registered an account and ' +
+           'please use this URL to activate your account\n' + 'http://localhost:5000/act?inf=' + cipher + '\n If you did not request this, please ignore'
                 };
                 transporter.sendMail(themail, function (err, info) {
                   if (err) {
@@ -115,14 +115,45 @@ exports.register = function (req, res) {
   });
 };
 
+/**
+*@api{activate}/act account activate
+*@apiName act
+*@apiGroup User
+*@apiVersion 0.2.0
+*
+*@apiParam {String} encrypted user's email
+*
+*@apiSuccessExample Success-Response:
+*   HTTP/1.1 250 OK
+*   {
+      "user account activate!!!"
+    }
+*
+*
+*@apiErrorExample Error-Response:
+*   HTTP/1.1 500
+*   {
+*     "Database query error ocurred"
+*   }
+*
+*/
 exports.activate = function (req, res) {
   var cipher = req.query.inf;
-  console.log(cipher);
   var bytes = crypto.AES.decrypt(cipher.toString(), 'Excalibur');
-  var plaintext = bytes.toString(crypto.enc.Utf8);
-  console.log(plaintext);
-  //res.send('got it');
-  
+  var recoveremail = bytes.toString(crypto.enc.Utf8);
+  // res.send('got it');
+  pool.getConnection(function (err, connection) {
+    if (err) {
+      res.status(500).send('Database pool connection error');
+    }
+    connection.query('UPDATE users SET password = ? WHERE email = ?', [true, recoveremail], function (error, results, fields) {
+      if (error) {
+        res.status(500).send('Database query error ocurred');
+      } else {
+        res.status(250).send('user account activate!!!');
+      }
+    });
+  });
 };
 
 /**
@@ -198,8 +229,8 @@ exports.login = function (req, res) {
                 from: 'sender@email.com', // sender address
                 to: req.body.email, // receiver
                 subject: 'Activate your Account in GRH!!!', // Subject line
-                text: 'Your are receiving this because you just registered an account.\n' +
-           'Please use this URL to activate your account' + 'http://localhost:3000/act?inf=' + cipher + '\n If you did not request this, please ignore'
+                text: 'Your are receiving this because you just registered an account and ' +
+           'please use this URL to activate your account\n' + 'http://localhost:5000/act?inf=' + cipher + '\n If you did not request this, please ignore'
               };
               transporter.sendMail(themail, function (err, info) {
                 if (err) {
