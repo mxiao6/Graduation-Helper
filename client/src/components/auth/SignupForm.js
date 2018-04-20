@@ -17,26 +17,44 @@ class NormalSignupForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log("Received values of form: ", values);
-
-        axios
-          .post(POST_SIGNUP, {
-            username: values.username,
-            email: values.email,
-            password: values.password
-          })
-          .then(res => {
-            console.log(res);
-            message.success(res.data);
-            this.props.actions.login({
-              email: values.email,
-              password: values.password
-            });
-            this.props.history.push("/");
-          })
-          .catch(e => {
-            message.error(e.response.data);
-            console.log(e.response);
-          });
+        var email_addr = (values.email).split("@")
+        if (email_addr[1] === 'illinois.edu'){
+          if (values.password1 === values.password2) {
+            if ((values.password1).length >= 10){
+              axios
+                .post(POST_SIGNUP, {
+                  username: values.username,
+                  email: values.email,
+                  password: values.password1
+                })
+                .then(res => {
+                  console.log(res);
+                  message.success(res.data);
+                  this.props.actions.login({
+                    email: values.email,
+                    password: values.password1
+                  });
+                  this.props.history.push("/");
+                })
+                .catch(e => {
+                  message.error(e.response.data);
+                  console.log(e.response);
+                });
+            } else{
+              message.error(
+                'Password must be at least 10 characters.'
+              );
+            }
+          } else {
+            message.error(
+              'Password does not match up with confirm password. Please try again.'
+            );
+          }
+        } else{
+          message.error(
+            'You must sign up with illinois email. Please try again.'
+          );
+        }
       }
     });
   };
@@ -66,13 +84,24 @@ class NormalSignupForm extends React.Component {
           )}
         </FormItem>
         <FormItem>
-          {getFieldDecorator("password", {
+          {getFieldDecorator("password1", {
             rules: [{ required: true, message: "Please input your Password!" }]
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
               type="password"
               placeholder="Password"
+            />
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("password2", {
+            rules: [{ required: true, message: "Please input your Password!" }]
+          })(
+            <Input
+              prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
+              type="password"
+              placeholder="Confirm Password"
             />
           )}
         </FormItem>
