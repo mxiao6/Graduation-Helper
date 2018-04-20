@@ -81,7 +81,6 @@ describe('User tests', function () {
   });
 });
 
-
 describe('schedule test', function () {
   describe('General schedule tests', function () {
     it('should give us a schedule', function (done) {
@@ -838,6 +837,35 @@ describe('schedule test', function () {
             done();
           });
         });
+      });
+    });
+  });
+
+  describe('save schedule tests', function () {
+    it('save schedule', function (done) {
+      chai.request(server).post('/saveschedule').query({
+        userId: 1,
+        semester: 'Spring',
+        year: '2018',
+        sections: [
+          {
+            'subjectId': 'CS',
+            'courseId': '425',
+            'sectionId': '31384',
+            'type': 'LCD',
+            'startTime': '09:30 AM',
+            'endTime': '10:45 AM',
+            'daysOfWeek': 'TR',
+            'semester': 'Spring',
+            'year': 2018
+          }
+        ]
+      }).end((err, res) => {
+        res.should.have.status(200);
+        done();
+        if (err) {
+          console.log(err);
+        }
       });
     });
   });
