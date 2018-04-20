@@ -6,6 +6,7 @@ import { GET_SUBJECT, GET_COURSE, GET_SECTION, GET_SECTION_DETAILS } from 'api';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
+import WindowSizeListener from 'react-window-size-listener';
 
 import { Cascader, Spin, Button, Table, Tag, message } from 'antd';
 import 'styles/ClassSelection.css';
@@ -293,7 +294,9 @@ class ClassSelection extends React.Component {
         </div>
         {this._renderCascader()}
         {this._renderCRNs()}
-        {_renderGenerated(location.state.schedule)}
+        <div style={{ width: this.state.width * 0.6 }}>
+          {_renderGenerated(location.state.schedule)}
+        </div>
         {this.state.tableLoading ? (
           <Spin />
         ) : (
@@ -306,6 +309,14 @@ class ClassSelection extends React.Component {
   render() {
     return (
       <div className="bodyContainer">
+        <WindowSizeListener
+          onResize={windowSize => {
+            this.setState({
+              height: windowSize.windowHeight,
+              width: windowSize.windowWidth,
+            });
+          }}
+        />
         {this.state.options ? this._renderContent() : <Spin />}
       </div>
     );
