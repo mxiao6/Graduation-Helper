@@ -388,13 +388,13 @@ exports.sendemail = function (req, res) {
             };
 
             if (process.argv.length > 2 && process.argv[2] === 'test') {
-              res.status(250).send('Email not sent in testing mode; But email would have been sended sucessfully.' + aucode);
+              res.status(250).send('Email not sent; in testing mode');
             } else {
               transporter.sendMail(themail, function (err, info) {
                 if (err) {
                   console.log(err);
                 } else {
-                  res.status(250).send('Email sended successfully.' + aucode);
+                  res.status(250).send('Email sended successfully.');
                   console.log(info);
                 }
               });

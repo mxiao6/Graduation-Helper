@@ -47,18 +47,11 @@ describe('User tests', function () {
     });
   });
 
-  var aucode = '';
+  var aucode = 'ABCDEFGHIJ';
   it('resetpass', function (done) {
     chai.request(server).post('/sendemail').send({'email': 'admin@illinois.edu'}).end((err, res) => {
       res.should.have.status(250);
-      var message = res.text;
-      var dotPosition = message.indexOf('.');
-      aucode = message.substring(dotPosition + 1);
-      var isGood = (aucode.length > 0);
-      if (isGood) {
-        console.log('this is a good test');
-      }
-      // isGood.should.be.true;
+      res.text.should.be.equal('Email not sent; in testing mode');
       done();
       if (err) {
         console.log(err);
@@ -67,7 +60,7 @@ describe('User tests', function () {
   });
 
   it('resetpass', function (done) {
-    chai.request(server).post('/resetpassword').send({'email': 'admin@illinois.edu', 'password': 'cs428', 'aucode': aucode}).end((err, res) => {
+    chai.request(server).post('/resetpassword').send({'email': 'admin@illinois.edu', 'password': 'test2test2test2', 'aucode': aucode}).end((err, res) => {
       res.should.have.status(250);
       done();
       if (err) {
@@ -84,6 +77,19 @@ describe('User tests', function () {
       if (err) {
         console.log(err);
       }
+    });
+  });
+});
+
+describe('User tests', function () {
+  it('it should not register since email already exists', function (done) {
+    chai.request(server).post('/register').query({ 'username': 'admin', 'email': 'admin@illinois.edu', 'password': 'cs428' }).end(function (err, res) {
+      res.should.have.status(422);
+      res.text.should.be.equal('Email already registered!');
+      if (err) {
+        err.response.should.have.status(422);
+      }
+      done();
     });
   });
 });
