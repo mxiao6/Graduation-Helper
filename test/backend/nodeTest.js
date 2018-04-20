@@ -883,7 +883,7 @@ describe('schedule test', function () {
   describe('schdule tests', function () {
     it('saving a schdule', function (done) {
       this.timeout(10000);
-      chai.request(server).post('/saveschedule').query({
+      chai.request(server).post('/saveschedule').send({
         'userid': 1,
         'year': '2018',
         'semester': 'Fall',
