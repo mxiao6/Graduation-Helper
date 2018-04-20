@@ -2,8 +2,6 @@ var mysql = require('mysql');
 var nodemailer = require('nodemailer');
 var randomstring = require('randomstring');
 var moment = require('moment');
-// var passport = require('passport');
-// var localstrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
 var crypto = require('crypto-js');
 var querystring = require('querystring');
@@ -72,15 +70,14 @@ exports.register = function (req, res) {
 
         // check for duplicate register
         if (error) {
-          res.status(500).send('Database query error ocurred');
+          res.status(500).send('Database query error occurred');
         } else {
           if (results.length > 0) {
             res.status(422).send('Email already registered!');
           } else {
             connection.query('INSERT INTO users SET ?', users, function (error, results, fields) {
               if (error) {
-                // console.log("error ocurred",error);
-                res.status(500).send('Database query error ocurred');
+                res.status(500).send('Database query error occurred');
               } else if (!testMode) {
                 var cipher = crypto.AES.encrypt(req.body.email, 'Excalibur');
                 cipher = querystring.escape(cipher);
@@ -95,8 +92,8 @@ exports.register = function (req, res) {
                   from: 'sender@email.com', // sender address
                   to: req.body.email, // receiver
                   subject: 'Activate your Account in GRH!!!', // Subject line
-                  text: 'Your are receiving this because you just registered an account and ' +
-                    'please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore'
+                  text: 'You are receiving this because you just registered an account. ' +
+                  'Please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore this email.'
                 };
                 transporter.sendMail(themail, function (err, info) {
                   if (err) {
@@ -135,27 +132,24 @@ exports.register = function (req, res) {
 *@apiErrorExample Error-Response:
 *   HTTP/1.1 500
 *   {
-*     "Database query error ocurred"
+*     "Database query error occurred"
 *   }
 *
 */
 exports.activate = function (req, res) {
   var cipher = req.query.inf;
-  // console.log("got:") + cipher;
   var bytes = crypto.AES.decrypt(cipher.toString(), 'Excalibur');
   var recoveremail = bytes.toString(crypto.enc.Utf8);
-  // console.log("really>" + recoveremail);
-  // res.send('got it');
   pool.getConnection(function (err, connection) {
     if (err) {
       res.status(500).send('Database pool connection error');
     }
     connection.query('UPDATE users SET act = ? WHERE email = ?', [1, recoveremail], function (error, results, fields) {
       if (error) {
-        res.status(500).send('Database query error ocurred');
+        res.status(500).send('Database query error occurred');
       } else {
         res.redirect('http://grhlinux.azurewebsites.net/#/Login');
-        res.status(250).send('user account activate!!!');
+        res.status(250).send('User account activated!');
       }
     });
   });
@@ -210,7 +204,7 @@ exports.login = function (req, res) {
       connection.release();
 
       if (error) {
-        res.status(500).send('Database query error ocurred');
+        res.status(500).send('Database query error occurred');
       } else {
         if (results.length > 0) {
           var hashedpass = results[0].password;
@@ -222,10 +216,8 @@ exports.login = function (req, res) {
 
             if (!results[0].act) {
               res.status(422).send('Account has not activate');
-              // console.log("TO cipher is:" + req.body.email);
               var cipher = crypto.AES.encrypt(req.body.email, 'Excalibur');
               cipher = querystring.escape(cipher);
-              // console.log(cipher);
               var transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -237,14 +229,14 @@ exports.login = function (req, res) {
                 from: 'sender@email.com', // sender address
                 to: req.body.email, // receiver
                 subject: 'Activate your Account in GRH!!!', // Subject line
-                text: 'Your are receiving this because you just registered an account and ' +
-                  'please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore'
+                text: 'You are receiving this because you just registered an account. ' +
+                  'Please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore this email.'
               };
               transporter.sendMail(themail, function (err, info) {
                 if (err) {
                   console.log(err);
                 } else {
-                  res.status(250).send('Activate email sended successfully');
+                  res.status(250).send('Activate email sent successfully');
                   console.log(info);
                 }
               });
@@ -257,7 +249,7 @@ exports.login = function (req, res) {
               };
               res.status(250).send(userInfo);
             } else {
-              res.status(422).send('Email and password does not match');
+              res.status(422).send('Email and password do not match');
             }
           });
         } else {
@@ -267,33 +259,6 @@ exports.login = function (req, res) {
     });
   });
 };
-
-// code for verification email
-/*
-  var cipher = crypto.AES.encrypt(email,"Excalibur");
-  var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'graduationhelper@gmail.com',
-      pass: 'Grh12345'
-    }
-  });
-  var themail = {
-    from: 'sender@email.com', // sender address
-    to: email, // receiver
-    subject: 'Activate your Account in GRH!!!', // Subject line
-    text: 'Your are receiving this because you just registered an account.\n' +
-           'Please use this URL to activate your account'+ 'http://localhost:3000/schedule/act?in='+ cipher + '\n If you did not request this, please ignore'
-  };
-  transporter.sendMail(themail, function (err, info) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.status(250).send('Email sended successfully');
-      console.log(info);
-    }
-  });
-*/
 
 /**
 *@api{sendemail}/userlogin Send reset information and record verification information
@@ -325,14 +290,14 @@ exports.sendemail = function (req, res) {
     connection.query('SELECT * FROM users WHERE email = ?', [email], function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send('Database query error ocurred1');
+        res.status(500).send('Database query error occurred');
       } else {
         if (results.length > 0) {
           var aucode;
           var now = moment().format('YYYY-MM-DD HH:mm:ss');
           connection.query('SELECT * FROM authentication WHERE email = ?', [email], function (error, results, fields) {
             if (error) {
-              res.status(500).send('Database query error ocurred0');
+              res.status(500).send('Database query error occurred');
             } else {
               if (results.length > 0) {
                 var timenow = moment();
@@ -346,12 +311,12 @@ exports.sendemail = function (req, res) {
                   aucode = randomstring.generate(10);
                   connection.query('UPDATE authentication SET aucode = ? WHERE email = ?', [aucode, email], function (error, results, fields) {
                     if (error) {
-                      res.status(500).send('Database query error ocurred');
+                      res.status(500).send('Database query error occurred');
                     }
                   });
                   connection.query('UPDATE authentication SET timesaved = ? WHERE email = ?', [now, email], function (error, results, fields) {
                     if (error) {
-                      res.status(500).send('Database query error ocurred');
+                      res.status(500).send('Database query error occurred');
                     }
                   });
                 }
@@ -364,8 +329,7 @@ exports.sendemail = function (req, res) {
                 };
                 connection.query('INSERT INTO authentication SET ?', auinfor, function (error, results, fields) {
                   if (error) {
-                    // console.log("error ocurred",error);
-                    res.status(500).send('Database query error ocurred2');
+                    res.status(500).send('Database query error occurred');
                   }
                 });
               }
@@ -382,9 +346,9 @@ exports.sendemail = function (req, res) {
               from: 'sender@email.com', // sender address
               to: email, // receiver
               subject: 'Reset information from GRH', // Subject line
-              text: 'Your are receiving this because you try to reset password for your account on Graduation Helper. \n' +
+              text: 'You are receiving this because you tried to reset the password for your account on Graduation Helper. \n' +
                 'The reset authentication code is ：     ' + aucode + '\n The code will expired in 30 minutes.' +
-                "If you didn't request this, please ignore and nothing will be changed in your account."
+                "If you didn't request this, please ignore this email."
             };
 
             if (process.argv.length > 2 && process.argv[2] === 'test') {
@@ -394,7 +358,7 @@ exports.sendemail = function (req, res) {
                 if (err) {
                   console.log(err);
                 } else {
-                  res.status(250).send('Email sended successfully. ');
+                  res.status(250).send('Email sent successfully');
                   console.log(info);
                 }
               });
@@ -459,7 +423,7 @@ exports.resetpassword = function (req, res) {
     connection.query('SELECT * FROM authentication WHERE email = ?', [email], function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send('Database query error ocurred');
+        res.status(500).send('Database query error occurred');
       } else {
         if (results.length > 0) {
           aucode = results[0].aucode;
@@ -474,7 +438,7 @@ exports.resetpassword = function (req, res) {
       if (timediff > 30) {
         res.status(422).write('aucode expired!');
       } else if (aucode !== Uaucode) {
-        res.status(422).send('aucode unmatched!');
+        res.status(422).send('aucode did not match!');
       } else {
         bcrypt.hash(password, 10, function (err, results) {
           if (err) {
@@ -485,7 +449,7 @@ exports.resetpassword = function (req, res) {
             password, email
           ], function (error, results, fields) {
             if (error) {
-              res.status(500).send('Database query error ocurred');
+              res.status(500).send('Database query error occurred');
             } else {
               res.status(250).send('Reset successfully!');
             }
@@ -525,7 +489,7 @@ exports.getUserInfo = function (req, res) {
       connection.release();
 
       if (error) {
-        res.status(500).send('Database query error ocurred');
+        res.status(500).send('Database query error occurred');
       } else {
         if (results.length > 0) {
           let userInfo = {

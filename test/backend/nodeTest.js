@@ -28,7 +28,7 @@ describe('User tests', function () {
   it('it should not login wrong password', function (done) {
     chai.request(server).post('/login').send({ 'email': 'admin@illinois.edu', 'password': 'wrong_pass' }).end((err, res) => {
       res.should.have.status(422);
-      res.text.should.be.equal('Email and password does not match');
+      res.text.should.be.equal('Email and password do not match');
       if (err) {
         err.response.should.have.status(422);
       }
