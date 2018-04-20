@@ -1,6 +1,6 @@
 let chai = require('chai');
 let chaiHttp = require('chai-http');
-let server = 'http://localhost:5000'; // require('../../server');
+let server = 'http://localhost:5000';
 var itParam = require('mocha-param');
 chai.use(chaiHttp);
 require('chai').should();
@@ -28,7 +28,7 @@ describe('User tests', function () {
   it('it should not login wrong password', function (done) {
     chai.request(server).post('/login').send({ 'email': 'admin@illinois.edu', 'password': 'wrong_pass' }).end((err, res) => {
       res.should.have.status(422);
-      res.text.should.be.equal('Email and password does not match');
+      res.text.should.be.equal('Email and password do not match');
       if (err) {
         err.response.should.have.status(422);
       }
@@ -80,7 +80,6 @@ describe('User tests', function () {
     });
   });
 });
-
 
 describe('schedule test', function () {
   describe('General schedule tests', function () {
