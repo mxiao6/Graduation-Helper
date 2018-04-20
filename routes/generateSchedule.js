@@ -130,14 +130,6 @@ function hasProperties (req) {
   return true;
 }
 
-// function checkDuplicates(generatedSchedules){
-//   let seen = new Set();
-//   let hasDuplicates = generatedSchedules.schedules.some(function(curr) {
-//     return seen.size === seen.add(curr.sections).size;
-//   });
-//   console.log('Has Duplicates: ', hasDuplicates);
-// }
-
 function isSectionsSimilar (sectionA, sectionB) {
   if (sectionA.daysOfWeek === sectionB.daysOfWeek) {
     if (sectionA.startTime === sectionB.startTime && sectionA.endTime === sectionB.endTime) {
@@ -437,44 +429,10 @@ function generateIterative (listOfPermutationsForEveryClass, preferences) {
   return generated;
 }
 
-// function isIndicesFull (indices, listOfPermutationsForEveryClass) {
-//   for (let i = indices.length - 1; i >= 0; i--) {
-//     if (indices[i] !== listOfPermutationsForEveryClass[i].length - 1) {
-//       indices[i] = indices[i] + 1;
-//       indices.fill(0, i + 1);
-//       return false;
-//     }
-//   }
-//   return true;
-// }
-
-// Testing a new less space intensive iterative genenrating method. Slower
-// function generateIterativeSpace (listOfPermutationsForEveryClass) {
-//   let indices = new Array(listOfPermutationsForEveryClass.length).fill(0);
-//   let current = [];
-//   let isDone = false;
-//   while (!isDone) {
-//     let temp = [];
-//     let isOverlapped = false;
-//     for (let i = 0; i < indices.length; i++) {
-//       isOverlapped = insertAndSortIfNotOverlapped(temp, listOfPermutationsForEveryClass[i][indices[i]]);
-//       if (isOverlapped) {
-//         break;
-//       }
-//     }
-//     if (!isOverlapped) {
-//       current.push(temp);
-//     }
-//     isDone = isIndicesFull(indices, listOfPermutationsForEveryClass);
-//   }
-//   return current;
-// }
-
 // Generates all possible valid schedules given details for all classes and optional preferences
 function generateSchedules (classes, preferences) {
   let allPermutations = getPermutationsForAllClasses(classes);
   let generated = generateIterative(allPermutations, preferences);
-  // console.time('Sorting');
   generated.schedules.sort(function (a, b) {
     if (a.score > b.score) {
       return -1;
@@ -483,7 +441,6 @@ function generateSchedules (classes, preferences) {
     }
     return 0;
   });
-  // console.timeEnd('Sorting');
   return generated;
 }
 
