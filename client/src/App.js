@@ -12,6 +12,7 @@ import ResetPassword from 'components/auth/ResetPassword';
 import SemesterSelection from 'components/schedules/SemesterSelection';
 import ClassSelection from 'components/schedules/ClassSelection';
 import GenerateSchedule from 'components/schedules/GenerateSchedule';
+import MySchedules from 'components/schedules/MySchedules';
 
 import 'styles/App.css';
 
@@ -31,6 +32,7 @@ class App extends Component {
               <Route path="/SemesterSelection" component={SemesterSelection} />
               <Route path="/ClassSelection" component={ClassSelection} />
               <Route path="/GenerateSchedule" component={GenerateSchedule} />
+              <Route path="/MySchedules" component={MySchedules} />
             </div>
           </Router>
         </PersistGate>

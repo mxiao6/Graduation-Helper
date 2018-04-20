@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
-import randomColor from 'randomcolor';
 import { Link } from 'react-router-dom';
 import WindowSizeListener from 'react-window-size-listener';
 import {
@@ -14,10 +13,15 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
 
-import { Cascader, Spin, Button, Tag, message, Modal } from 'antd';
+import { Cascader, Spin, Button, Tag, message, Modal, Row, Col } from 'antd';
 import 'styles/ClassSelection.css';
+import { daysMap, _parseTime } from 'utils';
 
 import BigCalendar from 'modules/react-big-calendar';
+import {
+  _parseSmallArray,
+  _renderSmallSchedules,
+} from 'components/schedules/SmallSchedules';
 
 class GenerateSchedule extends React.Component {
   state = {
@@ -31,6 +35,10 @@ class GenerateSchedule extends React.Component {
     scheduleIdx: 0,
     modalVisible: false,
     saving: false,
+    selectedDay: undefined,
+    noDaysList: [],
+    selectedOption: undefined,
+    noOptionsList: [],
   };
 
   componentWillMount() {
@@ -60,7 +68,11 @@ class GenerateSchedule extends React.Component {
       });
   }
 
-  onChange = (value, selectedOptions) => {
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.user) this.props.history.push('/');
+  }
+
+  _onChangeTags = (value, selectedOptions) => {
     console.log(value, selectedOptions);
     if (value.length === 0) {
       console.log('clear selection');
@@ -134,7 +146,7 @@ class GenerateSchedule extends React.Component {
 
   _generateSchedule = () => {
     const { semester } = this.props;
-    const { schedule } = this.state;
+    const { schedule, noDaysList, noOptionsList } = this.state;
     this.setState({
       generating: true,
     });
@@ -142,66 +154,23 @@ class GenerateSchedule extends React.Component {
       .post(POST_GENERATE_SCHEDULE, {
         ...semester,
         courses: schedule,
+        preferences: {
+          noClassDays: noDaysList,
+          noClassOptions: noOptionsList,
+        },
       })
       .then(res => {
         console.log('raw data', res.data);
         this.setState({
           generatedRaw: res.data,
           generated: this._parseSchedules(res.data),
-          smallArray: this._parseSmallArray(res.data),
+          smallArray: _parseSmallArray(res.data),
           generating: false,
         });
       })
       .catch(e => {
-        console.error('_generateSchedule', e);
+        console.error('_generateSchedule', e.response);
       });
-  };
-
-  _parseTime = time => {
-    let hour = parseInt(time.substr(0, 2), 10);
-    let mins = parseInt(time.substr(3, 2), 10);
-
-    if (time.slice(-2) === 'PM' && hour !== 12) hour += 12;
-
-    return { hour, mins };
-  };
-
-  _generateEmptyArray = () => {
-    let array = [];
-    for (let i = 0; i < 26; i++) {
-      let row = [];
-      for (let j = 0; j < 5; j++) {
-        row.push(false);
-      }
-      array.push(row);
-    }
-    return array;
-  };
-
-  _parseSmallArray = data => {
-    let parsed = [];
-    for (let schedule of data.schedules) {
-      let oneImg = this._generateEmptyArray();
-      for (let section of schedule.sections) {
-        if (!section.daysOfWeek || !section.endTime) continue;
-        let color = randomColor();
-        for (let day of section.daysOfWeek) {
-          let colIdx = daysMap[day] - 1; // 0 - 4
-          let startTime = this._parseTime(section.startTime);
-          let endTime = this._parseTime(section.endTime);
-          let rowStart = (startTime.hour - 8) * 2;
-          let rowEnd = (endTime.hour + 1 - 8) * 2;
-          for (let r = rowStart; r < rowEnd; r++) {
-            oneImg[r][colIdx] = color;
-          }
-        }
-      }
-      parsed.push({
-        schedule,
-        array: oneImg,
-      });
-    }
-    return parsed;
   };
 
   _parseSchedules = data => {
@@ -213,8 +182,8 @@ class GenerateSchedule extends React.Component {
           if (!section.daysOfWeek || !section.endTime) return retval;
           for (let day of section.daysOfWeek) {
             let date = 1 + daysMap[day];
-            let startTime = this._parseTime(section.startTime);
-            let endTime = this._parseTime(section.endTime);
+            let startTime = _parseTime(section.startTime);
+            let endTime = _parseTime(section.endTime);
             retval.push({
               title: `${section.subjectId} ${section.courseId}-${
                 section.sectionNumber
@@ -258,7 +227,7 @@ class GenerateSchedule extends React.Component {
         <Cascader
           options={this.state.options}
           loadData={this.loadData}
-          onChange={this.onChange}
+          onChange={this._onChangeTags}
           displayRender={this._displayRender}
           placeholder="Select Class"
           changeOnSelect
@@ -272,14 +241,6 @@ class GenerateSchedule extends React.Component {
         >
           Add
         </Button>
-        <Button
-          type="primary"
-          className="nextButton"
-          onClick={this._generateSchedule}
-          disabled={this.state.schedule.length === 0}
-        >
-          Generate
-        </Button>
       </div>
     );
   };
@@ -289,33 +250,7 @@ class GenerateSchedule extends React.Component {
     return generating ? (
       <Spin />
     ) : (
-      <div className="gridsContainer">
-        {_.map(smallArray, (smallGrid, gIdx) => {
-          return (
-            <a onClick={() => this._showBigSchedule(gIdx)} key={gIdx}>
-              <div className="smallGrid" key={gIdx}>
-                {_.map(smallGrid.array, (row, rIdx) => {
-                  return (
-                    <div className="smallRow" key={rIdx}>
-                      {_.map(row, (col, cIdx) => {
-                        return col ? (
-                          <div
-                            className="smallColActive"
-                            style={{ backgroundColor: col }}
-                            key={cIdx}
-                          />
-                        ) : (
-                          <div className="smallCol" key={cIdx} />
-                        );
-                      })}
-                    </div>
-                  );
-                })}
-              </div>
-            </a>
-          );
-        })}
-      </div>
+      _renderSmallSchedules(smallArray, this._showBigSchedule)
     );
   };
 
@@ -340,7 +275,7 @@ class GenerateSchedule extends React.Component {
       .post(POST_SAVE_SCHEDULE, {
         ...semester,
         userId: user.userId,
-        sections: sections,
+        sections,
       })
       .then(res => {
         console.log(res.data);
@@ -418,45 +353,212 @@ class GenerateSchedule extends React.Component {
     );
   };
 
-  _renderSchedule = () => {
-    const { schedule } = this.state;
+  _renderTags = () => {
+    const { schedule, noDaysList, noOptionsList } = this.state;
     return (
-      <div className="tagsContainer">
-        {schedule.map((tag, index) => {
-          return (
-            <Tag
-              color="blue"
-              closable
-              key={tag}
-              afterClose={() => this._closeTag(tag)}
-            >
-              {tag}
-            </Tag>
-          );
-        })}
+      <div>
+        <Row className="tagsContainer">
+          <Col span={8} className="tagsTitle">
+            Selected Courses:
+          </Col>
+          <Col span={16}>
+            {schedule.map((tag, index) => {
+              return (
+                <Tag
+                  color="blue"
+                  closable
+                  key={tag}
+                  afterClose={() => this._closeTag(tag)}
+                >
+                  {tag}
+                </Tag>
+              );
+            })}
+          </Col>
+        </Row>
+        <Row className="tagsContainer">
+          <Col span={8} className="tagsTitle">
+            No Class Days:
+          </Col>
+          <Col span={16}>
+            {noDaysList.map((tag, index) => {
+              return (
+                <Tag
+                  color="red"
+                  closable
+                  key={tag}
+                  afterClose={() => this._closeDaysTag(tag)}
+                >
+                  {tag}
+                </Tag>
+              );
+            })}
+          </Col>
+        </Row>
+        <Row className="tagsContainer">
+          <Col span={8} className="tagsTitle">
+            No Class Options:
+          </Col>
+          <Col span={16}>
+            {noOptionsList.map((tag, index) => {
+              return (
+                <Tag
+                  color="orange"
+                  closable
+                  key={tag}
+                  afterClose={() => this._closeOptionsTag(tag)}
+                >
+                  {tag}
+                </Tag>
+              );
+            })}
+          </Col>
+        </Row>
+      </div>
+    );
+  };
+
+  _onChangeDays = value => {
+    console.log('no class days', value);
+    this.setState({
+      selectedDay: value,
+    });
+  };
+
+  _addDays = () => {
+    const { selectedDay, noDaysList } = this.state;
+    if (noDaysList.indexOf(selectedDay) !== -1) {
+      message.error('Day exists');
+      return;
+    }
+    let newDaysList = noDaysList.slice(0);
+    newDaysList.push(selectedDay);
+
+    this.setState({
+      noDaysList: newDaysList,
+    });
+  };
+
+  _closeDaysTag = removedTag => {
+    const noDaysList = this.state.noDaysList.filter(tag => tag !== removedTag);
+    console.log('noDaysList', noDaysList);
+    this.setState({ noDaysList });
+  };
+
+  _onChangeOptions = value => {
+    console.log('no class options', value);
+    this.setState({
+      selectedOption: value,
+    });
+  };
+
+  _addOptions = () => {
+    const { selectedOption, noOptionsList } = this.state;
+    if (noOptionsList.indexOf(selectedOption) !== -1) {
+      message.error('Option exists');
+      return;
+    }
+    let newOptionsList = noOptionsList.slice(0);
+    newOptionsList.push(selectedOption);
+
+    this.setState({
+      noOptionsList: newOptionsList,
+    });
+  };
+
+  _closeOptionsTag = removedTag => {
+    const noOptionsList = this.state.noOptionsList.filter(
+      tag => tag !== removedTag
+    );
+    console.log('noOptionsList', noOptionsList);
+    this.setState({ noOptionsList });
+  };
+
+  _showSelectTimeModel = () => {};
+
+  _renderPreference = () => {
+    return (
+      <div>
+        <div className="cascaderContainer">
+          <Cascader
+            options={daysList}
+            onChange={this._onChangeDays}
+            placeholder="No Class Days"
+            changeOnSelect
+          />
+          <Button
+            type="primary"
+            className="nextButton"
+            onClick={this._addDays}
+            disabled={this.state.selectedDay === undefined}
+          >
+            Add
+          </Button>
+        </div>
+        <div className="cascaderContainer">
+          <Cascader
+            options={optionsList}
+            onChange={this._onChangeOptions}
+            placeholder="No Class Options"
+            changeOnSelect
+          />
+          <Button
+            type="primary"
+            className="nextButton"
+            onClick={this._addOptions}
+            disabled={this.state.selectedOption === undefined}
+          >
+            Add
+          </Button>
+        </div>
+        <div className="cascaderContainer">
+          <Button
+            type="primary"
+            className="nextButton"
+            onClick={this._showSelectTimeModel}
+          >
+            Select No Class Time
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  _renderGenerateButton = () => {
+    return (
+      <div className="cascaderContainer">
+        <Button
+          type="primary"
+          className="nextButton"
+          onClick={this._generateSchedule}
+          disabled={this.state.schedule.length === 0}
+        >
+          Generate
+        </Button>
       </div>
     );
   };
 
   _renderContent = () => {
     const { semester } = this.props;
+    const { width } = this.state;
     return (
       <div className="contentContainer">
-        <WindowSizeListener
-          onResize={windowSize => {
-            this.setState({
-              height: windowSize.windowHeight,
-              width: windowSize.windowWidth,
-            });
-          }}
-        />
-        <div>
+        <div style={{ marginBottom: 30 }}>
           Selected Semester: {semester.semester} {semester.year}
           &nbsp; &nbsp;
           <a onClick={this._resetSemester}>reset</a>
         </div>
-        {this._renderCascader()}
-        {this._renderSchedule()}
+        <Row style={{ width: width * 0.6 }}>
+          <Col span={12}>
+            {this._renderCascader()}
+            {this._renderPreference()}
+          </Col>
+          <Col span={12}>
+            {this._renderTags()}
+            {this._renderGenerateButton()}
+          </Col>
+        </Row>
         {this._renderSmallGrids()}
         {this._renderModal()}
       </div>
@@ -466,21 +568,57 @@ class GenerateSchedule extends React.Component {
   render() {
     return (
       <div className="bodyContainer">
+        <WindowSizeListener
+          onResize={windowSize => {
+            this.setState({
+              height: windowSize.windowHeight,
+              width: windowSize.windowWidth,
+            });
+          }}
+        />
         {this.state.options ? this._renderContent() : <Spin />}
       </div>
     );
   }
 }
 
-const daysMap = {
-  M: 1,
-  T: 2,
-  W: 3,
-  R: 4,
-  F: 5,
-};
-
 const _default = { year: '2018', semester: 'fall' };
+const daysList = [
+  {
+    value: 'M',
+    label: 'Monday',
+  },
+  {
+    value: 'T',
+    label: 'Tuesday',
+  },
+  {
+    value: 'W',
+    label: 'Wednesday',
+  },
+  {
+    value: 'R',
+    label: 'Thursday',
+  },
+  {
+    value: 'F',
+    label: 'Friday',
+  },
+];
+const optionsList = [
+  {
+    value: 'morning',
+    label: 'Morning',
+  },
+  {
+    value: 'lunch',
+    label: 'Lunch',
+  },
+  {
+    value: 'evening',
+    label: 'Evening',
+  },
+];
 
 function mapStateToProps(state, ownProps) {
   return {

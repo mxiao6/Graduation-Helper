@@ -231,3 +231,193 @@ exports.get = function (req, res) {
     });
   });
 };
+
+/**
+ *@api{post}/editschedule Edit saved user schedules
+ *@apiName editschedule
+ *@apiGroup Schedule
+ *@apiVersion 0.1.0
+ *
+ *@apiParam {int} scheduleId specific schedule ID to be edited
+ *@apiParam {Object[]} sections List of new class sections
+ *
+ *@apiParamExample {json} Request-Example:
+ *  {
+ *    "scheduleId": 5,
+ *    "sections": [
+*       {
+*         "subjectId": "CS",
+*         "courseId": "425",
+*         "sectionId": "31384",
+*         "type": "LCD",
+*         "startTime": "09:30 AM",
+*         "endTime": "10:45 AM",
+*         "daysOfWeek": "TR",
+*         "semester": "Spring",
+*         "year": 2018
+*       },
+*       {
+*         "subjectId": "CS",
+*         "courseId": "429",
+*         "sectionId": "41483",
+*         "type": "LCD",
+*         "startTime": "02:00 PM",
+*         "endTime": "03:15 PM",
+*         "daysOfWeek": "TR",
+*         "semester": "Spring",
+*         "year": 2018
+*       }
+*     ]
+ *  }
+ *
+ *@apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ *{
+ *  'Edit successful'
+ *}
+ *
+ *@apiErrorExample Error-Response:
+ * HTTP/1.1 400 Bad Request
+ * {
+ *    "error": "Incorrect parameters"
+ * }
+ */
+exports.edit = function (req, res) {
+  let scheduleId = req.body.scheduleId;
+  let sections = req.body.sections;
+
+  if (scheduleId === null || sections === null) {
+    return res.status(400).json({error: 'Incorrect parameters'});
+  }
+  for (let i = 0; i < sections.length; i++) {
+    if (sections[i].subjectId == null || sections[i].courseId == null || sections[i].sectionId == null) {
+      return res.status(400).json({error: 'Incorrect parameters'});
+    }
+  }
+
+  pool.getConnection(function (err, connection) {
+    if (err) {
+      return res.status(500).json({error: 'Connection Error'});
+    }
+    // find the current courses, remove, then add the new sections
+    connection.beginTransaction(function (err) {
+      if (err) {
+        throw err;
+      }
+      // delete current courses
+      connection.query('DELETE FROM courses WHERE scheduleId = ?', [scheduleId], function (err, results, fields) {
+        if (err) {
+          return connection.rollback(function () {
+            return res.status(500).json({error: 'Could not delete existing courses'});
+          });
+        }
+        // add the new sections
+        async.each(sections, function (section, callback) {
+          connection.query('INSERT INTO courses (scheduleId, subjectId, courseId, sectionId, type, startTime, endTime, daysOfWeek, semester, year) VALUES (?,?,?,?,?,?,?,?,?,?);',
+            [
+              scheduleId,
+              section.subjectId,
+              section.courseId,
+              section.sectionId,
+              section.type,
+              section.startTime,
+              section.endTime,
+              section.daysOfWeek,
+              section.semester,
+              section.year
+            ], function (err, results) {
+              if (err) {
+                callback(err);
+              } else {
+                callback(null);
+              }
+            });
+        }, function (err) {
+          if (err) {
+            return connection.rollback(function () {
+              // console.log(err);
+              return res.status(500).json({error: 'Could not save courses'});
+            });
+          } else {
+            connection.commit(function (err) {
+              if (err) {
+                return connection.rollback(function () {
+                  return res.status(500).json({error: 'Save commit error'});
+                });
+              } else {
+                connection.release();
+                return res.status(200).send('Edit Successful');
+              }
+            });
+          }
+        });
+      });
+    });
+  });
+};
+
+/**
+ * @api{post}/deleteschedule Delete user schedule
+ * @apiName deleteschedule
+ * @apiGroup Schedule
+ * @apiVersion 0.1.0
+ *
+ * @apiParam {int} scheduleId Schedule ID to be deleted
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "scheduleId": 5
+ * }
+ *
+ * @apiSuccessExample SuccessResponse:
+ * "Delete Successful"
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 400 Bad Request
+ * {
+ *    "error": "Incorrect parameters"
+ * }
+ */
+exports.delete = function (req, res) {
+  let scheduleId = req.body.scheduleId;
+
+  if (scheduleId === null) {
+    return res.status(400).json({error: 'Incorrect parameters'});
+  }
+  pool.getConnection(function (err, connection) {
+    if (err) {
+      return res.status(500).json({error: 'Connection Error'});
+    }
+    connection.beginTransaction(function (err) {
+      if (err) {
+        throw err;
+      }
+      // delete the courses
+      connection.query('DELETE FROM courses WHERE scheduleId = ?', [scheduleId], function (err, results, fields) {
+        if (err) {
+          return connection.rollback(function () {
+            return res.status(500).json({error: 'Could not delete courses'});
+          });
+        }
+        // delete the schedule
+        connection.query('DELETE FROM schedules WHERE scheduleId = ?', [scheduleId], function (err, results, fields) {
+          if (err) {
+            return connection.rollback(function () {
+              return res.status(500).json({error: 'Could not delete schedule'});
+            });
+          }
+          connection.commit(function (err) {
+            if (err) {
+              return connection.rollback(function () {
+                return res.status(500).json({error: 'Delete commit error'});
+              });
+            } else {
+              connection.release();
+              return res.status(200).send('Delete Successful');
+            }
+          });
+        });
+      });
+    });
+  });
+};

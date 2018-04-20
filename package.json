@@ -8,6 +8,7 @@
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
     "frontendTest": "mocha test/selenium",
+    "backendTest": "mocha --exit test/backend",
     "mocha": "mocha test/selenium && mocha --exit test/backend",
     "test": "npm run mocha && semistandard \"routes/**/*.js\" \"*.js\" && semistandard --env mocha \"test/**/*.js\"",
     "style": "semistandard --fix \"routes/**/*.js\" \"*.js\" && semistandard --fix --env mocha \"test/**/*.js\""

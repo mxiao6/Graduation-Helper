@@ -378,9 +378,15 @@ function calculateScheduleScore (scheduleSections, preferences) {
   for (let i = 0; i < scheduleSections.length; i++) {
     let section = scheduleSections[i];
     if (section.startTime !== 'ARRANGED') {
-      score = getScoreNoClassTime(score, section, preferences.noClassTime);
-      score = getScoreNoClassDays(score, section, preferences.noClassDays);
-      score = getScoreNoClassOptions(score, section, preferences.noClassOptions);
+      if (preferences.noClassTime) {
+        score = getScoreNoClassTime(score, section, preferences.noClassTime);
+      }
+      if (preferences.noClassDays) {
+        score = getScoreNoClassDays(score, section, preferences.noClassDays);
+      }
+      if (preferences.noClassOptions) {
+        score = getScoreNoClassOptions(score, section, preferences.noClassOptions);
+      }
     }
   }
   return score;

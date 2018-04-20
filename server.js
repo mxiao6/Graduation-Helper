@@ -15,6 +15,8 @@ app.use('/api', api);
 app.use('/schedule', generateSchedule);
 app.post('/saveschedule', schedule.save);
 app.get('/getschedule', schedule.get);
+app.post('/editschedule', schedule.edit);
+app.post('/deleteschedule', schedule.delete);
 app.post('/register', userlogin.register);
 app.post('/login', userlogin.login);
 app.post('/sendemail', userlogin.sendemail);

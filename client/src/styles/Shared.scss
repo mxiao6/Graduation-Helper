@@ -1,6 +1,13 @@
+@import 'Variables.scss';
+
 .bodyContainer {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+
+  h1 {
+    color: $ui-orange;
+    font-size: 2.875em;
+  }
 }
