@@ -263,7 +263,7 @@ describe('Home and Login Tests', function () {
       .then(curUrl => curUrl.should.include('Signup'))
       .then(() => driver.wait(findErrorMessage(0), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
-      .then(errorText => errorText.should.equal('You must sign up with illinois email. Please try again.'))
+      .then(errorText => errorText.should.equal('You must sign up with an illinois.edu email. Please try again.'))
       .then(() => done())
       .catch(error => done(error));
   });
@@ -313,7 +313,7 @@ describe('Home and Login Tests', function () {
       .then(curUrl => curUrl.should.include('Signup'))
       .then(() => driver.wait(findErrorMessage(0), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
-      .then(errorText => errorText.should.equal('Password does not match up with confirm password. Please try again.'))
+      .then(errorText => errorText.should.equal('Passwords do not match. Please try again.'))
       .then(() => done())
       .catch(error => done(error));
   });
@@ -569,7 +569,7 @@ describe('Schedule Generation Tests', function () {
   });
 
   it('Generate and Save Schedule, No Preferences', function (done) {
-    this.timeout(30000);
+    this.timeout(35000);
     goToLoginPage()
       .then(() => driver.wait(findEmailEntry(), 2000))
       .then(input => input.sendKeys('admin@illinois.edu'))
@@ -594,7 +594,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Agricultural and Biological Engineering'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(2000))
+      .then(() => driver.sleep(4000))
       .then(() => driver.wait(findElementByTitle('100: Intro Agric & Biological Engrg'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
@@ -627,7 +627,7 @@ describe('Schedule Generation Tests', function () {
   });
 
   it('Generate and Save Schedule, No Morning Classes', function (done) {
-    this.timeout(30000);
+    this.timeout(35000);
     goToLoginPage()
       .then(() => driver.wait(findEmailEntry(), 2000))
       .then(input => input.sendKeys('admin@illinois.edu'))
@@ -652,7 +652,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Agricultural and Biological Engineering'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(2000))
+      .then(() => driver.sleep(4000))
       .then(() => driver.wait(findElementByTitle('100: Intro Agric & Biological Engrg'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
