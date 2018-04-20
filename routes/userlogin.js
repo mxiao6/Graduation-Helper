@@ -106,6 +106,8 @@ exports.register = function (req, res) {
                     console.log(info);
                   }
                 });
+              } else {
+                res.status(250).send('Account created successfully. Please check your email to activate your account.');
               }
             });
           }
