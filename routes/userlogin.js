@@ -394,7 +394,7 @@ exports.sendemail = function (req, res) {
                 if (err) {
                   console.log(err);
                 } else {
-                  res.status(250).send('Email sended successfully');
+                  res.status(250).send('Email sended successfully. ');
                   console.log(info);
                 }
               });
