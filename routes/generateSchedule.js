@@ -97,15 +97,11 @@ router.post('/generate', function (req, res) {
   if (!hasProperties(req)) {
     return res.status(422).json({error: 'Incorrect Parameters'});
   }
-  let url = 'schedule/' + req.body.year + '/' + req.body.semester + '/';
+  let year = req.body.year;
+  let semester = req.body.semester;
   let selectedClasses = req.body.courses;
   let preferences = req.body.preferences;
-  // console.log();
-  // console.log('Getting section details');
-  getAllDetails(url, selectedClasses, function (error, result) {
-    if (error) {
-      return res.status(500).json({error: 'Could not generate schedules'});
-    }
+  getAllDetails(year, semester, selectedClasses).then(function (result) {
     // console.log('Generating Schedules');
     // console.time('generate');
     let generatedSchedules = genPrototype(result, preferences);
@@ -123,6 +119,8 @@ router.post('/generate', function (req, res) {
     //   res.status(200).json(generatedSchedules);
     // }
     return res.status(200).json(generatedSchedules);
+  }).catch(function (err) {
+    return res.status(500).json({error: err.message});
   });
 });
 
@@ -315,7 +313,7 @@ function getPermutationsForAllClasses (classes) {
   // console.log('Calculating permuations for every class');
   let allPermutations = [];
   for (let i = 0; i < classes.length; i++) {
-    allPermutations.push(getCourseSectionPermutations(classes[i].sectionList));
+    allPermutations.push(getCourseSectionPermutations(classes[i]));
   }
   return allPermutations;
 }

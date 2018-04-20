@@ -92,7 +92,6 @@ describe('schedule test', function () {
     it('should not give us a schedule', function (done) {
       chai.request(server).post('/schedule/generate').send({'year': '-1', 'semester': 'blah', 'courses': ['CS125']}).end((err, res) => {
         res.should.have.status(500);
-        res.body.error.should.be.equal('Could not generate schedules');
         if (err) {
           err.response.should.have.status(500);
         }
@@ -686,7 +685,6 @@ describe('parameterized tests', function () {
       'courses': schedule.courses
     }).end((err, res) => {
       res.should.have.status(500);
-      // res.body.error.should.be.equal('Could not generate schedules');
       // done();
       if (err) {
         err.response.should.have.status(500);
