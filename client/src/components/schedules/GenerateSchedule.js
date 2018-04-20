@@ -68,6 +68,10 @@ class GenerateSchedule extends React.Component {
       });
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.user) this.props.history.push('/');
+  }
+
   _onChangeTags = (value, selectedOptions) => {
     console.log(value, selectedOptions);
     if (value.length === 0) {

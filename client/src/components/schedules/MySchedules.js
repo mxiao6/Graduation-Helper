@@ -18,10 +18,13 @@ class MySchedules extends Component {
   };
 
   componentWillMount() {
+    const { user, history } = this.props;
+    if (!user) history.push('/');
+
     axios
       .get(GET_SCHEDULE, {
         params: {
-          userId: this.props.user.userId,
+          userId: user.userId,
         },
       })
       .then(res => {
@@ -34,6 +37,10 @@ class MySchedules extends Component {
       .catch(e => {
         console.error('GET_SCHEDULE', e.response);
       });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.user) this.props.history.push('/');
   }
 
   _parseSchedules = schedules => {
