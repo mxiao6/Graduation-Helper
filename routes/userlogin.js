@@ -15,7 +15,6 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
     user: 'root',
     password: '',
     database: 'testDatabase'
-
   });
 } else {
   pool = mysql.createPool({
@@ -50,6 +49,7 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
 */
 exports.register = function (req, res) {
   var inputpassword = req.body.password;
+  var testMode = process.argv.length > 2 && process.argv[2] === 'test';
   bcrypt.hash(inputpassword, 10, function (err, results) {
     if (err) {
       res.status(500).send('hash error');
@@ -59,7 +59,7 @@ exports.register = function (req, res) {
       'username': req.body.username,
       'email': req.body.email,
       'password': hashed,
-      'act': false
+      'act': testMode
     };
     pool.getConnection(function (err, connection) {
       if (err) {
@@ -67,7 +67,7 @@ exports.register = function (req, res) {
       }
 
       connection.query('SELECT * FROM users WHERE email = ?', [req.body.email], function (error, results, fields) {
-      // Done with connection
+        // Done with connection
         connection.release();
 
         // check for duplicate register
@@ -79,15 +79,11 @@ exports.register = function (req, res) {
           } else {
             connection.query('INSERT INTO users SET ?', users, function (error, results, fields) {
               if (error) {
-              // console.log("error ocurred",error);
+                // console.log("error ocurred",error);
                 res.status(500).send('Database query error ocurred');
-              } else {
-              // console.log('The solution is: ', results);
-                res.status(250).send('user registered sucessfully');
-                // console.log(req.body.email);
+              } else if (!testMode) {
                 var cipher = crypto.AES.encrypt(req.body.email, 'Excalibur');
                 cipher = querystring.escape(cipher);
-                // console.log(cipher);
                 var transporter = nodemailer.createTransport({
                   service: 'gmail',
                   auth: {
@@ -100,13 +96,13 @@ exports.register = function (req, res) {
                   to: req.body.email, // receiver
                   subject: 'Activate your Account in GRH!!!', // Subject line
                   text: 'Your are receiving this because you just registered an account and ' +
-           'please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore'
+                    'please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore'
                 };
                 transporter.sendMail(themail, function (err, info) {
                   if (err) {
                     console.log(err);
                   } else {
-                    res.status(250).send('Email sended successfully');
+                    res.status(250).send('Account created successfully. Please check your email to activate your account.');
                     console.log(info);
                   }
                 });
@@ -159,7 +155,6 @@ exports.activate = function (req, res) {
         res.redirect('http://grhlinux.azurewebsites.net/#/Login');
         res.status(250).send('user account activate!!!');
       }
-      
     });
   });
 };
@@ -241,7 +236,7 @@ exports.login = function (req, res) {
                 to: req.body.email, // receiver
                 subject: 'Activate your Account in GRH!!!', // Subject line
                 text: 'Your are receiving this because you just registered an account and ' +
-           'please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore'
+                  'please use this URL to activate your account\n' + 'http://grhlinux.azurewebsites.net/act?inf=' + cipher + '\n If you did not request this, please ignore'
               };
               transporter.sendMail(themail, function (err, info) {
                 if (err) {

@@ -7,7 +7,7 @@ require('chai').should();
 
 describe('User tests', function () {
   it('it should not register since email already exists', function (done) {
-    chai.request(server).post('/register').send({'username': 'admin', 'email': 'admin@gmail.com', 'password': 'cs428'}).end(function (err, res) {
+    chai.request(server).post('/register').send({ 'username': 'admin', 'email': 'admin@illinois.edu', 'password': 'cs428' }).end(function (err, res) {
       res.should.have.status(422);
       res.text.should.be.equal('Email already registered!');
       if (err) {
@@ -18,7 +18,7 @@ describe('User tests', function () {
   });
 
   it('it should login successfully', function (done) {
-    chai.request(server).post('/login').send({'email': 'admin@gmail.com', 'password': 'test2'}).end((err, res) => {
+    chai.request(server).post('/login').send({ 'email': 'admin@illinois.edu', 'password': 'test2test2test2' }).end((err, res) => {
       res.should.have.status(250);
       (err === null).should.equal(true);
       done();
@@ -26,7 +26,7 @@ describe('User tests', function () {
   });
 
   it('it should not login wrong password', function (done) {
-    chai.request(server).post('/login').send({'email': 'admin@gmail.com', 'password': 'wrong_pass'}).end((err, res) => {
+    chai.request(server).post('/login').send({ 'email': 'admin@illinois.edu', 'password': 'wrong_pass' }).end((err, res) => {
       res.should.have.status(422);
       res.text.should.be.equal('Email and password does not match');
       if (err) {
@@ -37,7 +37,7 @@ describe('User tests', function () {
   });
 
   it('it should not login no existing email', function (done) {
-    chai.request(server).post('/login').send({'email': 'NOEMAIL@gmail.com', 'password': 'NOEMAIL'}).end((err, res) => {
+    chai.request(server).post('/login').send({ 'email': 'NOEMAIL@illinois.edu', 'password': 'NOEMAIL' }).end((err, res) => {
       res.should.have.status(422);
       res.text.should.be.equal('Email does not exist');
       if (err) {
@@ -79,7 +79,7 @@ describe('schedule test', function () {
 
     it('should give us a schedule animal science', function (done) {
       this.timeout(20000);
-      chai.request(server).post('/schedule/generate').send({'year': '2018', 'semester': 'Spring', 'courses': ['ANSC250']}).end((err, res) => {
+      chai.request(server).post('/schedule/generate').send({ 'year': '2018', 'semester': 'Spring', 'courses': ['ANSC250'] }).end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a('Object');
         res.body.should.have.nested.property('numOfSchedules');
@@ -90,7 +90,7 @@ describe('schedule test', function () {
     });
 
     it('should not give us a schedule', function (done) {
-      chai.request(server).post('/schedule/generate').send({'year': '-1', 'semester': 'blah', 'courses': ['CS125']}).end((err, res) => {
+      chai.request(server).post('/schedule/generate').send({ 'year': '-1', 'semester': 'blah', 'courses': ['CS125'] }).end((err, res) => {
         res.should.have.status(500);
         if (err) {
           err.response.should.have.status(500);
@@ -100,7 +100,7 @@ describe('schedule test', function () {
     });
 
     it('should not give us a schedule because of incorrect Parameters', function (done) {
-      chai.request(server).post('/schedule/generate').send({'semester': 'blah', 'courses': ['ANSC250']}).end((err, res) => {
+      chai.request(server).post('/schedule/generate').send({ 'semester': 'blah', 'courses': ['ANSC250'] }).end((err, res) => {
         res.should.have.status(422);
         res.body.error.should.be.equal('Incorrect Parameters');
         if (err) {
@@ -133,7 +133,7 @@ describe('schedule test', function () {
         res.body.should.have.nested.property('numOfSchedules');
         res.body.should.have.nested.property('schedules');
         res.body.should.have.nested.property('metAllPreferences');
-        res.body.should.include({'metAllPreferences': false});
+        res.body.should.include({ 'metAllPreferences': false });
         (err === null).should.equal(true);
         done();
       });
@@ -161,7 +161,7 @@ describe('schedule test', function () {
         res.body.should.have.nested.property('numOfSchedules');
         res.body.should.have.nested.property('schedules');
         res.body.should.have.nested.property('metAllPreferences');
-        res.body.should.include({'metAllPreferences': true});
+        res.body.should.include({ 'metAllPreferences': true });
         (err === null).should.equal(true);
         done();
       });
@@ -184,7 +184,7 @@ describe('schedule test', function () {
         res.body.should.have.nested.property('numOfSchedules');
         res.body.should.have.nested.property('schedules');
         res.body.should.have.nested.property('metAllPreferences');
-        res.body.should.include({'metAllPreferences': false});
+        res.body.should.include({ 'metAllPreferences': false });
         (err === null).should.equal(true);
         done();
       });
@@ -207,7 +207,7 @@ describe('schedule test', function () {
         res.body.should.have.nested.property('numOfSchedules');
         res.body.should.have.nested.property('schedules');
         res.body.should.have.nested.property('metAllPreferences');
-        res.body.should.include({'metAllPreferences': true});
+        res.body.should.include({ 'metAllPreferences': true });
         (err === null).should.equal(true);
         done();
       });
@@ -232,7 +232,7 @@ describe('schedule test', function () {
         res.body.should.have.nested.property('numOfSchedules');
         res.body.should.have.nested.property('schedules');
         res.body.should.have.nested.property('metAllPreferences');
-        res.body.should.include({'metAllPreferences': false});
+        res.body.should.include({ 'metAllPreferences': false });
         (err === null).should.equal(true);
         done();
       });
@@ -257,7 +257,7 @@ describe('schedule test', function () {
         res.body.should.have.nested.property('numOfSchedules');
         res.body.should.have.nested.property('schedules');
         res.body.should.have.nested.property('metAllPreferences');
-        res.body.should.include({'metAllPreferences': true});
+        res.body.should.include({ 'metAllPreferences': true });
         (err === null).should.equal(true);
         done();
       });
@@ -289,7 +289,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': true});
+          res.body.should.include({ 'metAllPreferences': true });
           (err === null).should.equal(true);
           done();
         });
@@ -317,7 +317,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': true});
+          res.body.should.include({ 'metAllPreferences': true });
           (err === null).should.equal(true);
           done();
         });
@@ -342,7 +342,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': true});
+          res.body.should.include({ 'metAllPreferences': true });
           (err === null).should.equal(true);
           done();
         });
@@ -367,7 +367,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': false});
+          res.body.should.include({ 'metAllPreferences': false });
           (err === null).should.equal(true);
           done();
         });
@@ -397,7 +397,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': false});
+          res.body.should.include({ 'metAllPreferences': false });
           (err === null).should.equal(true);
           done();
         });
@@ -427,7 +427,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': false});
+          res.body.should.include({ 'metAllPreferences': false });
           (err === null).should.equal(true);
           done();
         });
@@ -459,7 +459,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': true});
+          res.body.should.include({ 'metAllPreferences': true });
           (err === null).should.equal(true);
           done();
         });
@@ -492,7 +492,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': true});
+          res.body.should.include({ 'metAllPreferences': true });
           (err === null).should.equal(true);
           done();
         });
@@ -527,7 +527,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': true});
+          res.body.should.include({ 'metAllPreferences': true });
           (err === null).should.equal(true);
           done();
         });
@@ -555,7 +555,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': false});
+          res.body.should.include({ 'metAllPreferences': false });
           (err === null).should.equal(true);
           done();
         });
@@ -586,7 +586,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': false});
+          res.body.should.include({ 'metAllPreferences': false });
           (err === null).should.equal(true);
           done();
         });
@@ -619,7 +619,7 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
-          res.body.should.include({'metAllPreferences': false});
+          res.body.should.include({ 'metAllPreferences': false });
           (err === null).should.equal(true);
           done();
         });
@@ -707,7 +707,7 @@ describe('API tests', function () {
   });
 
   it('it should get all semester for given year', function (done) {
-    chai.request(server).get('/api/semester').query({year: '2018'}).end((err, res) => {
+    chai.request(server).get('/api/semester').query({ year: '2018' }).end((err, res) => {
       res.body.should.be.a('array');
       res.body.length.should.be.eql(4);
       (err === null).should.equal(true);
@@ -716,7 +716,7 @@ describe('API tests', function () {
   });
 
   it('it should get all major for given year and semester', function (done) {
-    chai.request(server).get('/api/subject').query({year: '2018', semester: 'spring'}).end((err, res) => {
+    chai.request(server).get('/api/subject').query({ year: '2018', semester: 'spring' }).end((err, res) => {
       res.body.should.be.a('array');
       res.body.length.should.be.eql(180);
       (err === null).should.equal(true);
@@ -725,7 +725,7 @@ describe('API tests', function () {
   });
 
   it('it should get all course for given year, semester, major', function (done) {
-    chai.request(server).get('/api/course').query({year: '2018', semester: 'spring', course: 'AAS'}).end((err, res) => {
+    chai.request(server).get('/api/course').query({ year: '2018', semester: 'spring', course: 'AAS' }).end((err, res) => {
       res.body.should.be.a('array');
       res.body.length.should.be.eql(18);
       (err === null).should.equal(true);
@@ -734,7 +734,7 @@ describe('API tests', function () {
   });
 
   it('it should get class section for given year, semester, major, course, courseNumber', function (done) {
-    chai.request(server).get('/api/section').query({year: '2018', semester: 'spring', course: 'AAS', courseId: '100'}).end((err, res) => {
+    chai.request(server).get('/api/section').query({ year: '2018', semester: 'spring', course: 'AAS', courseId: '100' }).end((err, res) => {
       res.body.should.be.a('array');
       res.body.length.should.be.eql(8);
       (err === null).should.equal(true);
