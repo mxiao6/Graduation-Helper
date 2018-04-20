@@ -1,6 +1,6 @@
 let chai = require('chai');
 let chaiHttp = require('chai-http');
-let server = 'http://localhost:5000'; //require('../../server');
+let server = 'http://localhost:5000'; // require('../../server');
 var itParam = require('mocha-param');
 chai.use(chaiHttp);
 require('chai').should();
