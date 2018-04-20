@@ -43,12 +43,12 @@ class NormalSignupForm extends React.Component {
             }
           } else {
             message.error(
-              'Password does not match up with confirm password. Please try again.'
+              'Passwords do not match. Please try again.'
             );
           }
         } else{
           message.error(
-            'You must sign up with illinois email. Please try again.'
+            'You must sign up with an illinois.edu email. Please try again.'
           );
         }
       }

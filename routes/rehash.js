@@ -32,14 +32,6 @@ pool.getConnection(function (err, connection) {
           if (err) {
           }
           var hashed = results;
-          /*
-          bcrypt.compare(unhashed, hashed, function (err, results) {
-            if (err) {
-            }
-            console.log(results);
-          });
-          */
-          // console.log(cure + "'s password is hashed as:" + hashed);
           connection.query('UPDATE users SET password = ? WHERE email = ?', [results, emaillist[i]['email']], function (error, results, fields) {
             if (error) {
               console.log(hashed);
