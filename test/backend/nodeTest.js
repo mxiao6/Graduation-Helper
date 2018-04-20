@@ -921,7 +921,7 @@ describe('schedule test', function () {
 
     it('getting an existing schdule', function (done) {
       this.timeout(10000);
-      chai.request(server).get('/getschdule').query({
+      chai.request(server).get('/getschedule').query({
         'userId': 1,
         'year': '2018',
         'semester': 'Fall'
