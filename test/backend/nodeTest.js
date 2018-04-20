@@ -7,6 +7,7 @@ require('chai').should();
 
 describe('User tests', function () {
   it('it should not register since email already exists', function (done) {
+<<<<<<< HEAD
     chai
       .request(server)
       .post('/register')
@@ -61,6 +62,46 @@ describe('User tests', function () {
         }
         done();
       });
+=======
+    chai.request(server).post('/register').send({ 'username': 'admin', 'email': 'admin@illinois.edu', 'password': 'cs428' }).end(function (err, res) {
+      res.should.have.status(422);
+      res.text.should.be.equal('Email already registered!');
+      if (err) {
+        err.response.should.have.status(422);
+      }
+      done();
+    });
+  });
+
+  it('it should login successfully', function (done) {
+    chai.request(server).post('/login').send({ 'email': 'admin@illinois.edu', 'password': 'test2test2test2' }).end((err, res) => {
+      res.should.have.status(250);
+      (err === null).should.equal(true);
+      done();
+    });
+  });
+
+  it('it should not login wrong password', function (done) {
+    chai.request(server).post('/login').send({ 'email': 'admin@illinois.edu', 'password': 'wrong_pass' }).end((err, res) => {
+      res.should.have.status(422);
+      res.text.should.be.equal('Email and password does not match');
+      if (err) {
+        err.response.should.have.status(422);
+      }
+      done();
+    });
+  });
+
+  it('it should not login no existing email', function (done) {
+    chai.request(server).post('/login').send({ 'email': 'NOEMAIL@illinois.edu', 'password': 'NOEMAIL' }).end((err, res) => {
+      res.should.have.status(422);
+      res.text.should.be.equal('Email does not exist');
+      if (err) {
+        err.response.should.have.status(422);
+      }
+      done();
+    });
+>>>>>>> master
   });
 
   // it('resetpass', function(done) {
@@ -99,6 +140,7 @@ describe('schedule test', function () {
 
     it('should give us a schedule animal science', function (done) {
       this.timeout(20000);
+<<<<<<< HEAD
       chai
         .request(server)
         .post('/schedule/generate')
@@ -111,10 +153,20 @@ describe('schedule test', function () {
           (err === null).should.equal(true);
           done();
         });
+=======
+      chai.request(server).post('/schedule/generate').send({ 'year': '2018', 'semester': 'Spring', 'courses': ['ANSC250'] }).end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('Object');
+        res.body.should.have.nested.property('numOfSchedules');
+        res.body.should.have.nested.property('schedules');
+        (err === null).should.equal(true);
+        done();
+      });
+>>>>>>> master
     });
 
     it('should not give us a schedule', function (done) {
-      chai.request(server).post('/schedule/generate').send({'year': '-1', 'semester': 'blah', 'courses': ['CS125']}).end((err, res) => {
+      chai.request(server).post('/schedule/generate').send({ 'year': '-1', 'semester': 'blah', 'courses': ['CS125'] }).end((err, res) => {
         res.should.have.status(500);
         if (err) {
           err.response.should.have.status(500);
@@ -124,6 +176,7 @@ describe('schedule test', function () {
     });
 
     it('should not give us a schedule because of incorrect Parameters', function (done) {
+<<<<<<< HEAD
       chai
         .request(server)
         .post('/schedule/generate')
@@ -136,11 +189,22 @@ describe('schedule test', function () {
           }
           done();
         });
+=======
+      chai.request(server).post('/schedule/generate').send({ 'semester': 'blah', 'courses': ['ANSC250'] }).end((err, res) => {
+        res.should.have.status(422);
+        res.body.error.should.be.equal('Incorrect Parameters');
+        if (err) {
+          err.response.should.have.status(422);
+        }
+        done();
+      });
+>>>>>>> master
     });
   });
   describe('Schedule preferences tests', function () {
     it('should give us a schedule that does not meet preferences for start and end time', function (done) {
       this.timeout(10000);
+<<<<<<< HEAD
       chai
         .request(server)
         .post('/schedule/generate')
@@ -150,6 +214,167 @@ describe('schedule test', function () {
           courses: ['ANSC250'],
           preferences: {
             noClassDays: [],
+=======
+      chai.request(server).post('/schedule/generate').send({
+        'year': '2018',
+        'semester': 'Spring',
+        'courses': ['ANSC250'],
+        'preferences': {
+          noClassDays: [],
+          noClassOptions: [],
+          noClassTime: [
+            {
+              start: 12,
+              end: 14
+            }
+          ]
+        }
+      }).end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('Object');
+        res.body.should.have.nested.property('numOfSchedules');
+        res.body.should.have.nested.property('schedules');
+        res.body.should.have.nested.property('metAllPreferences');
+        res.body.should.include({ 'metAllPreferences': false });
+        (err === null).should.equal(true);
+        done();
+      });
+    });
+
+    it('should give us a schedule that meets preferences for start and end time', function (done) {
+      this.timeout(10000);
+      chai.request(server).post('/schedule/generate').send({
+        'year': '2018',
+        'semester': 'Spring',
+        'courses': ['ANSC250'],
+        'preferences': {
+          noClassDays: [],
+          noClassOptions: [],
+          noClassTime: [
+            {
+              start: 8,
+              end: 9
+            }
+          ]
+        }
+      }).end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('Object');
+        res.body.should.have.nested.property('numOfSchedules');
+        res.body.should.have.nested.property('schedules');
+        res.body.should.have.nested.property('metAllPreferences');
+        res.body.should.include({ 'metAllPreferences': true });
+        (err === null).should.equal(true);
+        done();
+      });
+    });
+
+    it('should give us a schedule that does not meet preferences for class option', function (done) {
+      this.timeout(10000);
+      chai.request(server).post('/schedule/generate').send({
+        'year': '2018',
+        'semester': 'Spring',
+        'courses': ['ANSC250'],
+        'preferences': {
+          noClassDays: [],
+          noClassOptions: ['lunch'],
+          noClassTime: []
+        }
+      }).end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('Object');
+        res.body.should.have.nested.property('numOfSchedules');
+        res.body.should.have.nested.property('schedules');
+        res.body.should.have.nested.property('metAllPreferences');
+        res.body.should.include({ 'metAllPreferences': false });
+        (err === null).should.equal(true);
+        done();
+      });
+    });
+
+    it('should give us a schedule that meets preferences for class option', function (done) {
+      this.timeout(10000);
+      chai.request(server).post('/schedule/generate').send({
+        'year': '2018',
+        'semester': 'Spring',
+        'courses': ['ANSC250'],
+        'preferences': {
+          noClassDays: [],
+          noClassOptions: ['evening'],
+          noClassTime: []
+        }
+      }).end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('Object');
+        res.body.should.have.nested.property('numOfSchedules');
+        res.body.should.have.nested.property('schedules');
+        res.body.should.have.nested.property('metAllPreferences');
+        res.body.should.include({ 'metAllPreferences': true });
+        (err === null).should.equal(true);
+        done();
+      });
+    });
+
+    it('should give us a schedule that does not meet preferences for class days', function (done) {
+      this.timeout(10000);
+      chai.request(server).post('/schedule/generate').send({
+        'year': '2018',
+        'semester': 'Spring',
+        'courses': ['ANSC250'],
+        'preferences': {
+          noClassDays: [
+            'T', 'R'
+          ],
+          noClassOptions: [],
+          noClassTime: []
+        }
+      }).end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('Object');
+        res.body.should.have.nested.property('numOfSchedules');
+        res.body.should.have.nested.property('schedules');
+        res.body.should.have.nested.property('metAllPreferences');
+        res.body.should.include({ 'metAllPreferences': false });
+        (err === null).should.equal(true);
+        done();
+      });
+    });
+
+    it('should give us a schedule that meets preferences for class days', function (done) {
+      this.timeout(10000);
+      chai.request(server).post('/schedule/generate').send({
+        'year': '2018',
+        'semester': 'Spring',
+        'courses': ['ANSC250'],
+        'preferences': {
+          noClassDays: [
+            'M', 'W', 'F'
+          ],
+          noClassOptions: [],
+          noClassTime: []
+        }
+      }).end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('Object');
+        res.body.should.have.nested.property('numOfSchedules');
+        res.body.should.have.nested.property('schedules');
+        res.body.should.have.nested.property('metAllPreferences');
+        res.body.should.include({ 'metAllPreferences': true });
+        (err === null).should.equal(true);
+        done();
+      });
+    });
+
+    describe('Few preferences test', function () {
+      it('should give us a schedule that meets a few preferences 1', function (done) {
+        this.timeout(10000);
+        chai.request(server).post('/schedule/generate').send({
+          'year': '2018',
+          'semester': 'Spring',
+          'courses': ['ANSC250'],
+          'preferences': {
+            noClassDays: ['F'],
+>>>>>>> master
             noClassOptions: [],
             noClassTime: [
               {
@@ -165,7 +390,11 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
+<<<<<<< HEAD
           res.body.should.include({ metAllPreferences: false });
+=======
+          res.body.should.include({ 'metAllPreferences': true });
+>>>>>>> master
           (err === null).should.equal(true);
           done();
         });
@@ -197,7 +426,11 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
+<<<<<<< HEAD
           res.body.should.include({ metAllPreferences: true });
+=======
+          res.body.should.include({ 'metAllPreferences': true });
+>>>>>>> master
           (err === null).should.equal(true);
           done();
         });
@@ -224,7 +457,11 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
+<<<<<<< HEAD
           res.body.should.include({ metAllPreferences: false });
+=======
+          res.body.should.include({ 'metAllPreferences': true });
+>>>>>>> master
           (err === null).should.equal(true);
           done();
         });
@@ -251,7 +488,11 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
+<<<<<<< HEAD
           res.body.should.include({ metAllPreferences: true });
+=======
+          res.body.should.include({ 'metAllPreferences': false });
+>>>>>>> master
           (err === null).should.equal(true);
           done();
         });
@@ -278,7 +519,11 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
+<<<<<<< HEAD
           res.body.should.include({ metAllPreferences: false });
+=======
+          res.body.should.include({ 'metAllPreferences': false });
+>>>>>>> master
           (err === null).should.equal(true);
           done();
         });
@@ -305,7 +550,11 @@ describe('schedule test', function () {
           res.body.should.have.nested.property('numOfSchedules');
           res.body.should.have.nested.property('schedules');
           res.body.should.have.nested.property('metAllPreferences');
+<<<<<<< HEAD
           res.body.should.include({ metAllPreferences: true });
+=======
+          res.body.should.include({ 'metAllPreferences': false });
+>>>>>>> master
           (err === null).should.equal(true);
           done();
         });
@@ -502,6 +751,7 @@ describe('schedule test', function () {
     describe('All preferences test', function () {
       it('should give us a schedule that meets all preferences 1', function (done) {
         this.timeout(10000);
+<<<<<<< HEAD
         chai
           .request(server)
           .post('/schedule/generate')
@@ -530,10 +780,39 @@ describe('schedule test', function () {
             (err === null).should.equal(true);
             done();
           });
+=======
+        chai.request(server).post('/schedule/generate').send({
+          'year': '2018',
+          'semester': 'Spring',
+          'courses': ['ANSC250'],
+          'preferences': {
+            noClassDays: [
+              'M', 'W'
+            ],
+            noClassOptions: ['evening'],
+            noClassTime: [
+              {
+                start: 7,
+                end: 8
+              }
+            ]
+          }
+        }).end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('Object');
+          res.body.should.have.nested.property('numOfSchedules');
+          res.body.should.have.nested.property('schedules');
+          res.body.should.have.nested.property('metAllPreferences');
+          res.body.should.include({ 'metAllPreferences': true });
+          (err === null).should.equal(true);
+          done();
+        });
+>>>>>>> master
       });
 
       it('should give us a schedule that meets all preferences 2', function (done) {
         this.timeout(10000);
+<<<<<<< HEAD
         chai
           .request(server)
           .post('/schedule/generate')
@@ -566,10 +845,42 @@ describe('schedule test', function () {
             (err === null).should.equal(true);
             done();
           });
+=======
+        chai.request(server).post('/schedule/generate').send({
+          'year': '2018',
+          'semester': 'Spring',
+          'courses': ['ANSC250'],
+          'preferences': {
+            noClassDays: [
+              'M', 'W'
+            ],
+            noClassOptions: ['evening'],
+            noClassTime: [
+              {
+                start: 7,
+                end: 8
+              }, {
+                start: 8,
+                end: 9
+              }
+            ]
+          }
+        }).end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('Object');
+          res.body.should.have.nested.property('numOfSchedules');
+          res.body.should.have.nested.property('schedules');
+          res.body.should.have.nested.property('metAllPreferences');
+          res.body.should.include({ 'metAllPreferences': true });
+          (err === null).should.equal(true);
+          done();
+        });
+>>>>>>> master
       });
 
       it('should give us a schedule that meets all preferences 3', function (done) {
         this.timeout(10000);
+<<<<<<< HEAD
         chai
           .request(server)
           .post('/schedule/generate')
@@ -602,10 +913,44 @@ describe('schedule test', function () {
             (err === null).should.equal(true);
             done();
           });
+=======
+        chai.request(server).post('/schedule/generate').send({
+          'year': '2018',
+          'semester': 'Spring',
+          'courses': ['ANSC250'],
+          'preferences': {
+            noClassDays: [
+              'M', 'W', 'F'
+            ],
+            noClassOptions: [
+              'evening', 'morning'
+            ],
+            noClassTime: [
+              {
+                start: 7,
+                end: 8
+              }, {
+                start: 8,
+                end: 9
+              }
+            ]
+          }
+        }).end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('Object');
+          res.body.should.have.nested.property('numOfSchedules');
+          res.body.should.have.nested.property('schedules');
+          res.body.should.have.nested.property('metAllPreferences');
+          res.body.should.include({ 'metAllPreferences': true });
+          (err === null).should.equal(true);
+          done();
+        });
+>>>>>>> master
       });
 
       it('should give us a schedule that does not meet all preferences 1', function (done) {
         this.timeout(10000);
+<<<<<<< HEAD
         chai
           .request(server)
           .post('/schedule/generate')
@@ -634,10 +979,37 @@ describe('schedule test', function () {
             (err === null).should.equal(true);
             done();
           });
+=======
+        chai.request(server).post('/schedule/generate').send({
+          'year': '2018',
+          'semester': 'Spring',
+          'courses': ['ANSC250'],
+          'preferences': {
+            noClassDays: ['T'],
+            noClassOptions: ['lunch'],
+            noClassTime: [
+              {
+                start: 12,
+                end: 14
+              }
+            ]
+          }
+        }).end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('Object');
+          res.body.should.have.nested.property('numOfSchedules');
+          res.body.should.have.nested.property('schedules');
+          res.body.should.have.nested.property('metAllPreferences');
+          res.body.should.include({ 'metAllPreferences': false });
+          (err === null).should.equal(true);
+          done();
+        });
+>>>>>>> master
       });
 
       it('should give us a schedule that does not meet all preferences 2', function (done) {
         this.timeout(10000);
+<<<<<<< HEAD
         chai
           .request(server)
           .post('/schedule/generate')
@@ -670,10 +1042,40 @@ describe('schedule test', function () {
             (err === null).should.equal(true);
             done();
           });
+=======
+        chai.request(server).post('/schedule/generate').send({
+          'year': '2018',
+          'semester': 'Spring',
+          'courses': ['ANSC250'],
+          'preferences': {
+            noClassDays: ['T'],
+            noClassOptions: ['lunch'],
+            noClassTime: [
+              {
+                start: 11,
+                end: 12
+              }, {
+                start: 12,
+                end: 14
+              }
+            ]
+          }
+        }).end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('Object');
+          res.body.should.have.nested.property('numOfSchedules');
+          res.body.should.have.nested.property('schedules');
+          res.body.should.have.nested.property('metAllPreferences');
+          res.body.should.include({ 'metAllPreferences': false });
+          (err === null).should.equal(true);
+          done();
+        });
+>>>>>>> master
       });
 
       it('should give us a schedule that does not meet all preferences 3', function (done) {
         this.timeout(10000);
+<<<<<<< HEAD
         chai
           .request(server)
           .post('/schedule/generate')
@@ -706,6 +1108,37 @@ describe('schedule test', function () {
             (err === null).should.equal(true);
             done();
           });
+=======
+        chai.request(server).post('/schedule/generate').send({
+          'year': '2018',
+          'semester': 'Spring',
+          'courses': ['ANSC250'],
+          'preferences': {
+            noClassDays: [
+              'T', 'R'
+            ],
+            noClassOptions: ['lunch'],
+            noClassTime: [
+              {
+                start: 11,
+                end: 12
+              }, {
+                start: 12,
+                end: 14
+              }
+            ]
+          }
+        }).end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('Object');
+          res.body.should.have.nested.property('numOfSchedules');
+          res.body.should.have.nested.property('schedules');
+          res.body.should.have.nested.property('metAllPreferences');
+          res.body.should.include({ 'metAllPreferences': false });
+          (err === null).should.equal(true);
+          done();
+        });
+>>>>>>> master
       });
     });
   });
@@ -796,6 +1229,7 @@ describe('API tests', function () {
   });
 
   it('it should get all semester for given year', function (done) {
+<<<<<<< HEAD
     chai
       .request(server)
       .get('/api/semester')
@@ -850,5 +1284,40 @@ describe('API tests', function () {
         (err === null).should.equal(true);
         done();
       });
+=======
+    chai.request(server).get('/api/semester').query({ year: '2018' }).end((err, res) => {
+      res.body.should.be.a('array');
+      res.body.length.should.be.eql(4);
+      (err === null).should.equal(true);
+      done();
+    });
+  });
+
+  it('it should get all major for given year and semester', function (done) {
+    chai.request(server).get('/api/subject').query({ year: '2018', semester: 'spring' }).end((err, res) => {
+      res.body.should.be.a('array');
+      res.body.length.should.be.eql(180);
+      (err === null).should.equal(true);
+      done();
+    });
+  });
+
+  it('it should get all course for given year, semester, major', function (done) {
+    chai.request(server).get('/api/course').query({ year: '2018', semester: 'spring', course: 'AAS' }).end((err, res) => {
+      res.body.should.be.a('array');
+      res.body.length.should.be.eql(18);
+      (err === null).should.equal(true);
+      done();
+    });
+  });
+
+  it('it should get class section for given year, semester, major, course, courseNumber', function (done) {
+    chai.request(server).get('/api/section').query({ year: '2018', semester: 'spring', course: 'AAS', courseId: '100' }).end((err, res) => {
+      res.body.should.be.a('array');
+      res.body.length.should.be.eql(8);
+      (err === null).should.equal(true);
+      done();
+    });
+>>>>>>> master
   });
 });

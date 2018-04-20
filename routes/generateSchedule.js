@@ -6,7 +6,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *@api {post} /schedule/generate Get generated schedules for classes
 *@apiName GenerateSchedules
 *@apiGroup Schedule
-*@apiVersion 0.2.0
+*@apiVersion 0.3.0
 *
 *@apiParam {String} year The specific school year
 *@apiParam {String} semester The specific semester year
@@ -17,6 +17,9 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *@apiParam {Object[]} preferences.noClassTime List of times the user does not want classes
 *@apiParam {Number} preferences.noClassTime.start Start time
 *@apiParam {Number} preferences.noClassTime.end End time
+*@apiParam {Object} [range] Range of schedules to recieve
+*@apiParam {Number} range.offset Starting offset
+*@apiParam {Number} range.limit Maximum numbers of schedules from offset
 *
 *@apiParamExample {json} Request-Example:
 *   {
@@ -27,7 +30,8 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *       "noClassDays": ["M","W"],
 *       "noClassOptions": ["morning","lunch","evening"],
 *       "noClassTime": [{"start": 14, "end": 16}],
-*     }
+*     },
+*     "range": {"offset": 0, "limit": 20}
 *   }
 *
 *@apiSuccessExample {json} Success-Response:
@@ -88,36 +92,31 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *
 *
 *@apiErrorExample Error-Response:
-*   HTTP/1.1 500 Internal Server Error
+*   HTTP/1.1 422 Internal Server Error
 *   {
-*     "error": "Could not generate schedules"
+*     "error": "Incorrect Parameters"
 *   }
 */
 router.post('/generate', function (req, res) {
   if (!hasProperties(req)) {
     return res.status(422).json({error: 'Incorrect Parameters'});
   }
+
   let year = req.body.year;
   let semester = req.body.semester;
   let selectedClasses = req.body.courses;
   let preferences = req.body.preferences;
+  let range = req.body.range;
   getAllDetails(year, semester, selectedClasses).then(function (result) {
-    // console.log('Generating Schedules');
-    // console.time('generate');
-    let generatedSchedules = genPrototype(result, preferences);
-    // console.timeEnd('generate');
-    // console.log('Number of schedules: ', generatedSchedules.numOfSchedules);
+    let generatedSchedules = generateSchedules(result, preferences);
 
-    // checkDuplicates(generatedSchedules);
+    if (range != null) {
+      if (range.offset < 0 || range.limit < 0 || range.offset >= generatedSchedules.numOfSchedules) {
+        throw new Error('Invalid Range');
+      }
+      generatedSchedules.schedules = generatedSchedules.schedules.slice(range.offset, range.offset + range.limit);
+    }
 
-    // console.log('Generated Schedules. Sending Data back');
-    // if (generatedSchedules.numOfSchedules > 100) {
-    //   generatedSchedules.schedules = generatedSchedules.schedules.slice(0, 150);
-    //   generatedSchedules.numOfSchedules = 150;
-    //   res.status(200).json(generatedSchedules)
-    // } else {
-    //   res.status(200).json(generatedSchedules);
-    // }
     return res.status(200).json(generatedSchedules);
   }).catch(function (err) {
     return res.status(500).json({error: err.message});
@@ -472,7 +471,7 @@ function generateIterative (listOfPermutationsForEveryClass, preferences) {
 // }
 
 // Generates all possible valid schedules given details for all classes and optional preferences
-function genPrototype (classes, preferences) {
+function generateSchedules (classes, preferences) {
   let allPermutations = getPermutationsForAllClasses(classes);
   let generated = generateIterative(allPermutations, preferences);
   // console.time('Sorting');

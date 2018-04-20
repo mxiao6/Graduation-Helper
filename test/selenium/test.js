@@ -21,6 +21,12 @@ function findRegisterButton () {
   });
 }
 
+function findHomeRegisterButton () {
+  return driver.findElements(webdriver.By.css('.registerButton a')).then(function (result) {
+    return result[0];
+  });
+}
+
 function findLoginButton () {
   return driver.findElements(webdriver.By.css('.login-form-button')).then(function (result) {
     return result[0];
@@ -71,6 +77,12 @@ function findEmailEntry () {
 
 function findUsernameEntry () {
   return driver.findElements(webdriver.By.css('#username')).then(function (result) {
+    return result[0];
+  });
+}
+
+function findFirstPasswordEntry () {
+  return driver.findElements(webdriver.By.css('#password1')).then(function (result) {
     return result[0];
   });
 }
@@ -138,7 +150,18 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
-  it('Register Button', function (done) {
+  it('Register Button on Home Page', function (done) {
+    this.timeout(10000);
+    driver.get('http://localhost:3000/')
+      .then(() => driver.wait(findHomeRegisterButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.getCurrentUrl())
+      .then(curUrl => curUrl.should.include('Signup'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Register Button on Login Page', function (done) {
     this.timeout(10000);
     goToLoginPage()
       .then(() => driver.wait(findRegisterButton, 2000))
@@ -170,11 +193,13 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findRegisterButton, 2000))
       .then(button => button.click())
       .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(input => input.sendKeys('admin@illinois.edu'))
       .then(() => driver.wait(findUsernameEntry(), 2000))
       .then(input => input.sendKeys('admin'))
-      .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test'))
+      .then(() => driver.wait(findFirstPasswordEntry(), 2000))
+      .then(input => input.sendKeys('testtesttest'))
+      .then(() => driver.wait(findConfirmPasswordEntry(), 2000))
+      .then(input => input.sendKeys('testtesttest'))
       .then(() => driver.wait(findLoginButton, 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
@@ -182,15 +207,14 @@ describe('Home and Login Tests', function () {
       .then(url => url.should.equal('http://localhost:3000/#/'))
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
+<<<<<<< HEAD
       .then(titleText => titleText.should.equal('Hello, \nadmin!'))
       .then(() => driver.wait(findUserDropdown(), 2000))
       .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
       .then(() => driver.sleep(1000))
       .then(() => driver.wait(findLogoutItem(), 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
-      .then(button => button.click())
+=======
+      .then(titleText => titleText.should.equal('The calendar \nreinvented for students.'))
       .then(() => done())
       .catch(error => done(error));
   });
@@ -199,13 +223,16 @@ describe('Home and Login Tests', function () {
     this.timeout(20000);
     goToLoginPage()
       .then(() => driver.wait(findRegisterButton, 2000))
+>>>>>>> master
       .then(button => button.click())
       .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(input => input.sendKeys('admin@illinois.edu'))
       .then(() => driver.wait(findUsernameEntry(), 2000))
       .then(input => input.sendKeys('admin'))
-      .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test'))
+      .then(() => driver.wait(findFirstPasswordEntry(), 2000))
+      .then(input => input.sendKeys('testtesttest'))
+      .then(() => driver.wait(findConfirmPasswordEntry(), 2000))
+      .then(input => input.sendKeys('testtesttest'))
       .then(() => driver.wait(findLoginButton, 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
@@ -218,13 +245,88 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  it('Register with Bad Email', function (done) {
+    this.timeout(20000);
+    goToLoginPage()
+      .then(() => driver.wait(findRegisterButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(() => driver.wait(findUsernameEntry(), 2000))
+      .then(input => input.sendKeys('admin'))
+      .then(() => driver.wait(findFirstPasswordEntry(), 2000))
+      .then(input => input.sendKeys('testtesttest'))
+      .then(() => driver.wait(findConfirmPasswordEntry(), 2000))
+      .then(input => input.sendKeys('testtesttest'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(curUrl => curUrl.should.include('Signup'))
+      .then(() => driver.wait(findErrorMessage(0), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(errorText => errorText.should.equal('You must sign up with illinois email. Please try again.'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Register with Short Password', function (done) {
+    this.timeout(20000);
+    goToLoginPage()
+      .then(() => driver.wait(findRegisterButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@illinois.edu'))
+      .then(() => driver.wait(findUsernameEntry(), 2000))
+      .then(input => input.sendKeys('admin'))
+      .then(() => driver.wait(findFirstPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test'))
+      .then(() => driver.wait(findConfirmPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(curUrl => curUrl.should.include('Signup'))
+      .then(() => driver.wait(findErrorMessage(0), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(errorText => errorText.should.equal('Password must be at least 10 characters.'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Register with Non Matching Passwords', function (done) {
+    this.timeout(20000);
+    goToLoginPage()
+      .then(() => driver.wait(findRegisterButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@illinois.edu'))
+      .then(() => driver.wait(findUsernameEntry(), 2000))
+      .then(input => input.sendKeys('admin'))
+      .then(() => driver.wait(findFirstPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test'))
+      .then(() => driver.wait(findConfirmPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test2'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(curUrl => curUrl.should.include('Signup'))
+      .then(() => driver.wait(findErrorMessage(0), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(errorText => errorText.should.equal('Password does not match up with confirm password. Please try again.'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
   it('Successful Login', function (done) {
     this.timeout(20000);
     goToLoginPage()
       .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(input => input.sendKeys('admin@illinois.edu'))
       .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test'))
+      .then(input => input.sendKeys('testtesttest'))
       .then(() => driver.wait(findLoginButton, 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
@@ -262,15 +364,15 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findResetPassword(), 2000))
       .then(button => button.click())
       .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(input => input.sendKeys('admin@illinois.edu'))
       .then(() => driver.wait(findButton(0), 2000))
       .then(button => button.click())
       .then(() => driver.wait(findAuCodeEntry(), 2000))
       .then(input => input.sendKeys('ABCDEFGHIJ'))
       .then(() => driver.wait(findNewPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test2'))
+      .then(input => input.sendKeys('test2test2test2'))
       .then(() => driver.wait(findConfirmPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test2'))
+      .then(input => input.sendKeys('test2test2test2'))
       .then(() => driver.wait(findButton(1), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
@@ -295,9 +397,9 @@ describe('Home and Login Tests', function () {
     this.timeout(20000);
     goToLoginPage()
       .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(input => input.sendKeys('admin@illinois.edu'))
       .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test2'))
+      .then(input => input.sendKeys('test2test2test2'))
       .then(() => driver.wait(findLoginButton, 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
@@ -382,9 +484,9 @@ function findSaveButton () {
 function selectSemester () {
   return goToLoginPage()
     .then(() => driver.wait(findEmailEntry(), 2000))
-    .then(input => input.sendKeys('admin@gmail.com'))
+    .then(input => input.sendKeys('admin@illinois.edu'))
     .then(() => driver.wait(findPasswordEntry(), 2000))
-    .then(input => input.sendKeys('test2'))
+    .then(input => input.sendKeys('test2test2test2'))
     .then(() => driver.wait(findLoginButton, 2000))
     .then(button => button.click())
     .then(() => driver.sleep(2000))
@@ -430,9 +532,9 @@ describe('Schedule Generation Tests', function () {
     this.timeout(20000);
     goToLoginPage()
       .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(input => input.sendKeys('admin@illinois.edu'))
       .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test2'))
+      .then(input => input.sendKeys('test2test2test2'))
       .then(() => driver.wait(findLoginButton, 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
@@ -460,9 +562,9 @@ describe('Schedule Generation Tests', function () {
     this.timeout(30000);
     goToLoginPage()
       .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@gmail.com'))
+      .then(input => input.sendKeys('admin@illinois.edu'))
       .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test2'))
+      .then(input => input.sendKeys('test2test2test2'))
       .then(() => driver.wait(findLoginButton, 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
