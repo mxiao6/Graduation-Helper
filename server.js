@@ -19,6 +19,7 @@ app.post('/register', userlogin.register);
 app.post('/login', userlogin.login);
 app.post('/sendemail', userlogin.sendemail);
 app.post('/resetpassword', userlogin.resetpassword);
+app.get('/act', userlogin.activate);
 
 process.on('uncaughtException', (err) => {
   console.log('uncaughtException ' + err);

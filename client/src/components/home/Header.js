@@ -65,9 +65,14 @@ class Header extends Component {
               Logout
             </Button>
           ) : (
-            <Button type="primary" className="loginButton">
-              <Link to={"/Login"}>Login</Link>
-            </Button>
+            <div>
+              <Button type="primary" className="registerButton">
+                <Link to={"/Signup"}>Register</Link>
+              </Button>
+              <Button type="primary" className="loginButton">
+                <Link to={"/Login"}>Login</Link>
+              </Button>
+            </div>
           )}
           <Modal
             title="Logout"
