@@ -207,13 +207,6 @@ describe('Home and Login Tests', function () {
       .then(url => url.should.equal('http://localhost:3000/#/'))
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
-<<<<<<< HEAD
-      .then(titleText => titleText.should.equal('Hello, \nadmin!'))
-      .then(() => driver.wait(findUserDropdown(), 2000))
-      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findLogoutItem(), 2000))
-=======
       .then(titleText => titleText.should.equal('The calendar \nreinvented for students.'))
       .then(() => done())
       .catch(error => done(error));
@@ -223,7 +216,6 @@ describe('Home and Login Tests', function () {
     this.timeout(20000);
     goToLoginPage()
       .then(() => driver.wait(findRegisterButton, 2000))
->>>>>>> master
       .then(button => button.click())
       .then(() => driver.wait(findEmailEntry(), 2000))
       .then(input => input.sendKeys('admin@illinois.edu'))
