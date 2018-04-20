@@ -2,6 +2,10 @@
 // History.
 // ------------------------------------------------------------------------------------------
 
+// ------------------------------------------------------------------------------------------
+// Schedule Generator.
+// ------------------------------------------------------------------------------------------
+
 /**
 *@api {get} /schedule/generate Get generated schedules for classes
 *@apiName GenerateSchedules
@@ -76,6 +80,102 @@
 */
 
 /**
+*@api {post} /schedule/generate Get generated schedules for classes
+*@apiName GenerateSchedules
+*@apiGroup Schedule
+*@apiVersion 0.2.0
+*
+*@apiParam {String} year The specific school year
+*@apiParam {String} semester The specific semester year
+*@apiParam {String[]} courses List of courses to generate schedules
+*@apiParam {Object} [preferences] User preferences information
+*@apiParam {String[]="M","T","W","R","F"} preferences.noClassDays List of days the user does not want classes
+*@apiParam {String[]="morning","lunch","evening"} preferences.noClassOptions List of not prefered times of the day
+*@apiParam {Object[]} preferences.noClassTime List of times the user does not want classes
+*@apiParam {Number} preferences.noClassTime.start Start time
+*@apiParam {Number} preferences.noClassTime.end End time
+*
+*@apiParamExample {json} Request-Example:
+*   {
+*     "year": "2017",
+*     "semester": "Spring",
+*     "courses": ["PHYS211","CS125"],
+*     "preferences": {
+*       "noClassDays": ["M","W"],
+*       "noClassOptions": ["morning","lunch","evening"],
+*       "noClassTime": [{"start": 14, "end": 16}],
+*     }
+*   }
+*
+*@apiSuccessExample {json} Success-Response:
+*   HTTP/1.1 200 OK
+*   {
+*     "numOfSchedules": 21,
+*     "metAllPreferences": false,
+*     "schedules": [
+*       {
+*         "score": 80,
+*         "sections": [
+*           {
+*             "subjectId": "CS",
+*             "courseId": "461",
+*             "sectionId": "48199",
+*             "sectionNumber": "AL4",
+*             "enrollmentStatus": "CrossListOpen",
+*             "type": "LCD",
+*             "startTime": "12:30 PM",
+*             "endTime": "01:45 PM",
+*             "daysOfWeek": "MW"
+*           },
+*           {
+*             "subjectId": "CS",
+*             "courseId": "425",
+*             "sectionId": "31384 56315",
+*             "sectionNumber": "T3 T4",
+*             "enrollmentStatus": "CrossListOpen",
+*             "type": "LCD",
+*             "startTime": "09:30 AM",
+*             "endTime": "10:45 AM",
+*             "daysOfWeek": "TR"
+*           },
+*           {
+*             "subjectId": "CS",
+*             "courseId": "461",
+*             "sectionId": "63508",
+*             "sectionNumber": "AY2",
+*             "enrollmentStatus": "CrossListOpen",
+*             "type": "DIS",
+*             "startTime": "11:00 AM",
+*             "endTime": "11:50 AM",
+*             "daysOfWeek": "R"
+*           },
+*           {
+*             "subjectId": "CHLH",
+*             "courseId": "243",
+*             "sectionId": "65894 57812",
+*             "sectionNumber": "ON ONL",
+*             "enrollmentStatus": "Closed",
+*             "type": "ONL",
+*             "startTime": "ARRANGED"
+*           }
+*         ]
+*       }
+*     ]
+*   }
+*
+*
+*@apiErrorExample Error-Response:
+*   HTTP/1.1 500 Internal Server Error
+*   {
+*     "error": "Could not generate schedules"
+*   }
+*/
+
+// ------------------------------------------------------------------------------------------
+// General api.
+// ------------------------------------------------------------------------------------------
+
+/**
 *@api{get}/sectionDetails Get section details
 *@apiName GetSectionDetails
 *@apiGroup Class
@@ -112,6 +212,10 @@
 *     "error": "Could not make request to the course website"
 *   }
 */
+
+// ------------------------------------------------------------------------------------------
+// Schedule api.
+// ------------------------------------------------------------------------------------------
 
 /**
 *@api{post}/saveschedule save the user schedule to the database

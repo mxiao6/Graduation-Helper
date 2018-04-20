@@ -7,7 +7,7 @@ var pool = userLogin.pool;
 *@api{post}/saveschedule Save user schedule
 *@apiName saveschedule
 *@apiGroup Schedule
-*@apiVersion 0.2.0
+*@apiVersion 0.3.0
 *
 *@apiParam {int} userId user ID that the schedule is to be associated with
 *@apiParam {String} semester The specific semester
@@ -130,7 +130,7 @@ exports.save = function (req, res) {
 *@api{get}/getschedule Get saved user schedules
 *@apiName getschedule
 *@apiGroup Schedule
-*@apiVersion 0.2.0
+*@apiVersion 0.3.0
 *
 *@apiParam {int} userId user ID that the schedule is associated with
 *@apiParam {String} [semester] The specific semester
