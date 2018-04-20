@@ -1,6 +1,6 @@
 {
   "name": "Graduation Helper",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "apiDoc for backend",
   "title": "API documentation GRH",
   "order": [
@@ -20,7 +20,7 @@
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2018-04-19T20:12:30.338Z",
+    "time": "2018-04-19T23:41:38.669Z",
     "url": "http://apidocjs.com",
     "version": "0.17.6"
   }

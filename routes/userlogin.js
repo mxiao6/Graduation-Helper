@@ -29,7 +29,7 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
 *@api{register}/userlogin Register a new user
 *@apiName Register
 *@apiGroup User
-*@apiVersion 0.2.0
+*@apiVersion 0.3.0
 *
 *@apiParam {String} username Username
 *@apiParam {String} email User's email
@@ -163,7 +163,7 @@ exports.activate = function (req, res) {
 *@api{login}/userlogin User login
 *@apiName Login
 *@apiGroup User
-*@apiVersion 0.2.0
+*@apiVersion 0.3.0
 *
 *@apiParam {String} email User's email
 *@apiParam {String} password Entered password
@@ -297,7 +297,7 @@ exports.login = function (req, res) {
 *@api{sendemail}/userlogin Send reset information and record verification information
 *@apiName Sendemail
 *@apiGroup User
-*@apiVersion 0.2.0
+*@apiVersion 0.3.0
 *
 *@apiParam {String} email User's email
 *
@@ -410,7 +410,7 @@ exports.sendemail = function (req, res) {
 *@api{resetpassword}/userlogin Update password after verificating
 *@apiName Resetpassword
 *@apiGroup User
-*@apiVersion 0.2.0
+*@apiVersion 0.3.0
 *
 *@apiParam {String} email User's email
 *@apiParam {String} password User's new password
@@ -498,7 +498,7 @@ exports.resetpassword = function (req, res) {
 *@api{getUserInfo}/userlogin return the user information given the userid
 *@apiName GetUserInfo
 *@apiGroup User
-*@apiVersion 0.2.0
+*@apiVersion 0.3.0
 *
 *@apiParam {String} user_id User's unique id
 *
