@@ -58,6 +58,16 @@ describe('User tests', function () {
         });
   });
 
+    it('badResetpass', function(done) {
+        chai.request(server).post('/sendemail').send({'email': 'NOEMAIL@illinois.edu'}).end((err, res) => {
+            res.should.have.status(422);
+            res.text.should.be.equal('Email does not exist');
+            done();
+            if (err) {
+                console.log(err);
+            }
+        });
+    });
   //   it('resetpass', function(done) {
   //     chai.request(server).post('/resetpassword').send({'email': 'test@gmail.com', 'password': 'newpassword'}).end((err, res) => {
   //       res.should.have.status(300);
