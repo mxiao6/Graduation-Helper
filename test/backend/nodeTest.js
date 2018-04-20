@@ -81,18 +81,6 @@ describe('User tests', function () {
   });
 });
 
-describe('User tests', function () {
-  it('it should not register since email already exists', function (done) {
-    chai.request(server).post('/register').query({ 'username': 'admin', 'email': 'admin@illinois.edu', 'password': 'cs428' }).end(function (err, res) {
-      res.should.have.status(422);
-      res.text.should.be.equal('Email already registered!');
-      if (err) {
-        err.response.should.have.status(422);
-      }
-      done();
-    });
-  });
-});
 
 describe('schedule test', function () {
   describe('General schedule tests', function () {
