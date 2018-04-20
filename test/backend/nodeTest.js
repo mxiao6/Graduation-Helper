@@ -1,6 +1,6 @@
 let chai = require('chai');
 let chaiHttp = require('chai-http');
-let server = 'http://localhost:5000';
+let server = require('../../server');// 'http://localhost:5000';
 var itParam = require('mocha-param');
 chai.use(chaiHttp);
 require('chai').should();
@@ -47,37 +47,45 @@ describe('User tests', function () {
     });
   });
 
-  it('resetpass', function(done) {
-        chai.request(server).post('/sendemail').send({'email': 'admin@illinois.edu'}).end((err, res) => {
-            res.should.have.status(250);
-            res.text.should.be.equal('Email not sent; in testing mode');
-            done();
-            if (err) {
-                console.log(err);
-            }
-        });
+  var aucode = '';
+  it('resetpass', function (done) {
+    chai.request(server).post('/sendemail').send({'email': 'admin@illinois.edu'}).end((err, res) => {
+      res.should.have.status(250);
+      var message = res.text;
+      var dotPosition = message.indexOf('.');
+      aucode = message.substring(dotPosition + 1);
+      var isGood = (aucode.length > 0);
+      if (isGood) {
+        console.log('this is a good test');
+      }
+      // isGood.should.be.true;
+      done();
+      if (err) {
+        console.log(err);
+      }
+    });
   });
 
-    it('badResetpass', function(done) {
-        chai.request(server).post('/sendemail').send({'email': 'NOEMAIL@illinois.edu'}).end((err, res) => {
-            res.should.have.status(422);
-            res.text.should.be.equal('Email does not exist');
-            done();
-            if (err) {
-                console.log(err);
-            }
-        });
+  it('resetpass', function (done) {
+    chai.request(server).post('/resetpassword').send({'email': 'admin@illinois.edu', 'password': 'cs428', 'aucode': aucode}).end((err, res) => {
+      res.should.have.status(250);
+      done();
+      if (err) {
+        console.log(err);
+      }
     });
-  //   it('resetpass', function(done) {
-  //     chai.request(server).post('/resetpassword').send({'email': 'test@gmail.com', 'password': 'newpassword'}).end((err, res) => {
-  //       res.should.have.status(300);
-  //       res.text.should.be.equal('Reset successfully!');
-  //       done();
-  //       if (err) {
-  //         console.log(err);
-  //       }
-  //     });
-  // });
+  });
+
+  it('badResetpass', function (done) {
+    chai.request(server).post('/sendemail').send({'email': 'NOEMAIL@illinois.edu'}).end((err, res) => {
+      res.should.have.status(422);
+      res.text.should.be.equal('Email does not exist');
+      done();
+      if (err) {
+        console.log(err);
+      }
+    });
+  });
 });
 
 describe('schedule test', function () {
