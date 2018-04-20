@@ -879,6 +879,61 @@ describe('schedule test', function () {
       });
     });
   });
+
+  describe('schdule tests', function () {
+    it('saving a schdule', function (done) {
+      this.timeout(10000);
+      chai.request(server).query('/saveschedule').send({
+        'userid': 1,
+        'year': '2018',
+        'semester': 'Fall',
+        'sections': [
+          {
+            'subjectId': 'CS',
+            'courseId': '425',
+            'sectionId': '31384',
+            'type': 'LCD',
+            'startTime': '09:30 AM',
+            'endTime': '10:45 AM',
+            'daysOfWeek': 'TR',
+            'semester': 'Spring',
+            'year': 2018
+          },
+          {
+            'subjectId': 'CS',
+            'courseId': '429',
+            'sectionId': '41483',
+            'type': 'LCD',
+            'startTime': '02:00 PM',
+            'endTime': '03:15 PM',
+            'daysOfWeek': 'TR',
+            'semester': 'Spring',
+            'year': 2018
+          }]
+      }).end((err, res) => {
+        res.should.have.status(200);
+        done();
+        if (err) {
+          err.response.should.have.status(500);
+        }
+      });
+    });
+
+    it('getting an existing schdule', function (done) {
+      this.timeout(10000);
+      chai.request(server).query('/getschdule').send({
+        'userid': 1,
+        'year': '2018',
+        'semester': 'Fall'
+      }).end((err, res) => {
+        res.should.have.status(200);
+        done();
+        if (err) {
+          err.response.should.have.status(500);
+        }
+      });
+    });
+  });
 });
 
 describe('API tests', function () {
