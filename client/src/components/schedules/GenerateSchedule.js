@@ -142,7 +142,7 @@ class GenerateSchedule extends React.Component {
 
   _generateSchedule = () => {
     const { semester } = this.props;
-    const { schedule } = this.state;
+    const { schedule, noDaysList, noOptionsList } = this.state;
     this.setState({
       generating: true,
     });
@@ -150,6 +150,10 @@ class GenerateSchedule extends React.Component {
       .post(POST_GENERATE_SCHEDULE, {
         ...semester,
         courses: schedule,
+        preferences: {
+          noClassDays: noDaysList,
+          noClassOptions: noOptionsList,
+        },
       })
       .then(res => {
         console.log('raw data', res.data);
@@ -161,7 +165,7 @@ class GenerateSchedule extends React.Component {
         });
       })
       .catch(e => {
-        console.error('_generateSchedule', e);
+        console.error('_generateSchedule', e.response);
       });
   };
 
@@ -232,14 +236,6 @@ class GenerateSchedule extends React.Component {
           disabled={this.state.selected === undefined}
         >
           Add
-        </Button>
-        <Button
-          type="primary"
-          className="nextButton"
-          onClick={this._generateSchedule}
-          disabled={this.state.schedule.length === 0}
-        >
-          Generate
         </Button>
       </div>
     );
@@ -354,21 +350,66 @@ class GenerateSchedule extends React.Component {
   };
 
   _renderTags = () => {
-    const { schedule } = this.state;
+    const { schedule, noDaysList, noOptionsList } = this.state;
     return (
-      <div className="tagsContainer">
-        {schedule.map((tag, index) => {
-          return (
-            <Tag
-              color="blue"
-              closable
-              key={tag}
-              afterClose={() => this._closeTag(tag)}
-            >
-              {tag}
-            </Tag>
-          );
-        })}
+      <div>
+        <Row className="tagsContainer">
+          <Col span={8} className="tagsTitle">
+            Selected Courses:
+          </Col>
+          <Col span={16}>
+            {schedule.map((tag, index) => {
+              return (
+                <Tag
+                  color="blue"
+                  closable
+                  key={tag}
+                  afterClose={() => this._closeTag(tag)}
+                >
+                  {tag}
+                </Tag>
+              );
+            })}
+          </Col>
+        </Row>
+        <Row className="tagsContainer">
+          <Col span={8} className="tagsTitle">
+            No Class Days:
+          </Col>
+          <Col span={16}>
+            {noDaysList.map((tag, index) => {
+              return (
+                <Tag
+                  color="red"
+                  closable
+                  key={tag}
+                  afterClose={() => this._closeDaysTag(tag)}
+                >
+                  {tag}
+                </Tag>
+              );
+            })}
+          </Col>
+        </Row>
+        <Row className="tagsContainer">
+          <Col span={8} className="tagsTitle">
+            No Class Options:
+          </Col>
+          <Col span={16}>
+            {noOptionsList.map((tag, index) => {
+              return (
+                <Tag
+                  color="orange"
+                  closable
+                  key={tag}
+                  afterClose={() => this._closeOptionsTag(tag)}
+                >
+                  {tag}
+                </Tag>
+              );
+            })}
+          </Col>
+        </Row>
       </div>
     );
   };
@@ -394,91 +435,126 @@ class GenerateSchedule extends React.Component {
     });
   };
 
-  _onChangeOptions = () => {};
+  _closeDaysTag = removedTag => {
+    const noDaysList = this.state.noDaysList.filter(tag => tag !== removedTag);
+    console.log('noDaysList', noDaysList);
+    this.setState({ noDaysList });
+  };
 
-  _addOptions = () => {};
+  _onChangeOptions = value => {
+    console.log('no class options', value);
+    this.setState({
+      selectedOption: value,
+    });
+  };
+
+  _addOptions = () => {
+    const { selectedOption, noOptionsList } = this.state;
+    if (noOptionsList.indexOf(selectedOption) !== -1) {
+      message.error('Option exists');
+      return;
+    }
+    let newOptionsList = noOptionsList.slice(0);
+    newOptionsList.push(selectedOption);
+
+    this.setState({
+      noOptionsList: newOptionsList,
+    });
+  };
+
+  _closeOptionsTag = removedTag => {
+    const noOptionsList = this.state.noOptionsList.filter(
+      tag => tag !== removedTag
+    );
+    console.log('noOptionsList', noOptionsList);
+    this.setState({ noOptionsList });
+  };
 
   _showSelectTimeModel = () => {};
 
-  daysList = [
-    {
-      value: 'M',
-      label: 'Monday',
-    },
-    {
-      value: 'T',
-      label: 'Tuesday',
-    },
-  ];
-
   _renderPreference = () => {
-    const { width } = this.state;
     return (
-      <div className="prefContainer">
-        <Row style={{ width: width * 0.8 }} className="prefRow">
-          <Col span={8}>
-            <div className="prefCascaderContainer">
-              <Cascader
-                className="prefCascader"
-                options={this.daysList}
-                onChange={this._onChangeDays}
-                placeholder="No Class Days"
-                changeOnSelect
-              />
-              <Button
-                type="primary"
-                className="nextButton"
-                onClick={this._addDays}
-                disabled={this.state.selectedDay === undefined}
-              >
-                Add
-              </Button>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div className="prefCascaderContainer">
-              <Cascader
-                options={this.state.options}
-                onChange={this._onChangeOptions}
-                placeholder="No Class Options"
-                changeOnSelect
-              />
-              <Button
-                type="primary"
-                className="nextButton"
-                onClick={this._addOptions}
-                disabled={this.state.noOptionsList === undefined}
-              >
-                Add
-              </Button>
-            </div>
-          </Col>
-          <Col span={8}>
-            <Button
-              type="primary"
-              className="nextButton"
-              onClick={this._showSelectTimeModel}
-            >
-              Select No Class Time
-            </Button>
-          </Col>
-        </Row>
+      <div>
+        <div className="cascaderContainer">
+          <Cascader
+            options={daysList}
+            onChange={this._onChangeDays}
+            placeholder="No Class Days"
+            changeOnSelect
+          />
+          <Button
+            type="primary"
+            className="nextButton"
+            onClick={this._addDays}
+            disabled={this.state.selectedDay === undefined}
+          >
+            Add
+          </Button>
+        </div>
+        <div className="cascaderContainer">
+          <Cascader
+            options={optionsList}
+            onChange={this._onChangeOptions}
+            placeholder="No Class Options"
+            changeOnSelect
+          />
+          <Button
+            type="primary"
+            className="nextButton"
+            onClick={this._addOptions}
+            disabled={this.state.selectedOption === undefined}
+          >
+            Add
+          </Button>
+        </div>
+        <div className="cascaderContainer">
+          <Button
+            type="primary"
+            className="nextButton"
+            onClick={this._showSelectTimeModel}
+          >
+            Select No Class Time
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  _renderGenerateButton = () => {
+    return (
+      <div className="cascaderContainer">
+        <Button
+          type="primary"
+          className="nextButton"
+          onClick={this._generateSchedule}
+          disabled={this.state.schedule.length === 0}
+        >
+          Generate
+        </Button>
       </div>
     );
   };
 
   _renderContent = () => {
     const { semester } = this.props;
+    const { width } = this.state;
     return (
       <div className="contentContainer">
-        <div>
+        <div style={{ marginBottom: 30 }}>
           Selected Semester: {semester.semester} {semester.year}
           &nbsp; &nbsp;
           <a onClick={this._resetSemester}>reset</a>
         </div>
-        {this._renderCascader()}
-        {this._renderTags()}
-        {this._renderPreference()}
+        <Row style={{ width: width * 0.6 }}>
+          <Col span={12}>
+            {this._renderCascader()}
+            {this._renderPreference()}
+          </Col>
+          <Col span={12}>
+            {this._renderTags()}
+            {this._renderGenerateButton()}
+          </Col>
+        </Row>
         {this._renderSmallGrids()}
         {this._renderModal()}
       </div>
@@ -503,6 +579,42 @@ class GenerateSchedule extends React.Component {
 }
 
 const _default = { year: '2018', semester: 'fall' };
+const daysList = [
+  {
+    value: 'M',
+    label: 'Monday',
+  },
+  {
+    value: 'T',
+    label: 'Tuesday',
+  },
+  {
+    value: 'W',
+    label: 'Wednesday',
+  },
+  {
+    value: 'R',
+    label: 'Thursday',
+  },
+  {
+    value: 'F',
+    label: 'Friday',
+  },
+];
+const optionsList = [
+  {
+    value: 'morning',
+    label: 'Morning',
+  },
+  {
+    value: 'lunch',
+    label: 'Lunch',
+  },
+  {
+    value: 'evening',
+    label: 'Evening',
+  },
+];
 
 function mapStateToProps(state, ownProps) {
   return {
