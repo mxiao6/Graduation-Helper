@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import WindowSizeListener from "react-window-size-listener";
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import WindowSizeListener from 'react-window-size-listener';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import { Button } from "antd";
-import "styles/Home.css";
+import { Button } from 'antd';
+import 'styles/Home.css';
 
 class Home extends Component {
   constructor(props) {
@@ -46,18 +46,8 @@ class Home extends Component {
                   <Button type="primary" className="tempButton">
                     <Link
                       to={{
-                        pathname: "/SemesterSelection",
-                        state: { next: "/ClassSelection" }
-                      }}
-                    >
-                      Select Class
-                    </Link>
-                  </Button>
-                  <Button type="primary" className="tempButton">
-                    <Link
-                      to={{
-                        pathname: "/SemesterSelection",
-                        state: { next: "/GenerateSchedule" }
+                        pathname: '/SemesterSelection',
+                        state: { next: '/GenerateSchedule' },
                       }}
                     >
                       Generate Schedule
@@ -75,7 +65,7 @@ class Home extends Component {
 
 function mapStateToProps(state, ownProps) {
   return {
-    user: state.auth.user
+    user: state.auth.user,
   };
 }
 
