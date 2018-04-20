@@ -46,6 +46,28 @@ describe('User tests', function () {
       done();
     });
   });
+
+  it('resetpass', function(done) {
+        chai.request(server).post('/sendemail').send({'email': 'admin@illinois.edu'}).end((err, res) => {
+            res.should.have.status(250);
+            res.text.should.be.equal('Email not sent; in testing mode');
+            done();
+            if (err) {
+                console.log(err);
+            }
+        });
+  });
+
+  //   it('resetpass', function(done) {
+  //     chai.request(server).post('/resetpassword').send({'email': 'test@gmail.com', 'password': 'newpassword'}).end((err, res) => {
+  //       res.should.have.status(300);
+  //       res.text.should.be.equal('Reset successfully!');
+  //       done();
+  //       if (err) {
+  //         console.log(err);
+  //       }
+  //     });
+  // });
 });
 
 describe('schedule test', function () {
