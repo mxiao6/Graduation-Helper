@@ -10,11 +10,13 @@ import { GET_SCHEDULE, POST_DELETE_SCHEDULE } from 'api';
 import {
   _parseSmallArray,
   _renderSmallSchedules,
+  _parseSchedule,
 } from 'components/schedules/SmallSchedules';
 
 class MySchedules extends Component {
   state = {
     schedules: undefined,
+    schedulesIndex: [],
   };
 
   componentWillMount() {
@@ -50,14 +52,24 @@ class MySchedules extends Component {
       })),
     };
 
+    this.setState({
+      schedulesIndex: _.map(schedules, (value, key) => key),
+    });
+    console.log('schedulesIndex', this.state.schedulesIndex);
+
     return _parseSmallArray(smallData);
   };
 
-  _showBigSchedule = scheduleIdx => {
-    console.log('scheduleIdx', scheduleIdx);
-    this.setState({
-      scheduleIdx,
-      modalVisible: true,
+  _editSchedule = idx => {
+    const { schedulesIndex, schedules } = this.state;
+    const { history } = this.props;
+    console.log('idx', schedulesIndex[idx], schedules[schedulesIndex[idx]]);
+    history.push({
+      pathname: '/ClassSelection',
+      state: {
+        scheduleId: schedulesIndex[idx],
+        schedule: _parseSchedule({ sections: schedules[schedulesIndex[idx]] }),
+      },
     });
   };
 
@@ -66,7 +78,7 @@ class MySchedules extends Component {
     return !smallSchedules ? (
       <Spin />
     ) : (
-      _renderSmallSchedules(smallSchedules, this._showBigSchedule)
+      _renderSmallSchedules(smallSchedules, this._editSchedule)
     );
   };
 

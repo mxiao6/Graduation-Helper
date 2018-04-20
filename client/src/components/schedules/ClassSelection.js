@@ -9,36 +9,37 @@ import * as classActions from 'containers/Classes';
 
 import { Cascader, Spin, Button, Table, Tag, message } from 'antd';
 import 'styles/ClassSelection.css';
+import { _renderGenerated } from 'components/schedules/SmallSchedules';
 
 const sectionColumns = [
   {
     title: 'Status',
-    dataIndex: 'enrollmentStatus'
+    dataIndex: 'enrollmentStatus',
   },
   {
     title: 'CRN',
-    dataIndex: 'sectionId'
+    dataIndex: 'sectionId',
   },
   {
     title: 'Type',
-    dataIndex: 'type'
+    dataIndex: 'type',
   },
   {
     title: 'Section',
-    dataIndex: 'sectionNumber'
+    dataIndex: 'sectionNumber',
   },
   {
     title: 'Start Time',
-    dataIndex: 'startTime'
+    dataIndex: 'startTime',
   },
   {
     title: 'End Time',
-    dataIndex: 'endTime'
+    dataIndex: 'endTime',
   },
   {
     title: 'Day',
-    dataIndex: 'daysOfWeek'
-  }
+    dataIndex: 'daysOfWeek',
+  },
 ];
 
 class ClassSelection extends React.Component {
@@ -47,14 +48,20 @@ class ClassSelection extends React.Component {
     selected: undefined,
     sectionList: undefined,
     selectedRowKeys: [],
-    tableLoading: false
+    tableLoading: false,
   };
 
   componentWillMount() {
-    console.log(this.props.semester);
+    const { semester, history, location } = this.props;
+    console.log(semester);
+    console.log('location', location, !location.state);
+    if (!location.state) {
+      history.goBack();
+    }
+
     axios
       .get(GET_SUBJECT, {
-        params: this.props.semester
+        params: semester,
       })
       .then(res => {
         console.log(res.data);
@@ -62,8 +69,8 @@ class ClassSelection extends React.Component {
           options: _.map(res.data, item => ({
             value: item.id,
             label: item.subject,
-            isLeaf: false
-          }))
+            isLeaf: false,
+          })),
         });
       })
       .catch(e => {
@@ -77,7 +84,7 @@ class ClassSelection extends React.Component {
     if (value.length === 0) {
       console.log('clear selection');
       this.setState({
-        selected: undefined
+        selected: undefined,
       });
       return;
     }
@@ -86,8 +93,8 @@ class ClassSelection extends React.Component {
       this.setState({
         selected: {
           course: value[0],
-          courseId: value[1]
-        }
+          courseId: value[1],
+        },
       });
     }
   };
@@ -100,8 +107,8 @@ class ClassSelection extends React.Component {
       .get(GET_COURSE, {
         params: {
           ...this.props.semester,
-          course: targetOption.value
-        }
+          course: targetOption.value,
+        },
       })
       .then(res => {
         console.log(res.data);
@@ -109,10 +116,10 @@ class ClassSelection extends React.Component {
         targetOption.children = _.map(res.data, item => ({
           label: `${item.id}: ${item.course}`,
           value: item.id,
-          isLeaf: true
+          isLeaf: true,
         }));
         this.setState({
-          options: [...this.state.options]
+          options: [...this.state.options],
         });
       })
       .catch(e => {
@@ -134,15 +141,15 @@ class ClassSelection extends React.Component {
     const { semester } = this.props;
 
     this.setState({
-      tableLoading: true
+      tableLoading: true,
     });
 
     axios
       .get(GET_SECTION, {
         params: {
           ...semester,
-          ...selected
-        }
+          ...selected,
+        },
       })
       .then(res => {
         console.log('simple sections', res.data);
@@ -162,8 +169,8 @@ class ClassSelection extends React.Component {
         params: {
           ...selected,
           ...semester,
-          sectionId: section.id
-        }
+          sectionId: section.id,
+        },
       });
     });
 
@@ -175,14 +182,14 @@ class ClassSelection extends React.Component {
           this.setState({
             sectionList: _.map(results, res => ({
               ...res.data,
-              key: res.data.sectionId
-            }))
+              key: res.data.sectionId,
+            })),
           });
         })
       )
       .then(res => {
         this.setState({
-          tableLoading: false
+          tableLoading: false,
         });
       })
       .catch(es => {
@@ -194,7 +201,7 @@ class ClassSelection extends React.Component {
     this.props.actions.resetSemester();
     this.props.history.push({
       pathname: '/SemesterSelection',
-      state: { next: '/ClassSelection' }
+      state: { next: '/ClassSelection' },
     });
   };
 
@@ -260,7 +267,7 @@ class ClassSelection extends React.Component {
     const { sectionList, selectedRowKeys } = this.state;
     const rowSelection = {
       selectedRowKeys,
-      onChange: this._onSelectChange
+      onChange: this._onSelectChange,
     };
     return (
       <div className="sectionsContainer">
@@ -274,7 +281,9 @@ class ClassSelection extends React.Component {
   };
 
   _renderContent = () => {
-    const { semester } = this.props;
+    const { semester, location } = this.props;
+    console.log('schedule', location.state.schedule);
+
     return (
       <div className="contentContainer">
         <div>
@@ -284,6 +293,7 @@ class ClassSelection extends React.Component {
         </div>
         {this._renderCascader()}
         {this._renderCRNs()}
+        {_renderGenerated(location.state.schedule)}
         {this.state.tableLoading ? (
           <Spin />
         ) : (
@@ -306,13 +316,13 @@ const _default = { year: '2018', semester: 'spring' };
 
 function mapStateToProps(state, ownProps) {
   return {
-    semester: state.classes.semester ? state.classes.semester : _default
+    semester: state.classes.semester ? state.classes.semester : _default,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(classActions, dispatch)
+    actions: bindActionCreators(classActions, dispatch),
   };
 }
 

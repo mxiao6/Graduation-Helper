@@ -3,6 +3,54 @@ import _ from 'lodash';
 import randomColor from 'randomcolor';
 import 'styles/ClassSelection.css';
 import { daysMap, _parseTime } from 'utils';
+import BigCalendar from 'modules/react-big-calendar';
+
+export const _parseSchedule = schedule => {
+  return {
+    score: schedule.score || 0,
+    sections: _.flatMap(schedule.sections, section => {
+      let retval = [];
+      if (!section.daysOfWeek || !section.endTime) return retval;
+      for (let day of section.daysOfWeek) {
+        let date = 1 + daysMap[day];
+        let startTime = _parseTime(section.startTime);
+        let endTime = _parseTime(section.endTime);
+        retval.push({
+          title: `${section.subjectId} ${section.courseId}-${
+            section.sectionNumber
+          }\n${section.sectionId}`,
+          start: new Date(2018, 3, date, startTime.hour, startTime.mins, 0),
+          end: new Date(2018, 3, date, endTime.hour, endTime.mins, 0),
+        });
+      }
+      return retval;
+    }),
+  };
+};
+
+export const _renderGenerated = schedule => {
+  return (
+    <BigCalendar
+      min={new Date(2018, 3, 1, 8, 0, 0)}
+      max={new Date(2018, 3, 1, 21, 0, 0)}
+      toolbar={false}
+      selectable
+      events={schedule.sections}
+      step={30}
+      timeslots={2}
+      defaultView="week"
+      defaultDate={new Date(2018, 3, 1)}
+      onSelectEvent={event => alert(event.title)}
+      onSelectSlot={slotInfo =>
+        alert(
+          `selected slot: \n\nstart ${slotInfo.start.toLocaleString()} ` +
+            `\nend: ${slotInfo.end.toLocaleString()}` +
+            `\naction: ${slotInfo.action}`
+        )
+      }
+    />
+  );
+};
 
 export const _generateEmptyArray = () => {
   let array = [];
