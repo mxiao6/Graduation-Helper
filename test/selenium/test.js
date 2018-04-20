@@ -263,7 +263,7 @@ describe('Home and Login Tests', function () {
       .then(curUrl => curUrl.should.include('Signup'))
       .then(() => driver.wait(findErrorMessage(0), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
-      .then(errorText => errorText.should.equal('You must sign up with illinois email. Please try again.'))
+      .then(errorText => errorText.should.equal('You must sign up with an illinois.edu email. Please try again.'))
       .then(() => done())
       .catch(error => done(error));
   });
@@ -313,7 +313,7 @@ describe('Home and Login Tests', function () {
       .then(curUrl => curUrl.should.include('Signup'))
       .then(() => driver.wait(findErrorMessage(0), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
-      .then(errorText => errorText.should.equal('Password does not match up with confirm password. Please try again.'))
+      .then(errorText => errorText.should.equal('Passwords do not match. Please try again.'))
       .then(() => done())
       .catch(error => done(error));
   });

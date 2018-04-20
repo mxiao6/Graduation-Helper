@@ -28,7 +28,7 @@ describe('User tests', function () {
   it('it should not login wrong password', function (done) {
     chai.request(server).post('/login').send({ 'email': 'admin@illinois.edu', 'password': 'wrong_pass' }).end((err, res) => {
       res.should.have.status(422);
-      res.text.should.be.equal('Email and password does not match');
+      res.text.should.be.equal('Email and password do not match');
       if (err) {
         err.response.should.have.status(422);
       }
@@ -47,16 +47,38 @@ describe('User tests', function () {
     });
   });
 
-  // it('resetpass', function(done) {
-  //   chai.request(server).post('/resetpassword').send({'email': 'test@gmail.com', 'password': 'newpassword'}).end((err, res) => {
-  //     res.should.have.status(300);
-  //     res.text.should.be.equal('Reset successfully!');
-  //     done();
-  //     if (err) {
-  //       console.log(err);
-  //     }
-  //   });
-  // });
+  var aucode = 'ABCDEFGHIJ';
+  it('resetpass', function (done) {
+    chai.request(server).post('/sendemail').send({'email': 'admin@illinois.edu'}).end((err, res) => {
+      res.should.have.status(250);
+      res.text.should.be.equal('Email not sent; in testing mode');
+      done();
+      if (err) {
+        console.log(err);
+      }
+    });
+  });
+
+  it('resetpass', function (done) {
+    chai.request(server).post('/resetpassword').send({'email': 'admin@illinois.edu', 'password': 'test2test2test2', 'aucode': aucode}).end((err, res) => {
+      res.should.have.status(250);
+      done();
+      if (err) {
+        console.log(err);
+      }
+    });
+  });
+
+  it('badResetpass', function (done) {
+    chai.request(server).post('/sendemail').send({'email': 'NOEMAIL@illinois.edu'}).end((err, res) => {
+      res.should.have.status(422);
+      res.text.should.be.equal('Email does not exist');
+      done();
+      if (err) {
+        console.log(err);
+      }
+    });
+  });
 });
 
 describe('schedule test', function () {
@@ -818,35 +840,6 @@ describe('schedule test', function () {
       });
     });
   });
-
-  // describe('save schedule tests', function() {
-  //   it('save schedule', function(done) {
-  //     chai.request(server).post('/saveschedule').send({
-  //       userId: 9,
-  //       semester: 'Spring',
-  //       year: '2018',
-  //       sections: [
-  //         {
-  //           "subjectId": "CS",
-  //           "courseId": "425",
-  //           "sectionId": "31384",
-  //           "type": "LCD",
-  //           "startTime": "09:30 AM",
-  //           "endTime": "10:45 AM",
-  //           "daysOfWeek": "TR",
-  //           "semester": "Spring",
-  //           "year": 2018
-  //         }
-  //       ]
-  //     }).end((err, res) => {
-  //       res.should.have.status(200);
-  //       done();
-  //       if (err) {
-  //         console.log(err);
-  //       }
-  //     });
-  //   });
-  // });
 
   describe('parameterized tests', function () {
     var data = [
