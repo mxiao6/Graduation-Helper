@@ -21,24 +21,26 @@ class MySchedules extends Component {
 
   componentWillMount() {
     const { user, history } = this.props;
-    if (!user) history.push('/');
-
-    axios
-      .get(GET_SCHEDULE, {
-        params: {
-          userId: user.userId,
-        },
-      })
-      .then(res => {
-        console.log('MySchedules', res.data);
-        this.setState({
-          schedules: res.data,
-          smallSchedules: this._parseSchedules(res.data),
+    if (!user) {
+      history.push('/');
+    } else {
+      axios
+        .get(GET_SCHEDULE, {
+          params: {
+            userId: user.userId,
+          },
+        })
+        .then(res => {
+          console.log('MySchedules', res.data);
+          this.setState({
+            schedules: res.data,
+            smallSchedules: this._parseSchedules(res.data),
+          });
+        })
+        .catch(e => {
+          console.error('GET_SCHEDULE', e.response);
         });
-      })
-      .catch(e => {
-        console.error('GET_SCHEDULE', e.response);
-      });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
