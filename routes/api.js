@@ -207,7 +207,6 @@ router.get('/course', function (req, res) {
             });
           }
         }
-
       }
       return res.status(200).json(courseList);
     }
@@ -217,7 +216,7 @@ router.get('/course', function (req, res) {
 });
 
 // Gets the different topics in special topic classes like 498 and 598
-function getSpecialTopicsTitles(urls){
+function getSpecialTopicsTitles (urls) {
   return Promise.map(urls, url => getParsedRequest(url), {concurrency: 4}).then(function (result) {
     let topicsSet = new Set([]);
     for (let i = 0; i < result.length; i++) {
@@ -284,14 +283,14 @@ router.get('/section', function (req, res) {
   let courseId = courseIdParams[0];
   let specialTopic = courseIdParams[1];
 
-  let url = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '.xml';  
-  if (specialTopic != null){
-    getSectionUrls(url).then(getSpecialTopicsSections).then(function(sections){
+  let url = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '.xml';
+  if (specialTopic != null) {
+    getSectionUrls(url).then(getSpecialTopicsSections).then(function (sections) {
       let specialSections = [];
       for (let i = 0; i < sections.length; i++) {
         let section = sections[i];
         let acronym = section.sectionTitle.match(/\b(\w)/g).join('');
-        if(specialTopic === acronym){
+        if (specialTopic === acronym) {
           specialSections.push({section: section.sectionNumber, id: section.sectionId});
         }
       }
@@ -299,7 +298,7 @@ router.get('/section', function (req, res) {
     }).catch(function (err) {
       return res.status(500).json({'error': err.message});
     });
-  }else{
+  } else {
     getParsedRequest(url).then(function (result) {
       let section = result['ns2:course']['sections'][0]['section'];
       if (section == null) {
@@ -319,7 +318,7 @@ router.get('/section', function (req, res) {
   }
 });
 
-function getSpecialTopicsSections(urls){
+function getSpecialTopicsSections (urls) {
   return Promise.map(urls, url => getParsedRequest(url), {concurrency: 4}).then(function (result) {
     let sections = [];
     for (let i = 0; i < result.length; i++) {
