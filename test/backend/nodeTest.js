@@ -880,18 +880,20 @@ describe('schedule test', function () {
     });
   });
 
-  describe('schdule tests', function () {
+  describe('schedule tests', function () {
     it('saving a schdule', function (done) {
       this.timeout(10000);
       chai.request(server).post('/saveschedule').send({
         'userId': 1,
         'year': '2018',
-        'semester': 'Fall',
+        'semester': 'Spring',
         'sections': [
           {
             'subjectId': 'CS',
             'courseId': '425',
             'sectionId': '31384',
+            'sectionTitle': 'Distributed Systems',
+            'sectionNumber': 'T3',
             'type': 'LCD',
             'startTime': '09:30 AM',
             'endTime': '10:45 AM',
@@ -903,6 +905,8 @@ describe('schedule test', function () {
             'subjectId': 'CS',
             'courseId': '429',
             'sectionId': '41483',
+            'sectionTitle': 'Software Engineering II, ACP',
+            'sectionNumber': 'Q3',
             'type': 'LCD',
             'startTime': '02:00 PM',
             'endTime': '03:15 PM',
