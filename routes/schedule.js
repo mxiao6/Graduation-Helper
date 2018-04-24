@@ -1,5 +1,4 @@
 // functions related to schedule objects
-const async = require('async');
 var userLogin = require('./userlogin');
 var pool = userLogin.pool;
 
@@ -56,7 +55,6 @@ exports.save = function (req, res) {
   let semester = req.body.semester;
   let year = req.body.year;
   let sections = req.body.sections;
-  console.log(req.body);
 
   if (userId == null || semester == null || year == null || sections == null) {
     return res.status(400).json({error: 'Incorrect parameters'});
@@ -77,33 +75,39 @@ exports.save = function (req, res) {
       if (err) {
         throw err;
       }
-      connection.query('INSERT INTO schedules (semester,user_id) VALUES (?,?);', [
-        semester + '' + year,
+      connection.query('INSERT INTO schedules (semester, year, user_id) VALUES (?,?,?);', [
+        semester,
+        year,
         userId
       ], function (err, results) {
-        console.log(err);
+        if (err) {
+          return connection.rollback(function () {
+            return res.status(500).json({error: 'Could not save schedules'});
+          });
+        }
+
         let scheduleId = results.insertId;
 
-        async.each(sections, function (section, callback) {
-          connection.query('INSERT INTO courses (scheduleId, subjectId,courseId,sectionId,type, startTime, endTime, daysOfWeek,semester,year) VALUES (?,?,?,?,?,?,?,?,?,?);', [
+        let insertSections = sections.map(function (section) {
+          let vals = [
             scheduleId,
             section.subjectId,
             section.courseId,
-            section.sectionId,
+            section.sectionId.split(' ')[0],
+            section.sectionNumber.split(' ')[0],
+            section.sectionTitle,
             section.type,
             section.startTime,
             section.endTime,
             section.daysOfWeek,
             semester,
             year
-          ], function (err, results) {
-            if (err) {
-              callback(err);
-            } else {
-              callback(null);
-            }
-          });
-        }, function (err) {
+          ];
+          return vals;
+        });
+
+        let query = 'INSERT INTO courses (scheduleId, subjectId,courseId,sectionId, sectionNumber, sectionTitle, type, startTime, endTime, daysOfWeek,semester,year) VALUES ?;';
+        connection.query(query, [insertSections], function (err) {
           if (err) {
             return connection.rollback(function () {
               return res.status(500).json({error: 'Could not save schedules'});
@@ -116,7 +120,7 @@ exports.save = function (req, res) {
                 });
               } else {
                 connection.release();
-                return res.status(200).send('Save successfully');
+                return res.status(200).send('Saved successfully');
               }
             });
           }
@@ -312,41 +316,39 @@ exports.edit = function (req, res) {
           });
         }
         // add the new sections
-        async.each(sections, function (section, callback) {
-          connection.query('INSERT INTO courses (scheduleId, subjectId, courseId, sectionId, type, startTime, endTime, daysOfWeek, semester, year) VALUES (?,?,?,?,?,?,?,?,?,?);',
-            [
-              scheduleId,
-              section.subjectId,
-              section.courseId,
-              section.sectionId,
-              section.type,
-              section.startTime,
-              section.endTime,
-              section.daysOfWeek,
-              section.semester,
-              section.year
-            ], function (err, results) {
-              if (err) {
-                callback(err);
-              } else {
-                callback(null);
-              }
-            });
-        }, function (err) {
+        let insertSections = sections.map(function (section) {
+          let vals = [
+            scheduleId,
+            section.subjectId,
+            section.courseId,
+            section.sectionId,
+            section.sectionNumber,
+            section.sectionTitle,
+            section.type,
+            section.startTime,
+            section.endTime,
+            section.daysOfWeek,
+            section.semester,
+            section.year
+          ];
+          return vals;
+        });
+
+        let query = 'INSERT INTO courses (scheduleId, subjectId, courseId,sectionId, sectionNumber, sectionTitle, type, startTime, endTime, daysOfWeek,semester,year) VALUES ?;';
+        connection.query(query, [insertSections], function (err) {
           if (err) {
             return connection.rollback(function () {
-              // console.log(err);
-              return res.status(500).json({error: 'Could not save courses'});
+              return res.status(500).json({error: 'Could not edit schedules'});
             });
           } else {
             connection.commit(function (err) {
               if (err) {
                 return connection.rollback(function () {
-                  return res.status(500).json({error: 'Save commit error'});
+                  return res.status(500).json({error: 'Edit commit Error'});
                 });
               } else {
                 connection.release();
-                return res.status(200).send('Edit Successful');
+                return res.status(200).send('Edited successfully');
               }
             });
           }
