@@ -881,7 +881,7 @@ describe('schedule test', function () {
   });
 
   describe('schedule tests', function () {
-    it('saving a schdule', function (done) {
+    it('saving a schedule', function (done) {
       this.timeout(10000);
       chai.request(server).post('/saveschedule').send({
         'userId': 1,
@@ -911,7 +911,7 @@ describe('schedule test', function () {
       });
     });
 
-    it('getting an existing schdule', function (done) {
+    it('getting an existing schedule', function (done) {
       this.timeout(10000);
       chai.request(server).get('/getschedule').query({
         'userId': 1,
