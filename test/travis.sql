@@ -22,14 +22,14 @@ CREATE TABLE testDatabase.courses(
   endTime VARCHAR(10),
   daysOfWeek VARCHAR(7),
   semester VARCHAR(6) NOT NULL,
-  year INT NOT NULL,
+  year YEAR(4) NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE testDatabase.schedules(
   scheduleId INT NOT NULL AUTO_INCREMENT,
   semester VARCHAR(8) NOT NULL,
-  year INT NOT NULL,
+  year YEAR(4) NOT NULL,
   user_id INT NOT NULL,
   PRIMARY KEY (scheduleId)
 );
