@@ -897,15 +897,13 @@ describe('schedule test', function () {
             'startTime': '09:30 AM',
             'endTime': '10:45 AM',
             'daysOfWeek': 'TR',
-            'semester': 'Spring',
-            'year': 2018
           }
         ]
       }).end((err, res) => {
-        console.log(err, res);
         res.should.have.status(200);
         done();
         if (err) {
+          console.log(err.body);
           err.response.should.have.status(500);
         }
       });
