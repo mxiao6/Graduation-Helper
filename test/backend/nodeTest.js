@@ -897,7 +897,7 @@ describe('schedule test', function () {
             'type': 'LCD',
             'startTime': '09:30 AM',
             'endTime': '10:45 AM',
-            'daysOfWeek': 'TR',
+            'daysOfWeek': 'TR'
           }
         ]
       }).end((err, res) => {
