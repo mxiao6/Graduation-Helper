@@ -22,6 +22,8 @@ var pool = userLogin.pool;
 *         "subjectId": "CS",
 *         "courseId": "425",
 *         "sectionId": "31384",
+*         "sectionTitle": "Distributed Systems",
+*         "sectionNumber": "T3",
 *         "type": "LCD",
 *         "startTime": "09:30 AM",
 *         "endTime": "10:45 AM",
@@ -33,6 +35,8 @@ var pool = userLogin.pool;
 *         "subjectId": "CS",
 *         "courseId": "429",
 *         "sectionId": "41483",
+*         "sectionTitle": "Software Engineering II, ACP",
+*         "sectionNumber": "Q3",
 *         "type": "LCD",
 *         "startTime": "02:00 PM",
 *         "endTime": "03:15 PM",
@@ -237,22 +241,24 @@ exports.get = function (req, res) {
 };
 
 /**
- *@api{post}/editschedule Edit saved user schedules
- *@apiName editschedule
- *@apiGroup Schedule
- *@apiVersion 0.1.0
- *
- *@apiParam {int} scheduleId specific schedule ID to be edited
- *@apiParam {Object[]} sections List of new class sections
- *
- *@apiParamExample {json} Request-Example:
- *  {
- *    "scheduleId": 5,
- *    "sections": [
+*@api{post}/editschedule Edit saved user schedules
+*@apiName editschedule
+*@apiGroup Schedule
+*@apiVersion 0.1.0
+*
+*@apiParam {int} scheduleId specific schedule ID to be edited
+*@apiParam {Object[]} sections List of new class sections
+*
+*@apiParamExample {json} Request-Example:
+*  {
+*    "scheduleId": 5,
+*    "sections": [
 *       {
 *         "subjectId": "CS",
 *         "courseId": "425",
 *         "sectionId": "31384",
+*         "sectionTitle": "Distributed Systems",
+*         "sectionNumber": "T3",
 *         "type": "LCD",
 *         "startTime": "09:30 AM",
 *         "endTime": "10:45 AM",
@@ -264,6 +270,8 @@ exports.get = function (req, res) {
 *         "subjectId": "CS",
 *         "courseId": "429",
 *         "sectionId": "41483",
+*         "sectionTitle": "Software Engineering II, ACP",
+*         "sectionNumber": "Q3",
 *         "type": "LCD",
 *         "startTime": "02:00 PM",
 *         "endTime": "03:15 PM",
@@ -272,20 +280,20 @@ exports.get = function (req, res) {
 *         "year": 2018
 *       }
 *     ]
- *  }
- *
- *@apiSuccessExample {json} Success-Response:
- * HTTP/1.1 200 OK
- *{
- *  'Edit successful'
- *}
- *
- *@apiErrorExample Error-Response:
- * HTTP/1.1 400 Bad Request
- * {
- *    "error": "Incorrect parameters"
- * }
- */
+*  }
+*
+*@apiSuccessExample {json} Success-Response:
+* HTTP/1.1 200 OK
+*{
+*  'Edit successful'
+*}
+*
+*@apiErrorExample Error-Response:
+* HTTP/1.1 400 Bad Request
+* {
+*    "error": "Incorrect parameters"
+* }
+*/
 exports.edit = function (req, res) {
   let scheduleId = req.body.scheduleId;
   let sections = req.body.sections;
