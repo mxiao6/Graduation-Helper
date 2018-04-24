@@ -900,20 +900,8 @@ describe('schedule test', function () {
             'daysOfWeek': 'TR',
             'semester': 'Spring',
             'year': 2018
-          },
-          {
-            'subjectId': 'CS',
-            'courseId': '429',
-            'sectionId': '41483',
-            'sectionTitle': 'Software Engineering II, ACP',
-            'sectionNumber': 'Q3',
-            'type': 'LCD',
-            'startTime': '02:00 PM',
-            'endTime': '03:15 PM',
-            'daysOfWeek': 'TR',
-            'semester': 'Spring',
-            'year': 2018
-          }]
+          }
+        ]
       }).end((err, res) => {
         res.should.have.status(200);
         done();
