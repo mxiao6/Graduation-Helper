@@ -27,9 +27,7 @@ var pool = userLogin.pool;
 *         "type": "LCD",
 *         "startTime": "09:30 AM",
 *         "endTime": "10:45 AM",
-*         "daysOfWeek": "TR",
-*         "semester": "Spring",
-*         "year": 2018
+*         "daysOfWeek": "TR"
 *       },
 *       {
 *         "subjectId": "CS",
@@ -40,9 +38,7 @@ var pool = userLogin.pool;
 *         "type": "LCD",
 *         "startTime": "02:00 PM",
 *         "endTime": "03:15 PM",
-*         "daysOfWeek": "TR",
-*         "semester": "Spring",
-*         "year": 2018
+*         "daysOfWeek": "TR"
 *       }
 *     ]
 *   }
