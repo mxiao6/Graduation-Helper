@@ -58,7 +58,7 @@ function getSectionOtherInfo (jsonInfo) {
   return {sectionTitle: sectionTitle, sectionNumber: sectionNumber, enrollmentStatus: enrollmentStatus};
 }
 
-function parseSectionDetails (jsonInfo) {
+function parseSectionPageJson (jsonInfo) {
   let {sectionTitle, sectionNumber, enrollmentStatus} = getSectionOtherInfo(jsonInfo);
   let {type, startTime, endTime, daysOfWeek} = getSectionTimeInfo(jsonInfo);
   let {sectionId, subjectId, courseId} = getSectionParentInfo(jsonInfo);
@@ -77,6 +77,22 @@ function parseSectionDetails (jsonInfo) {
   };
 
   return sectionDetails;
+}
+
+function getSectionUrls (specialTopicsUrl) {
+  return getParsedRequest(specialTopicsUrl).then(function (result) {
+    let section = result['ns2:course']['sections'][0]['section'];
+    if (section == null) {
+      return [];
+    } else {
+      let sectionListUrls = [];
+      for (let i = 0; i < section.length; i++) {
+        let sectionUrl = section[i]['$'].href;
+        sectionListUrls.push(sectionUrl);
+      }
+      return sectionListUrls;
+    }
+  });
 }
 
 // Given course url get all the urls for its sections
@@ -109,7 +125,7 @@ function getSectionDetailsHelper ([sectionUrls, specialTopic]) {
   return Promise.map(sectionUrls, sectionUrl => getParsedRequest(sectionUrl), {concurrency: 3}).then(function (result) {
     let sections = [];
     for (let i = 0; i < result.length; i++) {
-      let section = parseSectionDetails(result[i]);
+      let section = parseSectionPageJson(result[i]);
       // Checks if special topic class is defined
       if (specialTopic != null) {
         let acronym = section.sectionTitle.match(/\b(\w)/g).join('');
@@ -150,6 +166,7 @@ function getAllDetails (year, semester, selectedCourses) {
 
 module.exports = {
   getAllDetails: getAllDetails,
-  parseSectionDetails: parseSectionDetails,
+  getSectionUrls: getSectionUrls,
+  parseSectionPageJson: parseSectionPageJson,
   getParsedRequest: getParsedRequest
 };
