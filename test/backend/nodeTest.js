@@ -884,7 +884,6 @@ describe('schedule test', function () {
     it('saving a schedule', function (done) {
       this.timeout(10000);
       chai.request(server).post('/saveschedule').send({
-        'userId': 1,
         'year': '2018',
         'semester': 'Spring',
         'sections': [
@@ -903,6 +902,7 @@ describe('schedule test', function () {
           }
         ]
       }).end((err, res) => {
+        console.log(err, res);
         res.should.have.status(200);
         done();
         if (err) {
