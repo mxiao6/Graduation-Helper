@@ -2,36 +2,46 @@ username: myadmin
 password: Cs428grh!
 
 DB SCHEMA:
-* = PRIMARY_KEY
 
-TABLES:
+DATABASE graduation_helper;
 
-users:
-user_id* (INT)
-username (VARCHAR(16))
-email (VARCHAR(32))
-password (VARCHAR(64))
-act (BOOL)
+TABLE users (
+  user_id INT NOT NULL AUTO_INCREMENT,
+  username VARCHAR(16) NOT NULL,
+  email VARCHAR(32) NOT NULL,
+  password VARCHAR(64) NOT NULL,
+  act BOOL NOT NULL,
+  PRIMARY KEY (user_id)
+);
 
-schedules:
-scheduleId* (INT)
-semester (VARCHAR(16))
-user_id (UNSIGNED INT)
+TABLE courses(
+  id INT NOT NULL AUTO_INCREMENT,
+  scheduleId INT NOT NULL,
+  subjectId VARCHAR(4) NOT NULL,
+  courseId VARCHAR(4) NOT NULL,
+  sectionId VARCHAR(6) NOT NULL,
+  sectionNumber VARCHAR(4) NOT NULL,
+  sectionTitle VARCHAR(40) NOT NULL,
+  type VARCHAR(4),
+  startTime VARCHAR(10),
+  endTime VARCHAR(10),
+  daysOfWeek VARCHAR(7),
+  semester VARCHAR(6) NOT NULL,
+  year YEAR(4) NOT NULL,
+  PRIMARY KEY (id)
+);
 
-courses:
-id* (INT)
-scheduleId (INT)
-subjectId (VARCHAR(4))
-courseId (VARCHAR(4))
-sectionId (VARCHAR(6))
-type (VARCHAR(4))
-startTime (VARCHAR(10))
-endTime (VARCHAR(10))
-daysOfWeek (VARCHAR(7))
-semester (VARCHAR(6))
-year (YEAR(4))
+TABLE schedules(
+  scheduleId INT NOT NULL AUTO_INCREMENT,
+  semester VARCHAR(8) NOT NULL,
+  year YEAR(4) NOT NULL,
+  user_id INT NOT NULL,
+  PRIMARY KEY (scheduleId)
+);
 
-authentication:
-email* (VARCHAR(32))
-aucode (VARCHAR(64))
-timesaved (DATETIME)
+TABLE authentication(
+  email VARCHAR(32) NOT NULL,
+  aucode VARCHAR(64) NOT NULL,
+  timesaved DATETIME NOT NULL,
+  PRIMARY KEY (email)
+);

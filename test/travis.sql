@@ -15,18 +15,21 @@ CREATE TABLE testDatabase.courses(
   subjectId VARCHAR(4) NOT NULL,
   courseId VARCHAR(4) NOT NULL,
   sectionId VARCHAR(6) NOT NULL,
-  type VARCHAR(4) NOT NULL,
-  startTime VARCHAR(10) NOT NULL,
-  endTime VARCHAR(10) NOT NULL,
-  daysOfWeek VARCHAR(7) NOT NULL,
+  sectionNumber VARCHAR(4) NOT NULL,
+  sectionTitle VARCHAR(40) NOT NULL,
+  type VARCHAR(4),
+  startTime VARCHAR(10),
+  endTime VARCHAR(10),
+  daysOfWeek VARCHAR(7),
   semester VARCHAR(6) NOT NULL,
-  year INT NOT NULL,
+  year YEAR(4) NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE testDatabase.schedules(
   scheduleId INT NOT NULL AUTO_INCREMENT,
   semester VARCHAR(8) NOT NULL,
+  year YEAR(4) NOT NULL,
   user_id INT NOT NULL,
   PRIMARY KEY (scheduleId)
 );
