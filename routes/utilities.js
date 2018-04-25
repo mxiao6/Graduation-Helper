@@ -80,10 +80,10 @@ function parseSectionPageJson (jsonInfo) {
 }
 
 // Creates a code to uniquely identify a special topic
-function getTopicCode(sectionTitle){
+function getTopicCode (sectionTitle) {
   // let code = sectionTitle.match(/\b(\w)/g).join('');
 
-  let charArr = sectionTitle.split('').map(c => {return c.charCodeAt(0);});
+  let charArr = sectionTitle.split('').map(c => { return c.charCodeAt(0); });
   let code = '' + charArr.reduce((total, val) => total + val) % 999;
   return code;
 }
@@ -139,7 +139,7 @@ function getSectionDetailsHelper ([sectionUrls, specialTopic]) {
       // Checks if special topic class is defined
       if (specialTopic != null) {
         let topicCode = getTopicCode(section.sectionTitle);
-        if(specialTopic !== topicCode){
+        if (specialTopic !== topicCode) {
           continue;
         }
       }
