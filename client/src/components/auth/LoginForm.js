@@ -39,7 +39,7 @@ class NormalLoginForm extends React.Component {
       <Form onSubmit={this.handleSubmit} className="login-form">
         <FormItem>
           {getFieldDecorator("email", {
-            rules: [{ required: true, message: "Please input your Email!" }]
+            rules: [{ required: true, message: "Please enter your email." }]
           })(
             <Input
               prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />}
@@ -49,7 +49,7 @@ class NormalLoginForm extends React.Component {
         </FormItem>
         <FormItem>
           {getFieldDecorator("password", {
-            rules: [{ required: true, message: "Please input your Password!" }]
+            rules: [{ required: true, message: "Please enter your password." }]
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
