@@ -79,8 +79,18 @@ function parseSectionPageJson (jsonInfo) {
   return sectionDetails;
 }
 
-function getSectionUrls (specialTopicsUrl) {
-  return getParsedRequest(specialTopicsUrl).then(function (result) {
+// Creates a code to uniquely identify a special topic
+function getTopicCode(sectionTitle){
+  // let code = sectionTitle.match(/\b(\w)/g).join('');
+
+  let charArr = sectionTitle.split('').map(c => {return c.charCodeAt(0);});
+  let code = '' + charArr.reduce((total, val) => total + val) % 999;
+  return code;
+}
+
+// Gets all the section links given a course
+function getSectionUrls (courseUrl) {
+  return getParsedRequest(courseUrl).then(function (result) {
     let section = result['ns2:course']['sections'][0]['section'];
     if (section == null) {
       return [];
@@ -128,8 +138,8 @@ function getSectionDetailsHelper ([sectionUrls, specialTopic]) {
       let section = parseSectionPageJson(result[i]);
       // Checks if special topic class is defined
       if (specialTopic != null) {
-        let acronym = section.sectionTitle.match(/\b(\w)/g).join('');
-        if (specialTopic !== acronym) {
+        let topicCode = getTopicCode(section.sectionTitle);
+        if(specialTopic !== topicCode){
           continue;
         }
       }
@@ -168,5 +178,6 @@ module.exports = {
   getAllDetails: getAllDetails,
   getSectionUrls: getSectionUrls,
   parseSectionPageJson: parseSectionPageJson,
-  getParsedRequest: getParsedRequest
+  getParsedRequest: getParsedRequest,
+  getTopicCode: getTopicCode
 };

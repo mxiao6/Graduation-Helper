@@ -4,6 +4,7 @@ const Promise = require('bluebird');
 const parseSectionPageJson = require('./utilities.js').parseSectionPageJson;
 const getParsedRequest = require('./utilities.js').getParsedRequest;
 const getSectionUrls = require('./utilities.js').getSectionUrls;
+const getTopicCode = require('./utilities.js').getTopicCode;
 
 /**
 *@api{get}/years Get all years
@@ -201,12 +202,13 @@ router.get('/course', function (req, res) {
           let topics = await getSectionUrls(specialTopicsUrl).then(getSpecialTopicsTitles);
           if (topics && topics.size !== 0) {
             topics.forEach(function (topic) {
-              let acronym = topic.match(/\b(\w)/g).join('');
-              let specialId = id + '-' + acronym;
+              let topicCode = getTopicCode(topic);
+              let specialId = id + '-' + topicCode;
               courseList.push({course: topic, id: specialId});
             });
           }
         }
+
       }
       return res.status(200).json(courseList);
     }
@@ -289,8 +291,8 @@ router.get('/section', function (req, res) {
       let specialSections = [];
       for (let i = 0; i < sections.length; i++) {
         let section = sections[i];
-        let acronym = section.sectionTitle.match(/\b(\w)/g).join('');
-        if (specialTopic === acronym) {
+        let topicCode = getTopicCode(section.sectionTitle);
+        if (specialTopic === topicCode) {
           specialSections.push({section: section.sectionNumber, id: section.sectionId});
         }
       }

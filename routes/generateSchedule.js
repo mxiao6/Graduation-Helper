@@ -108,6 +108,8 @@ router.post('/generate', function (req, res) {
   let preferences = req.body.preferences;
   let range = req.body.range;
   getAllDetails(year, semester, selectedClasses).then(function (result) {
+    // console.log();
+    // console.log(result);
     let generatedSchedules = generateSchedules(result, preferences);
 
     if (range != null) {
@@ -123,12 +125,14 @@ router.post('/generate', function (req, res) {
   });
 });
 
+
 function hasProperties (req) {
   if (!req.body.hasOwnProperty('year') || !req.body.hasOwnProperty('semester') || !req.body.hasOwnProperty('courses')) {
     return false;
   }
   return true;
 }
+
 
 function isSectionsSimilar (sectionA, sectionB) {
   if (sectionA.daysOfWeek === sectionB.daysOfWeek) {
