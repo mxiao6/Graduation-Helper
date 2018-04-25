@@ -23,7 +23,7 @@ class Header extends Component {
 
   showConfirm = () => {
     const config = {
-      title: 'Are you sure to logout?',
+      title: 'Are you sure you want to log out?',
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',

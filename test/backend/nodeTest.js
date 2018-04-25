@@ -9,7 +9,7 @@ describe('User tests', function () {
   it('it should not register since email already exists', function (done) {
     chai.request(server).post('/register').send({ 'username': 'admin', 'email': 'admin@illinois.edu', 'password': 'cs428' }).end(function (err, res) {
       res.should.have.status(422);
-      res.text.should.be.equal('Email already registered!');
+      res.text.should.be.equal('Email already registered.');
       if (err) {
         err.response.should.have.status(422);
       }
@@ -28,7 +28,7 @@ describe('User tests', function () {
   it('it should not login wrong password', function (done) {
     chai.request(server).post('/login').send({ 'email': 'admin@illinois.edu', 'password': 'wrong_pass' }).end((err, res) => {
       res.should.have.status(422);
-      res.text.should.be.equal('Email and password do not match');
+      res.text.should.be.equal('Email and password do not match.');
       if (err) {
         err.response.should.have.status(422);
       }
@@ -39,7 +39,7 @@ describe('User tests', function () {
   it('it should not login no existing email', function (done) {
     chai.request(server).post('/login').send({ 'email': 'NOEMAIL@illinois.edu', 'password': 'NOEMAIL' }).end((err, res) => {
       res.should.have.status(422);
-      res.text.should.be.equal('Email does not exist');
+      res.text.should.be.equal('Email does not exist.');
       if (err) {
         err.response.should.have.status(422);
       }
@@ -49,9 +49,9 @@ describe('User tests', function () {
 
   var aucode = 'ABCDEFGHIJ';
   it('resetpass', function (done) {
-    chai.request(server).post('/sendemail').send({'email': 'admin@illinois.edu'}).end((err, res) => {
+    chai.request(server).post('/sendemail').send({ 'email': 'admin@illinois.edu' }).end((err, res) => {
       res.should.have.status(250);
-      res.text.should.be.equal('Email not sent; in testing mode');
+      res.text.should.be.equal('Email not sent because the server is in testing mode.');
       done();
       if (err) {
         console.log(err);
@@ -60,7 +60,7 @@ describe('User tests', function () {
   });
 
   it('resetpass', function (done) {
-    chai.request(server).post('/resetpassword').send({'email': 'admin@illinois.edu', 'password': 'test2test2test2', 'aucode': aucode}).end((err, res) => {
+    chai.request(server).post('/resetpassword').send({ 'email': 'admin@illinois.edu', 'password': 'test2test2test2', 'aucode': aucode }).end((err, res) => {
       res.should.have.status(250);
       done();
       if (err) {
@@ -70,9 +70,9 @@ describe('User tests', function () {
   });
 
   it('badResetpass', function (done) {
-    chai.request(server).post('/sendemail').send({'email': 'NOEMAIL@illinois.edu'}).end((err, res) => {
+    chai.request(server).post('/sendemail').send({ 'email': 'NOEMAIL@illinois.edu' }).end((err, res) => {
       res.should.have.status(422);
-      res.text.should.be.equal('Email does not exist');
+      res.text.should.be.equal('Email does not exist.');
       done();
       if (err) {
         console.log(err);

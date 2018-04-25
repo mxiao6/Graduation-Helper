@@ -10,6 +10,6 @@ export function logoutSuccess() {
 export function logout() {
   return function(dispatch) {
     dispatch(logoutSuccess());
-    message.success("Logout successful");
+    message.success("Logged out successfully.");
   };
 }

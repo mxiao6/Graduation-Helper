@@ -55,7 +55,7 @@ class NormalResetPWForm extends React.Component {
             });
         } else {
           message.error(
-            'New password does not match up with confirm password.'
+            'Passwords do not match. Please try again.'
           );
         }
       }
@@ -69,7 +69,7 @@ class NormalResetPWForm extends React.Component {
         <Form onSubmit={this.handleSubmit1} className="login-form">
           <FormItem>
             {getFieldDecorator('email', {
-              rules: [{ required: true, message: 'Please input your Email!' }],
+              rules: [{ required: true, message: 'Please enter your email.' }],
             })(
               <Input
                 prefix={
@@ -95,7 +95,7 @@ class NormalResetPWForm extends React.Component {
               rules: [
                 {
                   required: true,
-                  message: 'Please input Authentification Code!',
+                  message: 'Please enter the authentication code that you received in your email.',
                 },
               ],
             })(
@@ -104,14 +104,14 @@ class NormalResetPWForm extends React.Component {
                   <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
                 }
                 type="password"
-                placeholder="Authentification Code"
+                placeholder="Authentication Code"
               />
             )}
           </FormItem>
           <FormItem>
             {getFieldDecorator('password1', {
               rules: [
-                { required: true, message: 'Please input New Password!' },
+                { required: true, message: 'Please enter your new password.' },
               ],
             })(
               <Input
@@ -128,7 +128,7 @@ class NormalResetPWForm extends React.Component {
               rules: [
                 {
                   required: true,
-                  message: 'Please input the New Password again!',
+                  message: 'Please confirm your new password.',
                 },
               ],
             })(

@@ -185,10 +185,10 @@ describe('Home and Login Tests', function () {
       .then(button => button.click())
       .then(() => driver.wait(findErrorText(0), 2000))
       .then(errorElem => errorElem.getAttribute('innerText'))
-      .then(errorText => errorText.should.equal('Please input your Email!'))
+      .then(errorText => errorText.should.equal('Please enter your email.'))
       .then(() => driver.wait(findErrorText(1), 2000))
       .then(errorElem => errorElem.getAttribute('innerText'))
-      .then(errorText => errorText.should.equal('Please input your Password!'))
+      .then(errorText => errorText.should.equal('Please enter your password.'))
       .then(() => done())
       .catch(error => done(error));
   });
@@ -238,7 +238,7 @@ describe('Home and Login Tests', function () {
       .then(curUrl => curUrl.should.include('Signup'))
       .then(() => driver.wait(findErrorMessage(0), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
-      .then(errorText => errorText.should.equal('Email already registered!'))
+      .then(errorText => errorText.should.equal('Email already registered.'))
       .then(() => done())
       .catch(error => done(error));
   });

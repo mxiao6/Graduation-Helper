@@ -22,7 +22,7 @@ class Signup extends Component {
         />
         <div className="bodyContainer">
           <div
-            className="formContainer" /*style={{ marginTop: this.state.height/10 }}*/
+            className="formContainer"
           >
             <Card title="Sign Up" bordered={true} className="cardStyle">
               <SignupForm history={this.props.history} />
