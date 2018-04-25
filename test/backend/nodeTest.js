@@ -880,46 +880,37 @@ describe('schedule test', function () {
     });
   });
 
-  describe('schdule tests', function () {
-    it('saving a schdule', function (done) {
+  describe('schedule tests', function () {
+    it('saving a schedule', function (done) {
       this.timeout(10000);
       chai.request(server).post('/saveschedule').send({
         'userId': 1,
         'year': '2018',
-        'semester': 'Fall',
+        'semester': 'Spring',
         'sections': [
           {
             'subjectId': 'CS',
             'courseId': '425',
             'sectionId': '31384',
+            'sectionTitle': 'Distributed Systems',
+            'sectionNumber': 'T3',
             'type': 'LCD',
             'startTime': '09:30 AM',
             'endTime': '10:45 AM',
-            'daysOfWeek': 'TR',
-            'semester': 'Spring',
-            'year': 2018
-          },
-          {
-            'subjectId': 'CS',
-            'courseId': '429',
-            'sectionId': '41483',
-            'type': 'LCD',
-            'startTime': '02:00 PM',
-            'endTime': '03:15 PM',
-            'daysOfWeek': 'TR',
-            'semester': 'Spring',
-            'year': 2018
-          }]
+            'daysOfWeek': 'TR'
+          }
+        ]
       }).end((err, res) => {
         res.should.have.status(200);
         done();
         if (err) {
+          console.log(err.body);
           err.response.should.have.status(500);
         }
       });
     });
 
-    it('getting an existing schdule', function (done) {
+    it('getting an existing schedule', function (done) {
       this.timeout(10000);
       chai.request(server).get('/getschedule').query({
         'userId': 1,
