@@ -49,7 +49,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *             "sectionId": "48199",
 *             "sectionNumber": "AL4",
 *             "enrollmentStatus": "CrossListOpen",
-*             "type": "LCD",
+*             "type": "Lecture",
 *             "startTime": "12:30 PM",
 *             "endTime": "01:45 PM",
 *             "daysOfWeek": "MW"
@@ -60,7 +60,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *             "sectionId": "31384 56315",
 *             "sectionNumber": "T3 T4",
 *             "enrollmentStatus": "CrossListOpen",
-*             "type": "LCD",
+*             "type": "Lecture",
 *             "startTime": "09:30 AM",
 *             "endTime": "10:45 AM",
 *             "daysOfWeek": "TR"
@@ -71,7 +71,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *             "sectionId": "63508",
 *             "sectionNumber": "AY2",
 *             "enrollmentStatus": "CrossListOpen",
-*             "type": "DIS",
+*             "type": "Discussion",
 *             "startTime": "11:00 AM",
 *             "endTime": "11:50 AM",
 *             "daysOfWeek": "R"
@@ -82,7 +82,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *             "sectionId": "65894 57812",
 *             "sectionNumber": "ON ONL",
 *             "enrollmentStatus": "Closed",
-*             "type": "ONL",
+*             "type": "Online",
 *             "startTime": "ARRANGED"
 *           }
 *         ]
@@ -108,8 +108,6 @@ router.post('/generate', function (req, res) {
   let preferences = req.body.preferences;
   let range = req.body.range;
   getAllDetails(year, semester, selectedClasses).then(function (result) {
-    // console.log();
-    // console.log(result);
     let generatedSchedules = generateSchedules(result, preferences);
 
     if (range != null) {
@@ -125,6 +123,7 @@ router.post('/generate', function (req, res) {
   });
 });
 
+// Checks that the api call has necessary parameters
 function hasProperties (req) {
   if (!req.body.hasOwnProperty('year') || !req.body.hasOwnProperty('semester') || !req.body.hasOwnProperty('courses')) {
     return false;
@@ -132,6 +131,8 @@ function hasProperties (req) {
   return true;
 }
 
+// Checks that two sections are similar in cases where
+// certain sections are the same thing but simply in different rooms
 function isSectionsSimilar (sectionA, sectionB) {
   if (sectionA.daysOfWeek === sectionB.daysOfWeek) {
     if (sectionA.startTime === sectionB.startTime && sectionA.endTime === sectionB.endTime) {
@@ -148,7 +149,7 @@ function preProcessSections (sectionList) {
   for (let i = 0; i < sectionList.length; i++) {
     let section = sectionList[i];
     let sectionLetter = section.sectionNumber.charAt(0);
-    let sectionType = section.type;
+    let sectionType = section.type.split(/[^A-Za-z]/)[0];
     if (processedList.hasOwnProperty(sectionLetter)) {
       if (processedList[sectionLetter].hasOwnProperty(sectionType)) {
         let listOfSectionsWithLetterAndType = processedList[sectionLetter][sectionType];
@@ -250,7 +251,9 @@ function cartesianProduct (data) {
   return current;
 }
 
-// For some classes each section letter represents a type of class
+// Flattens the section list
+// returns a flatten list of sections
+// {A: {LEC:[]}, B: {DIS:[]}} -> {A: [], B:[]}
 function flattenSectionLetters (sectionList) {
   let flatten = {};
   for (let letter in sectionList) {
@@ -262,8 +265,6 @@ function flattenSectionLetters (sectionList) {
 // For some classes, each section letter represents a type of section in combination with other section letters
 // i.e. PHYS211 A is for lectures, D is for discussion
 // It will check if processed list for a class needs to be flatten
-// returns a flatten list of sections
-// {A: {LEC:[]}, B: {DIS:[]}} -> {A: [], B:[]}
 function shouldFlatten (processedDict) {
   let sectionAExists = false;
   for (let sectionLetter in processedDict) {

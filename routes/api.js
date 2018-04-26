@@ -360,7 +360,7 @@ function getSpecialTopicsSections (urls) {
 *     "courseId": "100",
 *     "sectionNumber": "AD1",
 *     "enrollmentStatus": "Open",
-*     "type": "DIS",
+*     "type": "Discussion",
 *     "startTime": "09:00 AM",
 *     "endTime": "09:50 AM",
 *     "daysOfWeek": "F      "
