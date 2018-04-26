@@ -75,6 +75,19 @@ class MySchedules extends Component {
     });
   };
 
+  _handleDelete = () => {
+    axios
+      .post(POST_DELETE_SCHEDULE, {
+        scheduleId: 4,
+      })
+      .then(res => {
+        console.log('POST_DELETE_SCHEDULE', res.data);
+      })
+      .catch(e => {
+        console.error('POST_DELETE_SCHEDULE', e.response);
+      });
+  };
+
   _renderSmallGrids = () => {
     const { loading, smallSchedules } = this.state;
     return !smallSchedules ? (
