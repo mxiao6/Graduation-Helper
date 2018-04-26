@@ -303,15 +303,22 @@ class EditSchedule extends React.Component {
 
   _onSelectChange = (selectedRowKeys, selectedRows) => {
     console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows);
+    let newSelectedRows = this.state.selectedRows.slice();
+    let sectionIds = _.map(selectedRowKeys, key => key.slice(-5));
+    newSelectedRows.push(...selectedRows);
+    newSelectedRows = _.chain(newSelectedRows)
+      .uniqBy('sectionId')
+      .filter(sec => sectionIds.indexOf(sec.sectionId) > -1)
+      .value();
     this.setState({
       selectedRowKeys,
-      selectedRows,
-      sections: _parseSchedule({ sections: selectedRows }).sections,
+      selectedRows: newSelectedRows,
+      sections: _parseSchedule({ sections: newSelectedRows }).sections,
     });
   };
 
   _renderSections = () => {
-    const { sectionList, selectedRowKeys } = this.state;
+    const { sectionList, selectedRowKeys, selectedRows } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this._onSelectChange,

@@ -316,7 +316,7 @@ class GenerateSchedule extends React.Component {
     const { schedule, noDaysList, noOptionsList } = this.state;
     return (
       <div>
-        <Row className="tagsContainer">
+        <Row className="tagsContainerGen">
           <Col span={8} className="tagsTitle">
             Selected Courses:
           </Col>
@@ -335,7 +335,7 @@ class GenerateSchedule extends React.Component {
             })}
           </Col>
         </Row>
-        <Row className="tagsContainer">
+        <Row className="tagsContainerGen">
           <Col span={8} className="tagsTitle">
             No Class Days:
           </Col>
@@ -354,7 +354,7 @@ class GenerateSchedule extends React.Component {
             })}
           </Col>
         </Row>
-        <Row className="tagsContainer">
+        <Row className="tagsContainerGen">
           <Col span={8} className="tagsTitle">
             No Class Options:
           </Col>

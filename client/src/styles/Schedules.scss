@@ -63,6 +63,15 @@
   }
 }
 
+.tagsContainerGen {
+  height: 32px !important;
+  margin: 1rem 0;
+  .tagsTitle {
+    text-align: right;
+    padding-right: 0.5rem;
+  }
+}
+
 .scheduleModal {
   display: flex;
   align-items: center;
