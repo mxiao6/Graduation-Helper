@@ -64,7 +64,6 @@ class GenerateSchedule extends React.Component {
         });
       })
       .catch(e => {
-        // message.error(e.response.data);
         console.error(e);
       });
   }
@@ -134,7 +133,7 @@ class GenerateSchedule extends React.Component {
     const { selected, schedule } = this.state;
     let tag = selected.course + selected.courseId;
     if (schedule.indexOf(tag) !== -1) {
-      message.error('Course exists');
+      message.error('Course already exists.');
       return;
     }
     let newSchedule = schedule.slice(0);
@@ -389,7 +388,7 @@ class GenerateSchedule extends React.Component {
   _addDays = () => {
     const { selectedDay, noDaysList } = this.state;
     if (noDaysList.indexOf(selectedDay) !== -1) {
-      message.error('Day exists');
+      message.error('Day already exists.');
       return;
     }
     let newDaysList = noDaysList.slice(0);
@@ -416,7 +415,7 @@ class GenerateSchedule extends React.Component {
   _addOptions = () => {
     const { selectedOption, noOptionsList } = this.state;
     if (noOptionsList.indexOf(selectedOption) !== -1) {
-      message.error('Option exists');
+      message.error('Option already exists.');
       return;
     }
     let newOptionsList = noOptionsList.slice(0);

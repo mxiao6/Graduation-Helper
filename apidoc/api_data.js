@@ -5,7 +5,7 @@ define({ "api": [
     "title": "Get courses in a subject",
     "name": "GetCourses",
     "group": "Class",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -78,7 +78,7 @@ define({ "api": [
     "title": "Get section details",
     "name": "GetSectionDetails",
     "group": "Class",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -322,7 +322,7 @@ define({ "api": [
     "title": "Get sections in a specific course",
     "name": "GetSections",
     "group": "Class",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -402,7 +402,7 @@ define({ "api": [
     "title": "Get semesters for year",
     "name": "GetSemester",
     "group": "Class",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -443,7 +443,7 @@ define({ "api": [
     "title": "Get all subjects",
     "name": "GetSubjects",
     "group": "Class",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -509,7 +509,7 @@ define({ "api": [
     "title": "Get all years",
     "name": "GetYears",
     "group": "Class",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "success": {
       "examples": [
         {
@@ -530,6 +530,143 @@ define({ "api": [
     },
     "filename": "routes/api.js",
     "groupTitle": "Class"
+  },
+  {
+    "type": "post",
+    "url": "/schedule/generate",
+    "title": "Get generated schedules for classes",
+    "name": "GenerateSchedules",
+    "group": "Schedule",
+    "version": "0.3.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "year",
+            "description": "<p>The specific school year</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "semester",
+            "description": "<p>The specific semester year</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "optional": false,
+            "field": "courses",
+            "description": "<p>List of courses to generate schedules</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": true,
+            "field": "preferences",
+            "description": "<p>User preferences information</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "allowedValues": [
+              "\"M\"",
+              "\"T\"",
+              "\"W\"",
+              "\"R\"",
+              "\"F\""
+            ],
+            "optional": false,
+            "field": "preferences.noClassDays",
+            "description": "<p>List of days the user does not want classes</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "allowedValues": [
+              "\"morning\"",
+              "\"lunch\"",
+              "\"evening\""
+            ],
+            "optional": false,
+            "field": "preferences.noClassOptions",
+            "description": "<p>List of not prefered times of the day</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": false,
+            "field": "preferences.noClassTime",
+            "description": "<p>List of times the user does not want classes</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "preferences.noClassTime.start",
+            "description": "<p>Start time</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "preferences.noClassTime.end",
+            "description": "<p>End time</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": true,
+            "field": "range",
+            "description": "<p>Range of schedules to recieve</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "range.offset",
+            "description": "<p>Starting offset</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "range.limit",
+            "description": "<p>Maximum numbers of schedules from offset</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"year\": \"2017\",\n  \"semester\": \"Spring\",\n  \"courses\": [\"PHYS211\",\"CS125\"],\n  \"preferences\": {\n    \"noClassDays\": [\"M\",\"W\"],\n    \"noClassOptions\": [\"morning\",\"lunch\",\"evening\"],\n    \"noClassTime\": [{\"start\": 14, \"end\": 16}],\n  },\n  \"range\": {\"offset\": 0, \"limit\": 20}\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"numOfSchedules\": 21,\n  \"metAllPreferences\": false,\n  \"schedules\": [\n    {\n      \"score\": 80,\n      \"sections\": [\n        {\n          \"subjectId\": \"CS\",\n          \"courseId\": \"461\",\n          \"sectionId\": \"48199\",\n          \"sectionNumber\": \"AL4\",\n          \"enrollmentStatus\": \"CrossListOpen\",\n          \"type\": \"LCD\",\n          \"startTime\": \"12:30 PM\",\n          \"endTime\": \"01:45 PM\",\n          \"daysOfWeek\": \"MW\"\n        },\n        {\n          \"subjectId\": \"CS\",\n          \"courseId\": \"425\",\n          \"sectionId\": \"31384 56315\",\n          \"sectionNumber\": \"T3 T4\",\n          \"enrollmentStatus\": \"CrossListOpen\",\n          \"type\": \"LCD\",\n          \"startTime\": \"09:30 AM\",\n          \"endTime\": \"10:45 AM\",\n          \"daysOfWeek\": \"TR\"\n        },\n        {\n          \"subjectId\": \"CS\",\n          \"courseId\": \"461\",\n          \"sectionId\": \"63508\",\n          \"sectionNumber\": \"AY2\",\n          \"enrollmentStatus\": \"CrossListOpen\",\n          \"type\": \"DIS\",\n          \"startTime\": \"11:00 AM\",\n          \"endTime\": \"11:50 AM\",\n          \"daysOfWeek\": \"R\"\n        },\n        {\n          \"subjectId\": \"CHLH\",\n          \"courseId\": \"243\",\n          \"sectionId\": \"65894 57812\",\n          \"sectionNumber\": \"ON ONL\",\n          \"enrollmentStatus\": \"Closed\",\n          \"type\": \"ONL\",\n          \"startTime\": \"ARRANGED\"\n        }\n      ]\n    }\n  ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 422 Internal Server Error\n{\n  \"error\": \"Incorrect Parameters\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/generateSchedule.js",
+    "groupTitle": "Schedule"
   },
   {
     "type": "post",
@@ -644,7 +781,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "routes/generateSchedule.js",
+    "filename": "routes/_apidoc.js",
     "groupTitle": "Schedule"
   },
   {
@@ -786,7 +923,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Request-Example:",
-          "content": "{\n  \"scheduleId\": 5,\n  \"sections\": [\n     {\n       \"subjectId\": \"CS\",\n       \"courseId\": \"425\",\n       \"sectionId\": \"31384\",\n       \"type\": \"LCD\",\n       \"startTime\": \"09:30 AM\",\n       \"endTime\": \"10:45 AM\",\n       \"daysOfWeek\": \"TR\",\n       \"semester\": \"Spring\",\n       \"year\": 2018\n     },\n     {\n       \"subjectId\": \"CS\",\n       \"courseId\": \"429\",\n       \"sectionId\": \"41483\",\n       \"type\": \"LCD\",\n       \"startTime\": \"02:00 PM\",\n       \"endTime\": \"03:15 PM\",\n       \"daysOfWeek\": \"TR\",\n       \"semester\": \"Spring\",\n       \"year\": 2018\n     }\n   ]\n}",
+          "content": "{\n  \"scheduleId\": 5,\n  \"sections\": [\n     {\n       \"subjectId\": \"CS\",\n       \"courseId\": \"425\",\n       \"sectionId\": \"31384\",\n       \"sectionTitle\": \"Distributed Systems\",\n       \"sectionNumber\": \"T3\",\n       \"type\": \"LCD\",\n       \"startTime\": \"09:30 AM\",\n       \"endTime\": \"10:45 AM\",\n       \"daysOfWeek\": \"TR\",\n       \"semester\": \"Spring\",\n       \"year\": 2018\n     },\n     {\n       \"subjectId\": \"CS\",\n       \"courseId\": \"429\",\n       \"sectionId\": \"41483\",\n       \"sectionTitle\": \"Software Engineering II, ACP\",\n       \"sectionNumber\": \"Q3\",\n       \"type\": \"LCD\",\n       \"startTime\": \"02:00 PM\",\n       \"endTime\": \"03:15 PM\",\n       \"daysOfWeek\": \"TR\",\n       \"semester\": \"Spring\",\n       \"year\": 2018\n     }\n   ]\n}",
           "type": "json"
         }
       ]
@@ -818,7 +955,7 @@ define({ "api": [
     "title": "Get saved user schedules",
     "name": "getschedule",
     "group": "Schedule",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -942,7 +1079,7 @@ define({ "api": [
     "title": "Save user schedule",
     "name": "saveschedule",
     "group": "Schedule",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -979,7 +1116,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Request-Example:",
-          "content": "{\n  \"year\": \"2017\",\n  \"semester\": \"Spring\",\n  \"sections\": [\n    {\n      \"subjectId\": \"CS\",\n      \"courseId\": \"425\",\n      \"sectionId\": \"31384\",\n      \"type\": \"LCD\",\n      \"startTime\": \"09:30 AM\",\n      \"endTime\": \"10:45 AM\",\n      \"daysOfWeek\": \"TR\",\n      \"semester\": \"Spring\",\n      \"year\": 2018\n    },\n    {\n      \"subjectId\": \"CS\",\n      \"courseId\": \"429\",\n      \"sectionId\": \"41483\",\n      \"type\": \"LCD\",\n      \"startTime\": \"02:00 PM\",\n      \"endTime\": \"03:15 PM\",\n      \"daysOfWeek\": \"TR\",\n      \"semester\": \"Spring\",\n      \"year\": 2018\n    }\n  ]\n}",
+          "content": "{\n  \"year\": \"2017\",\n  \"semester\": \"Spring\",\n  \"sections\": [\n    {\n      \"subjectId\": \"CS\",\n      \"courseId\": \"425\",\n      \"sectionId\": \"31384\",\n      \"sectionTitle\": \"Distributed Systems\",\n      \"sectionNumber\": \"T3\",\n      \"type\": \"LCD\",\n      \"startTime\": \"09:30 AM\",\n      \"endTime\": \"10:45 AM\",\n      \"daysOfWeek\": \"TR\",\n      \"semester\": \"Spring\",\n      \"year\": 2018\n    },\n    {\n      \"subjectId\": \"CS\",\n      \"courseId\": \"429\",\n      \"sectionId\": \"41483\",\n      \"sectionTitle\": \"Software Engineering II, ACP\",\n      \"sectionNumber\": \"Q3\",\n      \"type\": \"LCD\",\n      \"startTime\": \"02:00 PM\",\n      \"endTime\": \"03:15 PM\",\n      \"daysOfWeek\": \"TR\",\n      \"semester\": \"Spring\",\n      \"year\": 2018\n    }\n  ]\n}",
           "type": "json"
         }
       ]
@@ -1060,7 +1197,7 @@ define({ "api": [
     "title": "return the user information given the userid",
     "name": "GetUserInfo",
     "group": "User",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -1092,7 +1229,7 @@ define({ "api": [
     "title": "User login",
     "name": "Login",
     "group": "User",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -1131,6 +1268,11 @@ define({ "api": [
         },
         {
           "title": "Error-Response:",
+          "content": "HTTP/1.1 422\n{\n  \"Account hasn't activate\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
           "content": "HTTP/1.1 422\n{\n  \"Email and password does not match\"\n}",
           "type": "json"
         }
@@ -1145,7 +1287,7 @@ define({ "api": [
     "title": "Register a new user",
     "name": "Register",
     "group": "User",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -1200,7 +1342,7 @@ define({ "api": [
     "title": "Update password after verificating",
     "name": "Resetpassword",
     "group": "User",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -1267,7 +1409,7 @@ define({ "api": [
     "title": "Send reset information and record verification information",
     "name": "Sendemail",
     "group": "User",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -1295,6 +1437,47 @@ define({ "api": [
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 422\n{\n  \"Email does not exist\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "routes/userlogin.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "activate",
+    "url": "/act",
+    "title": "account activate",
+    "name": "act",
+    "group": "User",
+    "version": "0.2.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "inf",
+            "description": "<p>encrypted user's email</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 250 OK\n{\n    \"user account activate!!!\"\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 500\n{\n  \"Database query error occurred\"\n}",
           "type": "json"
         }
       ]

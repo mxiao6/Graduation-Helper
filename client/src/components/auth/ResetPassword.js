@@ -22,7 +22,7 @@ class ResetPassword extends Component {
         />
         <div className="bodyContainer">
           <div
-            className="formContainer" /*style={{ marginTop: this.state.height/10 }}*/
+            className="formContainer"
           >
             <Card title="Reset Password" bordered={true} className="cardStyle">
               <ResetPWForm history={this.props.history} />
