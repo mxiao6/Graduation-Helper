@@ -14,7 +14,7 @@ import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
 
 import { Cascader, Spin, Button, Tag, message, Modal, Row, Col } from 'antd';
-import 'styles/ClassSelection.css';
+import '../../styles/Schedules.css';
 import { daysMap, _parseTime } from 'utils';
 
 import {

@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import randomColor from 'randomcolor';
-import 'styles/ClassSelection.css';
+import '../../styles/Schedules.css';
 import { daysMap, _parseTime } from 'utils';
 import BigCalendar from 'modules/react-big-calendar';
 

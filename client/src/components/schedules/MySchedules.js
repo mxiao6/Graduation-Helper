@@ -6,7 +6,7 @@ import axios from 'axios';
 import { Button, Spin, Modal, message } from 'antd';
 import WindowSizeListener from 'react-window-size-listener';
 
-import 'styles/ClassSelection.css';
+import '../../styles/Schedules.css';
 import { GET_SCHEDULE, POST_DELETE_SCHEDULE } from 'api';
 import {
   _parseSmallArray,
@@ -88,7 +88,7 @@ class MySchedules extends Component {
     const { history } = this.props;
     let idx = scheduleIdx;
     history.push({
-      pathname: '/ClassSelection',
+      pathname: '/EditSchedule',
       state: {
         scheduleId: schedulesIndex[idx],
         schedule: _parseSchedule({ sections: schedules[schedulesIndex[idx]] }),
