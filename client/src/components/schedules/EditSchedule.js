@@ -238,7 +238,7 @@ class EditSchedule extends React.Component {
 
   _renderCascader = () => {
     return (
-      <div className="cascaderContainer">
+      <div className="cascaderContainer" style={{ margin: 0 }}>
         <Cascader
           options={this.state.options}
           loadData={this.loadData}
@@ -288,7 +288,7 @@ class EditSchedule extends React.Component {
 
   _renderContent = () => {
     const { semester, location } = this.props;
-    console.log('schedule', location.state.schedule);
+    const { width } = this.state;
 
     return (
       <div className="contentContainer">
@@ -300,9 +300,18 @@ class EditSchedule extends React.Component {
         <div style={{ width: this.state.width * 0.6, marginTop: 20 }}>
           {_renderGenerated(location.state.schedule)}
         </div>
-        {this._renderCascader()}
-        {this._renderCRNs()}
-        <div className="sectionTable">{this._renderTable()}</div>
+        <div className="editContainer">
+          <div className="selectedSections">
+            <div style={{ lineHeight: 40 }}>Select sections:</div>
+            <div className="tagsBox" style={{ width: width * 0.2 }}>
+              {this._renderCRNs()}
+            </div>
+          </div>
+          <div className="tableConainter" style={{ width: width * 0.45 }}>
+            {this._renderCascader()}
+            {this._renderTable()}
+          </div>
+        </div>
       </div>
     );
   };

@@ -12,10 +12,6 @@
   display: flex;
 }
 
-.sectionsContainer {
-  margin: 2rem 0;
-}
-
 .cascaderContainer {
   margin: 1rem 0;
   display: flex;
@@ -30,16 +26,6 @@
 
 .rbc-header > a {
   pointer-events: none;
-}
-
-.tagsContainer {
-  height: 32px !important;
-  margin: 1rem 0;
-
-  .tagsTitle {
-    text-align: right;
-    padding-right: 0.5rem;
-  }
 }
 
 .gridsContainer {
@@ -85,4 +71,36 @@
 
 .scheduleModal .ant-modal {
   top: 0;
+}
+
+.editContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 1rem 0;
+
+  .selectedSections {
+    margin-right: 1rem;
+    .selectedTitle {
+      line-height: 40px;
+      text-align: center;
+    }
+    .tagsBox {
+      height: 500px;
+      border: solid skyblue 1px;
+      border-radius: 5px;
+      .tagsContainer {
+        .tagsTitle {
+          text-align: right;
+          padding-right: 0.5rem;
+        }
+      }
+    }
+  }
+  .tableConainter {
+    .sectionsContainer {
+      margin: 2rem 0;
+    }
+  }
 }
