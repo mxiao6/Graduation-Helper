@@ -93,16 +93,19 @@
       margin: 1rem 0;
 
       .tagsContainer {
-        .tagsTitle {
-          text-align: right;
-          padding-right: 0.5rem;
+        .tagContent {
+          font-size: 14px;
+          margin-top: 0.5rem;
+          margin-left: 0.5rem;
         }
       }
     }
   }
   .tableConainter {
     .sectionsContainer {
-      margin: 1rem 0;
+      display: flex;
+      justify-content: center;
+      padding: 1rem 0;
     }
   }
 }

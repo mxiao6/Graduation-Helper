@@ -12,37 +12,6 @@ import { Cascader, Spin, Button, Table, Tag, message } from 'antd';
 import '../../styles/Schedules.css';
 import { _renderGenerated } from 'components/schedules/SmallSchedules';
 
-const sectionColumns = [
-  {
-    title: 'Status',
-    dataIndex: 'enrollmentStatus',
-  },
-  {
-    title: 'CRN',
-    dataIndex: 'sectionId',
-  },
-  {
-    title: 'Type',
-    dataIndex: 'type',
-  },
-  {
-    title: 'Section',
-    dataIndex: 'sectionNumber',
-  },
-  {
-    title: 'Start Time',
-    dataIndex: 'startTime',
-  },
-  {
-    title: 'End Time',
-    dataIndex: 'endTime',
-  },
-  {
-    title: 'Day',
-    dataIndex: 'daysOfWeek',
-  },
-];
-
 class EditSchedule extends React.Component {
   state = {
     options: undefined,
@@ -53,19 +22,32 @@ class EditSchedule extends React.Component {
   };
 
   componentWillMount() {
-    const { semester, history, location } = this.props;
-    console.log(semester);
-    console.log('location', location, !location.state);
+    const { history, location } = this.props;
     if (!location.state) {
       history.goBack();
+    } else {
+      this._retrieveSubject();
+      this._fillSelectedSections();
     }
+  }
 
+  _fillSelectedSections = () => {
+    const { scheduleRaw } = this.props.location.state;
+    this.setState({
+      selectedRowKeys: _.map(scheduleRaw, section => {
+        const { subjectId, courseId, sectionNumber, sectionId } = section;
+        return `${subjectId}${courseId} ${sectionNumber} ${sectionId}`;
+      }),
+    });
+  };
+
+  _retrieveSubject = () => {
+    const { semester } = this.props;
     axios
       .get(GET_SUBJECT, {
         params: semester,
       })
       .then(res => {
-        console.log(res.data);
         this.setState({
           options: _.map(res.data, item => ({
             value: item.id,
@@ -78,7 +60,7 @@ class EditSchedule extends React.Component {
         message.error(e.response.data);
         console.error(e.response);
       });
-  }
+  };
 
   onChange = (value, selectedOptions) => {
     console.log(value, selectedOptions);
@@ -181,10 +163,18 @@ class EditSchedule extends React.Component {
         axios.spread((...results) => {
           console.log('detailed sections', results);
           this.setState({
-            sectionList: _.map(results, res => ({
-              ...res.data,
-              key: res.data.sectionId,
-            })),
+            sectionList: _.map(results, res => {
+              const {
+                subjectId,
+                courseId,
+                sectionNumber,
+                sectionId,
+              } = res.data;
+              return {
+                ...res.data,
+                key: `${subjectId}${courseId} ${sectionNumber} ${sectionId}`,
+              };
+            }),
           });
         })
       )
@@ -226,6 +216,7 @@ class EditSchedule extends React.Component {
                 closable
                 key={tag}
                 afterClose={() => this._closeTag(tag)}
+                className="tagContent"
               >
                 {tag}
               </Tag>
@@ -233,6 +224,13 @@ class EditSchedule extends React.Component {
           })}
         </div>
       )
+    );
+  };
+
+  _filter = (inputValue, path) => {
+    return path.some(
+      option =>
+        option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
     );
   };
 
@@ -246,6 +244,7 @@ class EditSchedule extends React.Component {
           displayRender={this._displayRender}
           placeholder="Select Class"
           changeOnSelect
+          showSearch={{ filter: this._filter }}
         />
         <Button
           type="primary"
@@ -271,7 +270,7 @@ class EditSchedule extends React.Component {
       onChange: this._onSelectChange,
     };
     return (
-      <div className="sectionsContainer">
+      <div>
         <Table
           rowSelection={rowSelection}
           columns={sectionColumns}
@@ -283,7 +282,11 @@ class EditSchedule extends React.Component {
 
   _renderTable = () => {
     const { tableLoading, sectionList } = this.state;
-    return tableLoading ? <Spin /> : sectionList && this._renderSections();
+    return (
+      <div className="sectionsContainer">
+        {tableLoading ? <Spin /> : sectionList && this._renderSections()}
+      </div>
+    );
   };
 
   _renderContent = () => {
@@ -297,7 +300,7 @@ class EditSchedule extends React.Component {
           &nbsp; &nbsp;
           <a onClick={this._resetSemester}>reset</a>
         </div>
-        <div style={{ width: this.state.width * 0.6, marginTop: 20 }}>
+        <div style={{ width: width * 0.65, marginTop: 20 }}>
           {_renderGenerated(location.state.schedule)}
         </div>
         <div className="editContainer">
@@ -334,6 +337,37 @@ class EditSchedule extends React.Component {
 }
 
 const _default = { year: '2018', semester: 'fall' };
+
+const sectionColumns = [
+  {
+    title: 'Status',
+    dataIndex: 'enrollmentStatus',
+  },
+  {
+    title: 'CRN',
+    dataIndex: 'sectionId',
+  },
+  {
+    title: 'Type',
+    dataIndex: 'type',
+  },
+  {
+    title: 'Section',
+    dataIndex: 'sectionNumber',
+  },
+  {
+    title: 'Start Time',
+    dataIndex: 'startTime',
+  },
+  {
+    title: 'End Time',
+    dataIndex: 'endTime',
+  },
+  {
+    title: 'Day',
+    dataIndex: 'daysOfWeek',
+  },
+];
 
 function mapStateToProps(state, ownProps) {
   return {

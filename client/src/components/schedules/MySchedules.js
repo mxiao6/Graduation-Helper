@@ -92,6 +92,7 @@ class MySchedules extends Component {
       state: {
         scheduleId: schedulesIndex[idx],
         schedule: _parseSchedule({ sections: schedules[schedulesIndex[idx]] }),
+        scheduleRaw: schedules[schedulesIndex[idx]],
       },
     });
   };
