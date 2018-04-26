@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Promise = require('bluebird');
-const parseSectionDetails = require('./utilities.js').parseSectionDetails;
+const parseSectionPageJson = require('./utilities.js').parseSectionPageJson;
 const getParsedRequest = require('./utilities.js').getParsedRequest;
+const getSectionUrls = require('./utilities.js').getSectionUrls;
+const getTopicCode = require('./utilities.js').getTopicCode;
 
 /**
 *@api{get}/years Get all years
@@ -192,22 +194,20 @@ router.get('/course', function (req, res) {
       for (let i = 0; i < courses.length; i++) {
         let courseName = courses[i]['_'];
         let id = courses[i]['$']['id'];
+        courseList.push({course: courseName, id: id});
 
         // Check if the courses are special topics and split them up
         if (courseName === 'Special Topics') {
           let specialTopicsUrl = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '/' + id + '.xml';
-          let topics = await getSpecialTopics(specialTopicsUrl);
+          let topics = await getSectionUrls(specialTopicsUrl).then(getSpecialTopicsTitles);
           if (topics && topics.size !== 0) {
             topics.forEach(function (topic) {
-              let acronym = topic.match(/\b(\w)/g).join('');
-              let specialId = id + '-' + acronym;
+              let topicCode = getTopicCode(topic);
+              let specialId = id + '-' + topicCode;
               courseList.push({course: topic, id: specialId});
             });
-            continue;
           }
         }
-
-        courseList.push({course: courseName, id: id});
       }
       return res.status(200).json(courseList);
     }
@@ -216,35 +216,22 @@ router.get('/course', function (req, res) {
   });
 });
 
-function getSpecialTopics (specialTopicsUrl) {
-  return getParsedRequest(specialTopicsUrl).then(function (result) {
-    let section = result['ns2:course']['sections'][0]['section'];
-    if (section == null) {
-      return [];
-    } else {
-      let sectionListUrls = [];
-      for (let i = 0; i < section.length; i++) {
-        let sectionUrl = section[i]['$'].href;
-        sectionListUrls.push(sectionUrl);
+// Gets the different topics in special topic classes like 498 and 598
+function getSpecialTopicsTitles (urls) {
+  return Promise.map(urls, url => getParsedRequest(url), {concurrency: 4}).then(function (result) {
+    let topicsSet = new Set([]);
+    for (let i = 0; i < result.length; i++) {
+      let sectionTitle = result[i]['ns2:section']['sectionTitle'];
+      if (sectionTitle == null) {
+        sectionTitle = result[i]['ns2:section']['parents'][0]['course'][0]['_'];
+      } else {
+        sectionTitle = sectionTitle[0];
       }
-      return sectionListUrls;
+      topicsSet.add(sectionTitle);
     }
-  }).then(function (urls) {
-    return Promise.map(urls, url => getParsedRequest(url), {concurrency: 3}).then(function (result) {
-      let topicsSet = new Set([]);
-      for (let i = 0; i < result.length; i++) {
-        let sectionTitle = result[i]['ns2:section']['sectionTitle'];
-        if (sectionTitle == null) {
-          sectionTitle = result[i]['ns2:section']['parents'][0]['course'][0]['_'];
-        } else {
-          sectionTitle = sectionTitle[0];
-        }
-        topicsSet.add(sectionTitle);
-      }
-      return topicsSet;
-    }).catch(function (err) {
-      throw err;
-    });
+    return topicsSet;
+  }).catch(function (err) {
+    throw err;
   });
 }
 
@@ -292,25 +279,58 @@ router.get('/section', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
   let course = req.query.course;
-  let courseId = req.query.courseId;
+
+  let courseIdParams = req.query.courseId.split('-');
+  let courseId = courseIdParams[0];
+  let specialTopic = courseIdParams[1];
+
   let url = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '.xml';
-  getParsedRequest(url).then(function (result) {
-    let section = result['ns2:course']['sections'][0]['section'];
-    if (section == null) {
-      res.status(404).json({'error': 'No sections found'});
-    } else {
-      let sectionList = [];
-      for (let i = 0; i < section.length; i++) {
-        let sectionName = section[i]['_'];
-        let sectionId = section[i]['$']['id'];
-        sectionList.push({section: sectionName, id: sectionId});
+  if (specialTopic != null) {
+    getSectionUrls(url).then(getSpecialTopicsSections).then(function (sections) {
+      let specialSections = [];
+      for (let i = 0; i < sections.length; i++) {
+        let section = sections[i];
+        let topicCode = getTopicCode(section.sectionTitle);
+        if (specialTopic === topicCode) {
+          specialSections.push({section: section.sectionNumber, id: section.sectionId});
+        }
       }
-      res.status(200).json(sectionList);
-    }
-  }).catch(function (err) {
-    return res.status(500).json({'error': err.message});
-  });
+      return res.status(200).json(specialSections);
+    }).catch(function (err) {
+      return res.status(500).json({'error': err.message});
+    });
+  } else {
+    getParsedRequest(url).then(function (result) {
+      let section = result['ns2:course']['sections'][0]['section'];
+      if (section == null) {
+        res.status(404).json({'error': 'No sections found'});
+      } else {
+        let sectionList = [];
+        for (let i = 0; i < section.length; i++) {
+          let sectionNumber = section[i]['_'];
+          let sectionId = section[i]['$']['id'];
+          sectionList.push({section: sectionNumber, id: sectionId});
+        }
+        return res.status(200).json(sectionList);
+      }
+    }).catch(function (err) {
+      return res.status(500).json({'error': err.message});
+    });
+  }
 });
+
+function getSpecialTopicsSections (urls) {
+  return Promise.map(urls, url => getParsedRequest(url), {concurrency: 4}).then(function (result) {
+    let sections = [];
+    for (let i = 0; i < result.length; i++) {
+      let section = parseSectionPageJson(result[i]);
+      sections.push(section);
+    }
+    return sections;
+  }).catch(function (err) {
+    throw err;
+  });
+}
 
 /**
 *@api{get}/sectionDetails Get section details
@@ -356,12 +376,12 @@ router.get('/sectionDetails', function (req, res) {
   let year = req.query.year;
   let semester = req.query.semester;
   let course = req.query.course;
-  let courseId = req.query.courseId;
+  let courseId = req.query.courseId.split('-')[0];
   let sectionId = req.query.sectionId;
   let url = 'https://courses.illinois.edu/cisapp/explorer/schedule/' + year + '/' + semester + '/' + course + '/' + courseId + '/' + sectionId + '.xml';
 
   getParsedRequest(url).then(function (result) {
-    let sectionDetails = parseSectionDetails(result);
+    let sectionDetails = parseSectionPageJson(result);
     res.status(200).json(sectionDetails);
   }).catch(function (err) {
     return res.status(500).json({'error': err.message});

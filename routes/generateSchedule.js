@@ -108,6 +108,8 @@ router.post('/generate', function (req, res) {
   let preferences = req.body.preferences;
   let range = req.body.range;
   getAllDetails(year, semester, selectedClasses).then(function (result) {
+    // console.log();
+    // console.log(result);
     let generatedSchedules = generateSchedules(result, preferences);
 
     if (range != null) {
