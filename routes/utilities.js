@@ -58,7 +58,7 @@ function getSectionOtherInfo (jsonInfo) {
   return {sectionTitle: sectionTitle, sectionNumber: sectionNumber, enrollmentStatus: enrollmentStatus};
 }
 
-function parseSectionDetails (jsonInfo) {
+function parseSectionPageJson (jsonInfo) {
   let {sectionTitle, sectionNumber, enrollmentStatus} = getSectionOtherInfo(jsonInfo);
   let {type, startTime, endTime, daysOfWeek} = getSectionTimeInfo(jsonInfo);
   let {sectionId, subjectId, courseId} = getSectionParentInfo(jsonInfo);
@@ -77,6 +77,32 @@ function parseSectionDetails (jsonInfo) {
   };
 
   return sectionDetails;
+}
+
+// Creates a code to uniquely identify a special topic
+function getTopicCode (sectionTitle) {
+  // let code = sectionTitle.match(/\b(\w)/g).join('');
+
+  let charArr = sectionTitle.split('').map(c => { return c.charCodeAt(0); });
+  let code = '' + charArr.reduce((total, val) => total + val) % 999;
+  return code;
+}
+
+// Gets all the section links given a course
+function getSectionUrls (courseUrl) {
+  return getParsedRequest(courseUrl).then(function (result) {
+    let section = result['ns2:course']['sections'][0]['section'];
+    if (section == null) {
+      return [];
+    } else {
+      let sectionListUrls = [];
+      for (let i = 0; i < section.length; i++) {
+        let sectionUrl = section[i]['$'].href;
+        sectionListUrls.push(sectionUrl);
+      }
+      return sectionListUrls;
+    }
+  });
 }
 
 // Given course url get all the urls for its sections
@@ -109,11 +135,11 @@ function getSectionDetailsHelper ([sectionUrls, specialTopic]) {
   return Promise.map(sectionUrls, sectionUrl => getParsedRequest(sectionUrl), {concurrency: 3}).then(function (result) {
     let sections = [];
     for (let i = 0; i < result.length; i++) {
-      let section = parseSectionDetails(result[i]);
+      let section = parseSectionPageJson(result[i]);
       // Checks if special topic class is defined
       if (specialTopic != null) {
-        let acronym = section.sectionTitle.match(/\b(\w)/g).join('');
-        if (specialTopic !== acronym) {
+        let topicCode = getTopicCode(section.sectionTitle);
+        if (specialTopic !== topicCode) {
           continue;
         }
       }
@@ -150,6 +176,8 @@ function getAllDetails (year, semester, selectedCourses) {
 
 module.exports = {
   getAllDetails: getAllDetails,
-  parseSectionDetails: parseSectionDetails,
-  getParsedRequest: getParsedRequest
+  getSectionUrls: getSectionUrls,
+  parseSectionPageJson: parseSectionPageJson,
+  getParsedRequest: getParsedRequest,
+  getTopicCode: getTopicCode
 };
