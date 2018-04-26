@@ -302,7 +302,7 @@ class EditSchedule extends React.Component {
         </div>
         <div className="editContainer">
           <div className="selectedSections">
-            <div style={{ lineHeight: 40 }}>Select sections:</div>
+            <div className="selectedTitle">Select sections:</div>
             <div className="tagsBox" style={{ width: width * 0.2 }}>
               {this._renderCRNs()}
             </div>
