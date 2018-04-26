@@ -290,7 +290,6 @@ class GenerateSchedule extends React.Component {
       <Modal
         visible={modalVisible}
         title="Generated Schedule"
-        onOk={this._handleSave}
         onCancel={this._handleCancel}
         wrapClassName="scheduleModal"
         width={width * 0.7}

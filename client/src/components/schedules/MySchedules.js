@@ -3,20 +3,25 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import axios from 'axios';
-import { Button, Spin } from 'antd';
-import 'styles/ClassSelection.css';
+import { Button, Spin, Modal, message } from 'antd';
+import WindowSizeListener from 'react-window-size-listener';
 
+import 'styles/ClassSelection.css';
 import { GET_SCHEDULE, POST_DELETE_SCHEDULE } from 'api';
 import {
   _parseSmallArray,
   _renderSmallSchedules,
   _parseSchedule,
+  _renderGenerated,
 } from 'components/schedules/SmallSchedules';
 
 class MySchedules extends Component {
   state = {
     schedules: undefined,
+    smallSchedules: undefined,
     schedulesIndex: [],
+    modalVisible: false,
+    scheduleIdx: 0,
   };
 
   componentWillMount() {
@@ -34,7 +39,8 @@ class MySchedules extends Component {
           console.log('MySchedules', res.data);
           this.setState({
             schedules: res.data,
-            smallSchedules: this._parseSchedules(res.data),
+            generated: this._parseSchedules(res.data),
+            smallSchedules: this._parseSmallSchedules(res.data),
           });
         })
         .catch(e => {
@@ -48,8 +54,16 @@ class MySchedules extends Component {
   }
 
   _parseSchedules = schedules => {
+    let parsed = _.map(schedules, schedule =>
+      _parseSchedule({ sections: schedule })
+    );
+    console.log('parsed', parsed);
+    return parsed;
+  };
+
+  _parseSmallSchedules = schedules => {
     let smallData = {
-      schedules: _.map(schedules, (value, key) => ({
+      schedules: _.map(schedules, value => ({
         sections: value,
       })),
     };
@@ -62,10 +76,17 @@ class MySchedules extends Component {
     return _parseSmallArray(smallData);
   };
 
-  _editSchedule = idx => {
-    const { schedulesIndex, schedules } = this.state;
+  _openModal = idx => {
+    this.setState({
+      scheduleIdx: idx,
+      modalVisible: true,
+    });
+  };
+
+  _handleEdit = () => {
+    const { schedulesIndex, schedules, scheduleIdx } = this.state;
     const { history } = this.props;
-    console.log('idx', schedulesIndex[idx], schedules[schedulesIndex[idx]]);
+    let idx = scheduleIdx;
     history.push({
       pathname: '/ClassSelection',
       state: {
@@ -76,16 +97,29 @@ class MySchedules extends Component {
   };
 
   _handleDelete = () => {
+    const { schedulesIndex, scheduleIdx } = this.state;
     axios
       .post(POST_DELETE_SCHEDULE, {
-        scheduleId: 4,
+        scheduleId: schedulesIndex[scheduleIdx],
       })
       .then(res => {
         console.log('POST_DELETE_SCHEDULE', res.data);
+        message.success('Delete successful');
+        this.setState({
+          modalVisible: false,
+        });
+        window.location.reload();
       })
       .catch(e => {
         console.error('POST_DELETE_SCHEDULE', e.response);
+        this.setState({
+          modalVisible: false,
+        });
       });
+  };
+
+  _handleCancel = () => {
+    this.setState({ modalVisible: false });
   };
 
   _renderSmallGrids = () => {
@@ -93,18 +127,51 @@ class MySchedules extends Component {
     return !smallSchedules ? (
       <Spin />
     ) : (
-      _renderSmallSchedules(smallSchedules, this._editSchedule)
+      _renderSmallSchedules(smallSchedules, this._openModal)
+    );
+  };
+
+  _renderModal = () => {
+    const { modalVisible, height, width, generated, scheduleIdx } = this.state;
+    return (
+      <Modal
+        visible={modalVisible}
+        title="My Schedule"
+        wrapClassName="scheduleModal"
+        onCancel={this._handleCancel}
+        width={width * 0.7}
+        footer={[
+          <Button key="cancel" onClick={this._handleCancel}>
+            Cancel
+          </Button>,
+          <Button key="delete" type="danger" onClick={this._handleDelete}>
+            Delete
+          </Button>,
+          <Button key="edit" type="primary" onClick={this._handleEdit}>
+            Edit
+          </Button>,
+        ]}
+      >
+        {!_.isEmpty(generated) && _renderGenerated(generated[scheduleIdx])}
+      </Modal>
     );
   };
 
   render() {
     const { user } = this.props;
     return (
-      <div>
-        <div className="bodyContainer">
-          <h1>My Schedules</h1>
-          {this._renderSmallGrids()}
-        </div>
+      <div className="bodyContainer">
+        <WindowSizeListener
+          onResize={windowSize => {
+            this.setState({
+              height: windowSize.windowHeight,
+              width: windowSize.windowWidth,
+            });
+          }}
+        />
+        <h1>My Schedules</h1>
+        {this._renderSmallGrids()}
+        {this._renderModal()}
       </div>
     );
   }
