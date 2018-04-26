@@ -2,7 +2,13 @@ import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { GET_SUBJECT, GET_COURSE, GET_SECTION, GET_SECTION_DETAILS } from 'api';
+import {
+  GET_SUBJECT,
+  GET_COURSE,
+  GET_SECTION,
+  GET_SECTION_DETAILS,
+  POST_EDIT_SCHEDULE,
+} from 'api';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
@@ -10,7 +16,10 @@ import WindowSizeListener from 'react-window-size-listener';
 
 import { Cascader, Spin, Button, Table, Tag, message } from 'antd';
 import '../../styles/Schedules.css';
-import { _renderGenerated } from 'components/schedules/SmallSchedules';
+import {
+  _renderGenerated,
+  _parseSchedule,
+} from 'components/schedules/SmallSchedules';
 
 class EditSchedule extends React.Component {
   state = {
@@ -18,7 +27,9 @@ class EditSchedule extends React.Component {
     selected: undefined,
     sectionList: undefined,
     selectedRowKeys: [],
+    selectedRows: [],
     tableLoading: false,
+    sections: [],
   };
 
   componentWillMount() {
@@ -31,6 +42,27 @@ class EditSchedule extends React.Component {
     }
   }
 
+  _saveEdit = () => {
+    const { semester, location } = this.props;
+    const { scheduleId } = location.state;
+    const { selectedRows } = this.state;
+    axios
+      .post(POST_EDIT_SCHEDULE, {
+        scheduleId,
+        sections: _.map(selectedRows, sec => ({
+          ...sec,
+          ...semester,
+        })),
+      })
+      .then(res => {
+        console.log('POST_EDIT_SCHEDULE', res.data);
+        message.success('Edit successful!');
+      })
+      .catch(e => {
+        console.error('POST_EDIT_SCHEDULE', e.response);
+      });
+  };
+
   _fillSelectedSections = () => {
     const { scheduleRaw } = this.props.location.state;
     this.setState({
@@ -38,6 +70,8 @@ class EditSchedule extends React.Component {
         const { subjectId, courseId, sectionNumber, sectionId } = section;
         return `${subjectId}${courseId} ${sectionNumber} ${sectionId}`;
       }),
+      selectedRows: scheduleRaw,
+      sections: _parseSchedule({ sections: scheduleRaw }).sections,
     });
   };
 
@@ -200,8 +234,14 @@ class EditSchedule extends React.Component {
     const selectedRowKeys = this.state.selectedRowKeys.filter(
       tag => tag !== removedTag
     );
-    console.log(selectedRowKeys);
-    this.setState({ selectedRowKeys });
+    const selectedRows = this.state.selectedRows.filter(
+      sec => sec.sectionId !== removedTag.slice(-5)
+    );
+    this.setState({
+      selectedRowKeys,
+      selectedRows,
+      sections: _parseSchedule({ sections: selectedRows }).sections,
+    });
   };
 
   _renderCRNs = () => {
@@ -254,13 +294,20 @@ class EditSchedule extends React.Component {
         >
           Choose
         </Button>
+        <Button type="primary" className="nextButton" onClick={this._saveEdit}>
+          Save
+        </Button>
       </div>
     );
   };
 
-  _onSelectChange = selectedRowKeys => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
+  _onSelectChange = (selectedRowKeys, selectedRows) => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows);
+    this.setState({
+      selectedRowKeys,
+      selectedRows,
+      sections: _parseSchedule({ sections: selectedRows }).sections,
+    });
   };
 
   _renderSections = () => {
@@ -290,8 +337,8 @@ class EditSchedule extends React.Component {
   };
 
   _renderContent = () => {
-    const { semester, location } = this.props;
-    const { width } = this.state;
+    const { semester } = this.props;
+    const { width, sections } = this.state;
 
     return (
       <div className="contentContainer">
@@ -301,7 +348,7 @@ class EditSchedule extends React.Component {
           <a onClick={this._resetSemester}>reset</a>
         </div>
         <div style={{ width: width * 0.65, marginTop: 20 }}>
-          {_renderGenerated(location.state.schedule)}
+          {_renderGenerated({ sections })}
         </div>
         <div className="editContainer">
           <div className="selectedSections">
