@@ -47,7 +47,7 @@ class EditSchedule extends React.Component {
     const { scheduleId } = location.state;
     const { selectedRows } = this.state;
     if (_.isEmpty(selectedRows)) {
-      message.error('The schedule cannot be empty!');
+      message.error('The schedule cannot be empty.');
     } else {
       axios
         .post(POST_EDIT_SCHEDULE, {
@@ -198,23 +198,23 @@ class EditSchedule extends React.Component {
     axios
       .all(promises)
       .then(
-        axios.spread((...results) => {
-          console.log('detailed sections', results);
-          this.setState({
-            sectionList: _.map(results, res => {
-              const {
+      axios.spread((...results) => {
+        console.log('detailed sections', results);
+        this.setState({
+          sectionList: _.map(results, res => {
+            const {
                 subjectId,
-                courseId,
-                sectionNumber,
-                sectionId,
+              courseId,
+              sectionNumber,
+              sectionId,
               } = res.data;
-              return {
-                ...res.data,
-                key: `${subjectId}${courseId} ${sectionNumber} ${sectionId}`,
-              };
-            }),
-          });
-        })
+            return {
+              ...res.data,
+              key: `${subjectId}${courseId} ${sectionNumber} ${sectionId}`,
+            };
+          }),
+        });
+      })
       )
       .then(res => {
         this.setState({
