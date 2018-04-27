@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import axios from 'axios';
 import { Button, Spin, Modal, message } from 'antd';
@@ -127,8 +126,8 @@ class MySchedules extends Component {
     return !smallSchedules ? (
       <Spin />
     ) : (
-        _renderSmallSchedules(smallSchedules, this._openModal)
-      );
+      _renderSmallSchedules(smallSchedules, this._openModal)
+    );
   };
 
   _renderModal = () => {

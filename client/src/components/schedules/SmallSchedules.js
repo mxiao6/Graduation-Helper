@@ -34,20 +34,11 @@ export const _renderGenerated = schedule => {
       min={new Date(2018, 3, 1, 8, 0, 0)}
       max={new Date(2018, 3, 1, 21, 0, 0)}
       toolbar={false}
-      selectable
       events={schedule.sections}
       step={30}
       timeslots={2}
       defaultView="week"
       defaultDate={new Date(2018, 3, 1)}
-      onSelectEvent={event => alert(event.title)}
-      onSelectSlot={slotInfo =>
-        alert(
-          `selected slot: \n\nstart ${slotInfo.start.toLocaleString()} ` +
-            `\nend: ${slotInfo.end.toLocaleString()}` +
-            `\naction: ${slotInfo.action}`
-        )
-      }
     />
   );
 };
