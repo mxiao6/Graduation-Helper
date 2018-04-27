@@ -56,7 +56,7 @@ class EditSchedule extends React.Component {
       })
       .then(res => {
         console.log('POST_EDIT_SCHEDULE', res.data);
-        message.success('Edit successful!');
+        message.success('Schedule edited successfully.');
       })
       .catch(e => {
         console.error('POST_EDIT_SCHEDULE', e.response);
@@ -194,23 +194,23 @@ class EditSchedule extends React.Component {
     axios
       .all(promises)
       .then(
-        axios.spread((...results) => {
-          console.log('detailed sections', results);
-          this.setState({
-            sectionList: _.map(results, res => {
-              const {
+      axios.spread((...results) => {
+        console.log('detailed sections', results);
+        this.setState({
+          sectionList: _.map(results, res => {
+            const {
                 subjectId,
-                courseId,
-                sectionNumber,
-                sectionId,
+              courseId,
+              sectionNumber,
+              sectionId,
               } = res.data;
-              return {
-                ...res.data,
-                key: `${subjectId}${courseId} ${sectionNumber} ${sectionId}`,
-              };
-            }),
-          });
-        })
+            return {
+              ...res.data,
+              key: `${subjectId}${courseId} ${sectionNumber} ${sectionId}`,
+            };
+          }),
+        });
+      })
       )
       .then(res => {
         this.setState({
