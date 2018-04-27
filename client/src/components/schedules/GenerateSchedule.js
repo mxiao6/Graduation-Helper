@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
 import WindowSizeListener from 'react-window-size-listener';
 import {
   GET_SUBJECT,
@@ -14,8 +13,9 @@ import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
 
 import { Cascader, Spin, Button, Tag, message, Modal, Row, Col } from 'antd';
+import BigCalendar from 'modules/react-big-calendar';
 import '../../styles/Schedules.css';
-import { daysMap, _parseTime } from 'utils';
+import { daysMapRev } from 'utils';
 
 import {
   _parseSmallArray,
@@ -40,6 +40,8 @@ class GenerateSchedule extends React.Component {
     noDaysList: [],
     selectedOption: undefined,
     noOptionsList: [],
+    noTimeList: [],
+    timeModalVisible: false,
   };
 
   componentWillMount() {
@@ -146,7 +148,7 @@ class GenerateSchedule extends React.Component {
 
   _generateSchedule = () => {
     const { semester } = this.props;
-    const { schedule, noDaysList, noOptionsList } = this.state;
+    const { schedule, noDaysList, noOptionsList, noTimeList } = this.state;
     this.setState({
       generating: true,
     });
@@ -157,6 +159,7 @@ class GenerateSchedule extends React.Component {
         preferences: {
           noClassDays: noDaysList,
           noClassOptions: noOptionsList,
+          noClassTime: noTimeList,
         },
       })
       .then(res => {
@@ -272,29 +275,21 @@ class GenerateSchedule extends React.Component {
       });
   };
 
-  _handleCancel = () => {
-    this.setState({ modalVisible: false });
-  };
-
   _renderModal = () => {
-    const {
-      modalVisible,
-      saving,
-      height,
-      width,
-      scheduleIdx,
-      generated,
-    } = this.state;
+    const { modalVisible, saving, width, scheduleIdx, generated } = this.state;
 
     return (
       <Modal
         visible={modalVisible}
         title="Generated Schedule"
-        onCancel={this._handleCancel}
+        onCancel={() => this.setState({ modalVisible: false })}
         wrapClassName="scheduleModal"
         width={width * 0.7}
         footer={[
-          <Button key="cancel" onClick={this._handleCancel}>
+          <Button
+            key="cancel"
+            onClick={() => this.setState({ modalVisible: false })}
+          >
             Cancel
           </Button>,
           <Button
@@ -313,7 +308,7 @@ class GenerateSchedule extends React.Component {
   };
 
   _renderTags = () => {
-    const { schedule, noDaysList, noOptionsList } = this.state;
+    const { schedule, noDaysList, noOptionsList, noTimeList } = this.state;
     return (
       <div>
         <Row className="tagsContainerGen">
@@ -373,6 +368,25 @@ class GenerateSchedule extends React.Component {
             })}
           </Col>
         </Row>
+        <Row className="tagsContainerGen">
+          <Col span={8} className="tagsTitle">
+            No Class Time:
+          </Col>
+          <Col span={16}>
+            {noTimeList.map((tag, index) => {
+              return (
+                <Tag
+                  color="green"
+                  closable
+                  key={tag.day + tag.start + tag.end}
+                  afterClose={() => this._closeTimeTag(tag)}
+                >
+                  {`${tag.day} ${tag.start} - ${tag.end}`}
+                </Tag>
+              );
+            })}
+          </Col>
+        </Row>
       </div>
     );
   };
@@ -399,7 +413,7 @@ class GenerateSchedule extends React.Component {
   };
 
   _closeDaysTag = removedTag => {
-    const noDaysList = this.state.noDaysList.filter(tag => tag !== removedTag);
+    let noDaysList = this.state.noDaysList.filter(tag => tag !== removedTag);
     console.log('noDaysList', noDaysList);
     this.setState({ noDaysList });
   };
@@ -426,14 +440,26 @@ class GenerateSchedule extends React.Component {
   };
 
   _closeOptionsTag = removedTag => {
-    const noOptionsList = this.state.noOptionsList.filter(
+    let noOptionsList = this.state.noOptionsList.filter(
       tag => tag !== removedTag
     );
     console.log('noOptionsList', noOptionsList);
     this.setState({ noOptionsList });
   };
 
-  _showSelectTimeModel = () => {};
+  _closeTimeTag = removedTag => {
+    let noTimeList = this.state.noTimeList.filter(
+      tag => tag.start !== removedTag.start || tag.end !== removedTag.end
+    );
+    console.log('removed noTimeList', noTimeList);
+    this.setState({ noTimeList });
+  };
+
+  _showSelectTimeModal = () => {
+    this.setState({
+      timeModalVisible: true,
+    });
+  };
 
   _renderPreference = () => {
     return (
@@ -449,7 +475,7 @@ class GenerateSchedule extends React.Component {
             type="primary"
             className="nextButton"
             onClick={this._addDays}
-            disabled={this.state.selectedDay === undefined}
+            disabled={_.isEmpty(this.state.selectedDay)}
           >
             Add
           </Button>
@@ -465,7 +491,7 @@ class GenerateSchedule extends React.Component {
             type="primary"
             className="nextButton"
             onClick={this._addOptions}
-            disabled={this.state.selectedOption === undefined}
+            disabled={_.isEmpty(this.state.selectedOption)}
           >
             Add
           </Button>
@@ -474,7 +500,7 @@ class GenerateSchedule extends React.Component {
           <Button
             type="primary"
             className="nextButton"
-            onClick={this._showSelectTimeModel}
+            onClick={this._showSelectTimeModal}
           >
             Select No Class Time
           </Button>
@@ -495,6 +521,59 @@ class GenerateSchedule extends React.Component {
           Generate
         </Button>
       </div>
+    );
+  };
+
+  _handleSelectTime = slotInfo => {
+    let diff = slotInfo.start - new Date(2018, 3, 1);
+    let diffDay = Math.floor(diff / 1000 / 60 / 60 / 24);
+    let newTime = {
+      day: daysMapRev[diffDay],
+      start: slotInfo.start.getHours(),
+      end: slotInfo.end.getHours(),
+    };
+    if (newTime.start === newTime.end || !newTime.day) return;
+    let newNoTimeList = this.state.noTimeList.slice();
+    newNoTimeList.push(newTime);
+    newNoTimeList = _.uniqWith(newNoTimeList, _.isEqual);
+    this.setState({
+      noTimeList: newNoTimeList,
+      timeModalVisible: false,
+    });
+    console.log('newNoTimeList', newNoTimeList);
+  };
+
+  _renderTimeModal = () => {
+    const { timeModalVisible, width } = this.state;
+    return (
+      <Modal
+        visible={timeModalVisible}
+        title="Drag to Select No Class Time"
+        onCancel={() => this.setState({ timeModalVisible: false })}
+        wrapClassName="scheduleModal"
+        width={width * 0.7}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => this.setState({ timeModalVisible: false })}
+          >
+            Cancel
+          </Button>,
+        ]}
+      >
+        <BigCalendar
+          min={new Date(2018, 3, 1, 8, 0, 0)}
+          max={new Date(2018, 3, 1, 21, 0, 0)}
+          toolbar={false}
+          selectable
+          events={[]}
+          step={30}
+          timeslots={2}
+          defaultView="week"
+          defaultDate={new Date(2018, 3, 1)}
+          onSelectSlot={slotInfo => this._handleSelectTime(slotInfo)}
+        />
+      </Modal>
     );
   };
 
@@ -520,6 +599,7 @@ class GenerateSchedule extends React.Component {
         </Row>
         {this._renderSmallGrids()}
         {this._renderModal()}
+        {this._renderTimeModal()}
       </div>
     );
   };

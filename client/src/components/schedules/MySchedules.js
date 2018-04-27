@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import axios from 'axios';
 import { Button, Spin, Modal, message } from 'antd';
@@ -123,16 +122,16 @@ class MySchedules extends Component {
   };
 
   _renderSmallGrids = () => {
-    const { loading, smallSchedules } = this.state;
+    const { smallSchedules } = this.state;
     return !smallSchedules ? (
       <Spin />
     ) : (
-        _renderSmallSchedules(smallSchedules, this._openModal)
-      );
+      _renderSmallSchedules(smallSchedules, this._openModal)
+    );
   };
 
   _renderModal = () => {
-    const { modalVisible, height, width, generated, scheduleIdx } = this.state;
+    const { modalVisible, width, generated, scheduleIdx } = this.state;
     return (
       <Modal
         visible={modalVisible}
@@ -158,7 +157,6 @@ class MySchedules extends Component {
   };
 
   render() {
-    const { user } = this.props;
     return (
       <div className="bodyContainer">
         <WindowSizeListener
@@ -176,10 +174,9 @@ class MySchedules extends Component {
     );
   }
 }
-
-function mapStateToProps(state, ownProps) {
+function mapStateToProps({ auth, classes }) {
   return {
-    user: state.auth.user,
+    user: auth.user,
   };
 }
 

@@ -6,6 +6,14 @@ export const daysMap = {
   F: 5,
 };
 
+export const daysMapRev = {
+  1: 'M',
+  2: 'T',
+  3: 'W',
+  4: 'R',
+  5: 'F',
+};
+
 export const _parseTime = time => {
   let hour = parseInt(time.substr(0, 2), 10);
   let mins = parseInt(time.substr(3, 2), 10);
