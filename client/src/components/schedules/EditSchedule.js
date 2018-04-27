@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
 import {
   GET_SUBJECT,
   GET_COURSE,
@@ -322,7 +321,7 @@ class EditSchedule extends React.Component {
   };
 
   _renderSections = () => {
-    const { sectionList, selectedRowKeys, selectedRows } = this.state;
+    const { sectionList, selectedRowKeys } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this._onSelectChange,

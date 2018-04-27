@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
 import WindowSizeListener from 'react-window-size-listener';
 import {
   GET_SUBJECT,
@@ -16,7 +15,7 @@ import * as classActions from 'containers/Classes';
 import { Cascader, Spin, Button, Tag, message, Modal, Row, Col } from 'antd';
 import BigCalendar from 'modules/react-big-calendar';
 import '../../styles/Schedules.css';
-import { daysMap, _parseTime, daysMapRev } from 'utils';
+import { daysMapRev } from 'utils';
 
 import {
   _parseSmallArray,
@@ -277,14 +276,7 @@ class GenerateSchedule extends React.Component {
   };
 
   _renderModal = () => {
-    const {
-      modalVisible,
-      saving,
-      height,
-      width,
-      scheduleIdx,
-      generated,
-    } = this.state;
+    const { modalVisible, saving, width, scheduleIdx, generated } = this.state;
 
     return (
       <Modal

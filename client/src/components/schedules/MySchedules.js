@@ -122,7 +122,7 @@ class MySchedules extends Component {
   };
 
   _renderSmallGrids = () => {
-    const { loading, smallSchedules } = this.state;
+    const { smallSchedules } = this.state;
     return !smallSchedules ? (
       <Spin />
     ) : (
@@ -131,7 +131,7 @@ class MySchedules extends Component {
   };
 
   _renderModal = () => {
-    const { modalVisible, height, width, generated, scheduleIdx } = this.state;
+    const { modalVisible, width, generated, scheduleIdx } = this.state;
     return (
       <Modal
         visible={modalVisible}
@@ -157,7 +157,6 @@ class MySchedules extends Component {
   };
 
   render() {
-    const { user } = this.props;
     return (
       <div className="bodyContainer">
         <WindowSizeListener
