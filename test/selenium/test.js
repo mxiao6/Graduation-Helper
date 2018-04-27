@@ -57,7 +57,7 @@ function findLogoutItem() {
   });
 }
 
-function findYesButton() {
+function findDangerButton() {
   return driver.findElements(webdriver.By.css('.ant-btn-danger')).then(function (result) {
     return result[0];
   });
@@ -353,7 +353,7 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
+      .then(() => driver.wait(findDangerButton(), 2000))
       .then(button => button.click())
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
@@ -391,7 +391,7 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
+      .then(() => driver.wait(findDangerButton(), 2000))
       .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
@@ -459,9 +459,15 @@ function findGenerateScheduleButton() {
   });
 }
 
-function findSmallSchedule() {
+function findSmallSchedule(index) {
   return driver.findElements(webdriver.By.css('.smallGrid')).then(function (result) {
-    return result[0];
+    return result[index];
+  });
+}
+
+function getNumSchedules() {
+  return driver.findElements(webdriver.By.css('.smallGrid')).then(function (result) {
+    return result.length;
   });
 }
 
@@ -557,7 +563,7 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findAddOrGenerateButton(4), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(5000))
-      .then(() => driver.wait(findSmallSchedule(), 2000))
+      .then(() => driver.wait(findSmallSchedule(0), 2000))
       .then(element => element.click())
       .then(() => driver.sleep(2000))
       .then(() => driver.wait(findSectionElement(2), 2000))
@@ -609,7 +615,7 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findAddOrGenerateButton(4), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(5000))
-      .then(() => driver.wait(findSmallSchedule(), 2000))
+      .then(() => driver.wait(findSmallSchedule(0), 2000))
       .then(element => element.click())
       .then(() => driver.sleep(2000))
       .then(() => driver.wait(findSectionElement(2), 2000))
@@ -640,7 +646,7 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
+      .then(() => driver.wait(findDangerButton(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
       .then(() => driver.getCurrentUrl())
@@ -673,14 +679,27 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findMySchedulesTitle(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.equal('My Schedules'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Delete Schedule', function (done) {
+    this.timeout(30000);
+    driver.get('http://localhost:3000/')
       .then(() => driver.wait(findUserDropdown(), 2000))
       .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
       .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findLogoutItem(), 2000))
+      .then(() => driver.wait(findMySchedulesItem(), 2000))
       .then(button => button.click())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSmallSchedule(1), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findDangerButton(), 2000))
       .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(getNumSchedules(), 1000))
+      .then(numberOfSchedules => numberOfSchedules.should.equal(1))
       .then(() => done())
       .catch(error => done(error));
   });

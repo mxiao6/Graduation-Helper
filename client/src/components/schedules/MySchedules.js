@@ -104,7 +104,7 @@ class MySchedules extends Component {
       })
       .then(res => {
         console.log('POST_DELETE_SCHEDULE', res.data);
-        message.success('Delete successful');
+        message.success('Schedule deleted successfully.');
         this.setState({
           modalVisible: false,
         });
@@ -127,8 +127,8 @@ class MySchedules extends Component {
     return !smallSchedules ? (
       <Spin />
     ) : (
-      _renderSmallSchedules(smallSchedules, this._openModal)
-    );
+        _renderSmallSchedules(smallSchedules, this._openModal)
+      );
   };
 
   _renderModal = () => {
