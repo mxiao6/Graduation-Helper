@@ -15,10 +15,14 @@ function findLoginPageButton () {
   });
 }
 
-function findRegisterButton () {
-  return driver.findElements(webdriver.By.linkText('register now!')).then(function (result) {
-    return result[0];
+function findLink (link, index) {
+  return driver.findElements(webdriver.By.linkText(link)).then(function (result) {
+    return result[index];
   });
+}
+
+function findRegisterButton () {
+  return findLink('register now!', 0);
 }
 
 function findHomeRegisterButton () {
@@ -57,7 +61,7 @@ function findLogoutItem () {
   });
 }
 
-function findYesButton () {
+function findDangerButton () {
   return driver.findElements(webdriver.By.css('.ant-btn-danger')).then(function (result) {
     return result[0];
   });
@@ -71,6 +75,12 @@ function findErrorText (index) {
 
 function findErrorMessage (index) {
   return driver.findElements(webdriver.By.css('.ant-message-error span')).then(function (result) {
+    return result[index];
+  });
+}
+
+function findSuccessMessage (index) {
+  return driver.findElements(webdriver.By.css('.ant-message-success span')).then(function (result) {
     return result[index];
   });
 }
@@ -170,7 +180,7 @@ describe('Home and Login Tests', function () {
   it('Register Button on Login Page', function (done) {
     this.timeout(10000);
     goToLoginPage()
-      .then(() => driver.wait(findRegisterButton, 2000))
+      .then(() => driver.wait(findLink('register now!', 0), 2000))
       .then(button => button.click())
       .then(() => driver.getCurrentUrl())
       .then(curUrl => curUrl.should.include('Signup'))
@@ -347,7 +357,7 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
+      .then(() => driver.wait(findDangerButton(), 2000))
       .then(button => button.click())
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
@@ -385,7 +395,7 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
+      .then(() => driver.wait(findDangerButton(), 2000))
       .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
@@ -406,24 +416,10 @@ describe('Home and Login Tests', function () {
       .then(() => driver.wait(findTitleText(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.equal('Hello, \nadmin!'))
-      .then(() => driver.wait(findUserDropdown(), 2000))
-      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findLogoutItem(), 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
-      .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
   });
 });
-
-function findSelectClassButton () {
-  return driver.findElements(webdriver.By.linkText('Select Class')).then(function (result) {
-    return result[0];
-  });
-}
 
 function findSemesterDropdown () {
   return driver.findElements(webdriver.By.css('.ant-cascader-input')).then(function (result) {
@@ -444,9 +440,7 @@ function findElementByTitle (title) {
 }
 
 function findNextButton () {
-  return driver.findElements(webdriver.By.linkText('Next')).then(function (result) {
-    return result[0];
-  });
+  return findLink('Next', 0);
 }
 
 function findAddOrGenerateButton (index) {
@@ -462,14 +456,18 @@ function findSelectedSemester () {
 }
 
 function findGenerateScheduleButton () {
-  return driver.findElements(webdriver.By.linkText('Generate Schedule')).then(function (result) {
-    return result[0];
+  return findLink('Generate Schedule', 0);
+}
+
+function findSmallSchedule (index) {
+  return driver.findElements(webdriver.By.css('.smallGrid')).then(function (result) {
+    return result[index];
   });
 }
 
-function findSmallSchedule () {
+function getNumSchedules () {
   return driver.findElements(webdriver.By.css('.smallGrid')).then(function (result) {
-    return result[0];
+    return result.length;
   });
 }
 
@@ -479,9 +477,15 @@ function findSectionElement (index) {
   });
 }
 
-function findSaveButton () {
+function findSaveOrEditButton () {
   return driver.findElements(webdriver.By.css('.ant-modal-footer > .ant-btn-primary')).then(function (result) {
     return result[0];
+  });
+}
+
+function findEditScheduleButton (index) {
+  return driver.findElements(webdriver.By.css('.cascaderContainer > .ant-btn-primary')).then(function (result) {
+    return result[index];
   });
 }
 
@@ -491,16 +495,21 @@ function findMySchedulesTitle () {
   });
 }
 
+function findSectionDeleteButton (index) {
+  return driver.findElements(webdriver.By.css('.anticon-cross')).then(function (result) {
+    return result[index];
+  });
+}
+
+function findCheckbox (index) {
+  return driver.findElements(webdriver.By.css('.ant-checkbox-input')).then(function (result) {
+    return result[index];
+  });
+}
+
 function selectSemester () {
-  return goToLoginPage()
-    .then(() => driver.wait(findEmailEntry(), 2000))
-    .then(input => input.sendKeys('admin@illinois.edu'))
-    .then(() => driver.wait(findPasswordEntry(), 2000))
-    .then(input => input.sendKeys('test2test2test2'))
-    .then(() => driver.wait(findLoginButton, 2000))
-    .then(button => button.click())
-    .then(() => driver.sleep(2000))
-    .then(() => driver.wait(findSelectClassButton, 2000))
+  return driver.get('http://localhost:3000/')
+    .then(() => driver.wait(findGenerateScheduleButton, 2000))
     .then(button => button.click())
     .then(() => driver.getCurrentUrl())
     .then(url => url.should.contain('SemesterSelection'))
@@ -522,32 +531,17 @@ describe('Schedule Generation Tests', function () {
     this.timeout(20000);
     selectSemester()
       .then(() => driver.getCurrentUrl())
-      .then(url => url.should.contain('ClassSelection'))
+      .then(url => url.should.contain('GenerateSchedule'))
       .then(() => driver.wait(findSelectedSemester(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.contain('Selected Semester: Fall 2018'))
-      .then(() => driver.wait(findUserDropdown(), 2000))
-      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findLogoutItem(), 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
-      .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
   });
 
   it('Semester Already Selected', function (done) {
     this.timeout(20000);
-    goToLoginPage()
-      .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@illinois.edu'))
-      .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test2test2test2'))
-      .then(() => driver.wait(findLoginButton, 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(2000))
+    driver.get('http://localhost:3000/')
       .then(() => driver.wait(findGenerateScheduleButton(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
@@ -556,28 +550,13 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findSelectedSemester(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.contain('Selected Semester: Fall 2018'))
-      .then(() => driver.wait(findUserDropdown(), 2000))
-      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findLogoutItem(), 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
-      .then(button => button.click())
       .then(() => done())
       .catch(error => done(error));
   });
 
   it('Generate and Save Schedule, No Preferences', function (done) {
     this.timeout(35000);
-    goToLoginPage()
-      .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@illinois.edu'))
-      .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test2test2test2'))
-      .then(() => driver.wait(findLoginButton, 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(2000))
+    driver.get('http://localhost:3000/')
       .then(() => driver.wait(findGenerateScheduleButton(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
@@ -602,7 +581,7 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findAddOrGenerateButton(4), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(5000))
-      .then(() => driver.wait(findSmallSchedule(), 2000))
+      .then(() => driver.wait(findSmallSchedule(0), 2000))
       .then(element => element.click())
       .then(() => driver.sleep(2000))
       .then(() => driver.wait(findSectionElement(2), 2000))
@@ -611,31 +590,19 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findSectionElement(3), 2000))
       .then(className => className.getAttribute('innerText'))
       .then(innerText => innerText.should.equal('AAS 100-AD1 41758'))
-      .then(() => driver.wait(findSaveButton(), 2000))
+      .then(() => driver.wait(findSaveOrEditButton(), 2000))
       .then(button => button.click())
-      .then(() => driver.sleep(5000))
-      .then(() => driver.wait(findUserDropdown(), 2000))
-      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findLogoutItem(), 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
-      .then(button => button.click())
+      .then(() => driver.sleep(2500))
+      .then(() => driver.wait(findSuccessMessage(0), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(successText => successText.should.equal('Schedule saved successfully.'))
       .then(() => done())
       .catch(error => done(error));
   });
 
   it('Generate and Save Schedule, No Morning Classes', function (done) {
     this.timeout(35000);
-    goToLoginPage()
-      .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@illinois.edu'))
-      .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test2test2test2'))
-      .then(() => driver.wait(findLoginButton, 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(2000))
+    driver.get('http://localhost:3000/')
       .then(() => driver.wait(findGenerateScheduleButton(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
@@ -666,7 +633,7 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findAddOrGenerateButton(4), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(5000))
-      .then(() => driver.wait(findSmallSchedule(), 2000))
+      .then(() => driver.wait(findSmallSchedule(0), 2000))
       .then(element => element.click())
       .then(() => driver.sleep(2000))
       .then(() => driver.wait(findSectionElement(2), 2000))
@@ -675,31 +642,19 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findSectionElement(3), 2000))
       .then(className => className.getAttribute('innerText'))
       .then(innerText => innerText.should.equal('AAS 100-AD2 47100'))
-      .then(() => driver.wait(findSaveButton(), 2000))
+      .then(() => driver.wait(findSaveOrEditButton(), 2000))
       .then(button => button.click())
-      .then(() => driver.sleep(5000))
-      .then(() => driver.wait(findUserDropdown(), 2000))
-      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findLogoutItem(), 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
-      .then(button => button.click())
+      .then(() => driver.sleep(2500))
+      .then(() => driver.wait(findSuccessMessage(0), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(successText => successText.should.equal('Schedule saved successfully.'))
       .then(() => done())
       .catch(error => done(error));
   });
 
   it('Log Out From Generate Schedules Page', function (done) {
     this.timeout(30000);
-    goToLoginPage()
-      .then(() => driver.wait(findEmailEntry(), 2000))
-      .then(input => input.sendKeys('admin@illinois.edu'))
-      .then(() => driver.wait(findPasswordEntry(), 2000))
-      .then(input => input.sendKeys('test2test2test2'))
-      .then(() => driver.wait(findLoginButton, 2000))
-      .then(button => button.click())
-      .then(() => driver.sleep(2000))
+    driver.get('http://localhost:3000/')
       .then(() => driver.wait(findGenerateScheduleButton(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
@@ -709,7 +664,7 @@ describe('Schedule Generation Tests', function () {
       .then(() => driver.wait(findLogoutItem(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
+      .then(() => driver.wait(findDangerButton(), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(2000))
       .then(() => driver.getCurrentUrl())
@@ -738,18 +693,133 @@ describe('Schedule Generation Tests', function () {
       .then(button => button.click())
       .then(() => driver.sleep(2000))
       .then(() => driver.getCurrentUrl())
-      .then(url => url.should.equal('http://localhost:3000/#/MySchedules'))
+      .then(url => url.should.contain('MySchedules'))
       .then(() => driver.wait(findMySchedulesTitle(), 2000))
       .then(textElem => textElem.getAttribute('innerText'))
       .then(titleText => titleText.should.equal('My Schedules'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Delete Schedule', function (done) {
+    this.timeout(30000);
+    driver.get('http://localhost:3000/')
       .then(() => driver.wait(findUserDropdown(), 2000))
       .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
       .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findLogoutItem(), 2000))
+      .then(() => driver.wait(findMySchedulesItem(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSmallSchedule(1), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findDangerButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(getNumSchedules(), 1000))
+      .then(numberOfSchedules => numberOfSchedules.should.equal(1))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Edit Button', function (done) {
+    this.timeout(30000);
+    driver.get('http://localhost:3000/')
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findMySchedulesItem(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSmallSchedule(0), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSaveOrEditButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.contain('EditSchedule'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Save Empty Schedule', function (done) {
+    this.timeout(30000);
+    driver.get('http://localhost:3000/')
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findMySchedulesItem(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSmallSchedule(0), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSaveOrEditButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSectionDeleteButton(2), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSectionDeleteButton(1), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSectionDeleteButton(0), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findEditScheduleButton(1), 2000))
+      .then(button => button.click())
+      .then(() => driver.wait(findErrorMessage(0), 2000))
+      .then(errorElem => errorElem.getAttribute('innerText'))
+      .then(errorText => errorText.should.equal('The schedule cannot be empty.'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Edit and Save Schedule', function (done) {
+    this.timeout(30000);
+    driver.get('http://localhost:3000/')
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findMySchedulesItem(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSmallSchedule(0), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSaveOrEditButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSectionDeleteButton(2), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findSemesterDropdown(), 2000))
+      .then(dropdown => dropdown.click())
+      .then(() => driver.wait(findElementByTitle('Accountancy'), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findElementByTitle('201: Accounting and Accountancy I'), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findEditScheduleButton(0), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(3000))
+      .then(() => driver.wait(findCheckbox(1), 2000))
       .then(button => button.click())
       .then(() => driver.sleep(1000))
-      .then(() => driver.wait(findYesButton(), 2000))
+      .then(() => driver.wait(findLink('2', 0), 2000))
       .then(button => button.click())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findCheckbox(9), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findEditScheduleButton(1), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2500))
+      .then(() => driver.wait(findSuccessMessage(0), 2000))
+      .then(errorElem => errorElem.getAttribute('innerText'))
+      .then(successText => successText.should.equal('Schedule edited successfully.'))
       .then(() => done())
       .catch(error => done(error));
   });

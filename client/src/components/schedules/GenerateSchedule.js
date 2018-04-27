@@ -14,13 +14,14 @@ import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
 
 import { Cascader, Spin, Button, Tag, message, Modal, Row, Col } from 'antd';
-import 'styles/ClassSelection.css';
+import '../../styles/Schedules.css';
 import { daysMap, _parseTime } from 'utils';
 
-import BigCalendar from 'modules/react-big-calendar';
 import {
   _parseSmallArray,
   _renderSmallSchedules,
+  _renderGenerated,
+  _parseSchedule,
 } from 'components/schedules/SmallSchedules';
 
 class GenerateSchedule extends React.Component {
@@ -173,28 +174,7 @@ class GenerateSchedule extends React.Component {
   };
 
   _parseSchedules = data => {
-    let parsed = _.map(data.schedules, schedule => {
-      return {
-        score: schedule.score,
-        sections: _.flatMap(schedule.sections, section => {
-          let retval = [];
-          if (!section.daysOfWeek || !section.endTime) return retval;
-          for (let day of section.daysOfWeek) {
-            let date = 1 + daysMap[day];
-            let startTime = _parseTime(section.startTime);
-            let endTime = _parseTime(section.endTime);
-            retval.push({
-              title: `${section.subjectId} ${section.courseId}-${
-                section.sectionNumber
-              }\n${section.sectionId}`,
-              start: new Date(2018, 3, date, startTime.hour, startTime.mins, 0),
-              end: new Date(2018, 3, date, endTime.hour, endTime.mins, 0),
-            });
-          }
-          return retval;
-        }),
-      };
-    });
+    let parsed = _.map(data.schedules, schedule => _parseSchedule(schedule));
     console.log('parsed', parsed);
     return parsed;
   };
@@ -297,12 +277,19 @@ class GenerateSchedule extends React.Component {
   };
 
   _renderModal = () => {
-    const { modalVisible, saving, height, width } = this.state;
+    const {
+      modalVisible,
+      saving,
+      height,
+      width,
+      scheduleIdx,
+      generated,
+    } = this.state;
+
     return (
       <Modal
         visible={modalVisible}
         title="Generated Schedule"
-        onOk={this._handleSave}
         onCancel={this._handleCancel}
         wrapClassName="scheduleModal"
         width={width * 0.7}
@@ -320,35 +307,8 @@ class GenerateSchedule extends React.Component {
           </Button>,
         ]}
       >
-        {this._renderGenerated()}
+        {generated.length !== 0 && _renderGenerated(generated[scheduleIdx])}
       </Modal>
-    );
-  };
-
-  _renderGenerated = () => {
-    const { scheduleIdx, generated } = this.state;
-    return (
-      generated.length !== 0 && (
-        <BigCalendar
-          min={new Date(2018, 3, 1, 8, 0, 0)}
-          max={new Date(2018, 3, 1, 21, 0, 0)}
-          toolbar={false}
-          selectable
-          events={generated[scheduleIdx].sections}
-          step={30}
-          timeslots={2}
-          defaultView="week"
-          defaultDate={new Date(2018, 3, 1)}
-          onSelectEvent={event => alert(event.title)}
-          onSelectSlot={slotInfo =>
-            alert(
-              `selected slot: \n\nstart ${slotInfo.start.toLocaleString()} ` +
-                `\nend: ${slotInfo.end.toLocaleString()}` +
-                `\naction: ${slotInfo.action}`
-            )
-          }
-        />
-      )
     );
   };
 
@@ -356,7 +316,7 @@ class GenerateSchedule extends React.Component {
     const { schedule, noDaysList, noOptionsList } = this.state;
     return (
       <div>
-        <Row className="tagsContainer">
+        <Row className="tagsContainerGen">
           <Col span={8} className="tagsTitle">
             Selected Courses:
           </Col>
@@ -375,7 +335,7 @@ class GenerateSchedule extends React.Component {
             })}
           </Col>
         </Row>
-        <Row className="tagsContainer">
+        <Row className="tagsContainerGen">
           <Col span={8} className="tagsTitle">
             No Class Days:
           </Col>
@@ -394,7 +354,7 @@ class GenerateSchedule extends React.Component {
             })}
           </Col>
         </Row>
-        <Row className="tagsContainer">
+        <Row className="tagsContainerGen">
           <Col span={8} className="tagsTitle">
             No Class Options:
           </Col>
