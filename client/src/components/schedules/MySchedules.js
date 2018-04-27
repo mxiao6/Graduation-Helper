@@ -174,10 +174,9 @@ class MySchedules extends Component {
     );
   }
 }
-
-function mapStateToProps(state, ownProps) {
+function mapStateToProps({ auth, classes }) {
   return {
-    user: state.auth.user,
+    user: auth.user,
   };
 }
 

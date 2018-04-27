@@ -32,13 +32,19 @@ class EditSchedule extends React.Component {
   };
 
   componentWillMount() {
-    const { history, location } = this.props;
-    if (!location.state) {
+    const { user, history, location } = this.props;
+    if (!user) {
+      history.push('/');
+    } else if (!location.state) {
       history.goBack();
     } else {
       this._retrieveSubject();
       this._fillSelectedSections();
     }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.user) this.props.history.push('/');
   }
 
   _saveEdit = () => {
@@ -197,23 +203,23 @@ class EditSchedule extends React.Component {
     axios
       .all(promises)
       .then(
-      axios.spread((...results) => {
-        console.log('detailed sections', results);
-        this.setState({
-          sectionList: _.map(results, res => {
-            const {
+        axios.spread((...results) => {
+          console.log('detailed sections', results);
+          this.setState({
+            sectionList: _.map(results, res => {
+              const {
                 subjectId,
-              courseId,
-              sectionNumber,
-              sectionId,
+                courseId,
+                sectionNumber,
+                sectionId,
               } = res.data;
-            return {
-              ...res.data,
-              key: `${subjectId}${courseId} ${sectionNumber} ${sectionId}`,
-            };
-          }),
-        });
-      })
+              return {
+                ...res.data,
+                key: `${subjectId}${courseId} ${sectionNumber} ${sectionId}`,
+              };
+            }),
+          });
+        })
       )
       .then(res => {
         this.setState({
@@ -426,9 +432,10 @@ const sectionColumns = [
   },
 ];
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps({ auth, classes }) {
   return {
-    semester: state.classes.semester ? state.classes.semester : _default,
+    user: auth.user,
+    semester: classes.semester ? classes.semester : _default,
   };
 }
 
