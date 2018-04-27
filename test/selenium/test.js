@@ -9,137 +9,137 @@ var chromeOptions = {
 chromeCapabilities.set('chromeOptions', chromeOptions);
 var driver = new webdriver.Builder().withCapabilities(chromeCapabilities).build();
 
-function findLoginPageButton() {
+function findLoginPageButton () {
   return driver.findElements(webdriver.By.css('.loginButton a')).then(function (result) {
     return result[0];
   });
 }
 
-function findLink(link, index) {
+function findLink (link, index) {
   return driver.findElements(webdriver.By.linkText(link)).then(function (result) {
     return result[index];
   });
 }
 
-function findRegisterButton() {
+function findRegisterButton () {
   return findLink('register now!', 0);
 }
 
-function findHomeRegisterButton() {
+function findHomeRegisterButton () {
   return driver.findElements(webdriver.By.css('.registerButton a')).then(function (result) {
     return result[0];
   });
 }
 
-function findLoginButton() {
+function findLoginButton () {
   return driver.findElements(webdriver.By.css('.login-form-button')).then(function (result) {
     return result[0];
   });
 }
 
-function findButton(index) {
+function findButton (index) {
   return driver.findElements(webdriver.By.css('.login-form-button')).then(function (result) {
     return result[index];
   });
 }
 
-function findUserDropdown() {
+function findUserDropdown () {
   return driver.findElements(webdriver.By.css('.ant-dropdown-trigger')).then(function (result) {
     return result[0];
   });
 }
 
-function findMySchedulesItem() {
+function findMySchedulesItem () {
   return driver.findElements(webdriver.By.css('.ant-dropdown-menu-item')).then(function (result) {
     return result[0];
   });
 }
 
-function findLogoutItem() {
+function findLogoutItem () {
   return driver.findElements(webdriver.By.css('.ant-dropdown-menu-item')).then(function (result) {
     return result[1];
   });
 }
 
-function findDangerButton() {
+function findDangerButton () {
   return driver.findElements(webdriver.By.css('.ant-btn-danger')).then(function (result) {
     return result[0];
   });
 }
 
-function findErrorText(index) {
+function findErrorText (index) {
   return driver.findElements(webdriver.By.css('.ant-form-explain')).then(function (result) {
     return result[index];
   });
 }
 
-function findErrorMessage(index) {
+function findErrorMessage (index) {
   return driver.findElements(webdriver.By.css('.ant-message-error span')).then(function (result) {
     return result[index];
   });
 }
 
-function findSuccessMessage(index) {
+function findSuccessMessage (index) {
   return driver.findElements(webdriver.By.css('.ant-message-success span')).then(function (result) {
     return result[index];
   });
 }
 
-function findEmailEntry() {
+function findEmailEntry () {
   return driver.findElements(webdriver.By.css('#email')).then(function (result) {
     return result[0];
   });
 }
 
-function findUsernameEntry() {
+function findUsernameEntry () {
   return driver.findElements(webdriver.By.css('#username')).then(function (result) {
     return result[0];
   });
 }
 
-function findFirstPasswordEntry() {
+function findFirstPasswordEntry () {
   return driver.findElements(webdriver.By.css('#password1')).then(function (result) {
     return result[0];
   });
 }
 
-function findPasswordEntry() {
+function findPasswordEntry () {
   return driver.findElements(webdriver.By.css('#password')).then(function (result) {
     return result[0];
   });
 }
 
-function findTitleText() {
+function findTitleText () {
   return driver.findElements(webdriver.By.css('.intro h1')).then(function (result) {
     return result[0];
   });
 }
 
-function findResetPassword() {
+function findResetPassword () {
   return driver.findElements(webdriver.By.css('.login-form-forgot')).then(function (result) {
     return result[0];
   });
 }
 
-function findAuCodeEntry() {
+function findAuCodeEntry () {
   return driver.findElements(webdriver.By.css('#aucode')).then(function (result) {
     return result[0];
   });
 }
 
-function findNewPasswordEntry() {
+function findNewPasswordEntry () {
   return driver.findElements(webdriver.By.css('#password1')).then(function (result) {
     return result[0];
   });
 }
 
-function findConfirmPasswordEntry() {
+function findConfirmPasswordEntry () {
   return driver.findElements(webdriver.By.css('#password2')).then(function (result) {
     return result[0];
   });
 }
 
-function goToLoginPage() {
+function goToLoginPage () {
   return driver.get('http://localhost:3000/')
     .then(() => driver.wait(findLoginPageButton, 2000))
     .then(button => button.click());
@@ -421,111 +421,105 @@ describe('Home and Login Tests', function () {
   });
 });
 
-function findSemesterDropdown() {
+function findSemesterDropdown () {
   return driver.findElements(webdriver.By.css('.ant-cascader-input')).then(function (result) {
     return result[0];
   });
 }
 
-function findDropdown(index) {
+function findDropdown (index) {
   return driver.findElements(webdriver.By.css('.ant-cascader-input')).then(function (result) {
     return result[index];
   });
 }
 
-function findElementByTitle(title) {
+function findElementByTitle (title) {
   return driver.findElements(webdriver.By.css('*[title="' + title + '"]')).then(function (result) {
     return result[0];
   });
 }
 
-function findNextButton() {
+function findNextButton () {
   return findLink('Next', 0);
 }
 
-function findAddOrGenerateButton(index) {
+function findAddOrGenerateButton (index) {
   return driver.findElements(webdriver.By.css('.nextButton')).then(function (result) {
     return result[index];
   });
 }
 
-function findSelectedSemester() {
+function findSelectedSemester () {
   return driver.findElements(webdriver.By.css('.contentContainer div')).then(function (result) {
     return result[0];
   });
 }
 
-function findGenerateScheduleButton() {
+function findGenerateScheduleButton () {
   return findLink('Generate Schedule', 0);
 }
 
-function findSmallSchedule(index) {
+function findSmallSchedule (index) {
   return driver.findElements(webdriver.By.css('.smallGrid')).then(function (result) {
     return result[index];
   });
 }
 
-function getNumSchedules() {
+function getNumSchedules () {
   return driver.findElements(webdriver.By.css('.smallGrid')).then(function (result) {
     return result.length;
   });
 }
 
-function findSectionElement(index) {
+function findSectionElement (index) {
   return driver.findElements(webdriver.By.css('.rbc-event-content')).then(function (result) {
     return result[index];
   });
 }
 
-function findSaveOrEditButton() {
+function findSaveOrEditButton () {
   return driver.findElements(webdriver.By.css('.ant-modal-footer > .ant-btn-primary')).then(function (result) {
     return result[0];
   });
 }
 
-function findEditScheduleButton(index) {
+function findEditScheduleButton (index) {
   return driver.findElements(webdriver.By.css('.cascaderContainer > .ant-btn-primary')).then(function (result) {
     return result[index];
   });
 }
 
-function findMySchedulesTitle() {
+function findMySchedulesTitle () {
   return driver.findElements(webdriver.By.css('.bodyContainer h1')).then(function (result) {
     return result[0];
   });
 }
 
-function findSectionDeleteButton(index) {
+function findSectionDeleteButton (index) {
   return driver.findElements(webdriver.By.css('.anticon-cross')).then(function (result) {
     return result[index];
   });
 }
 
-function findCheckbox(index) {
+function findCheckbox (index) {
   return driver.findElements(webdriver.By.css('.ant-checkbox-input')).then(function (result) {
     return result[index];
   });
 }
 
-function findTimeslot(index) {
+function findTimeslot (index) {
   return driver.findElements(webdriver.By.css('.rbc-day-slot > .rbc-timeslot-group')).then(function (result) {
     return result[index];
   });
 }
 
-function findNoClassTimeTag(index) {
+function findNoClassTimeTag (index) {
   return driver.findElements(webdriver.By.css('.ant-tag-green')).then(function (result) {
     return result[index];
   });
 }
 
-function getNumberOfNoClassTimeTags(index) {
-  return driver.findElements(webdriver.By.css('.ant-tag-green')).then(function (result) {
-    return result.length;
-  });
-}
-
-function selectSemester() {
+function selectSemester () {
   return driver.get('http://localhost:3000/')
     .then(() => driver.wait(findGenerateScheduleButton, 2000))
     .then(button => button.click())
@@ -582,7 +576,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Asian American Studies'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(2000))
+      .then(() => driver.sleep(4000))
       .then(() => driver.wait(findElementByTitle('100: Intro Asian American Studies'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
@@ -628,7 +622,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Asian American Studies'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(2000))
+      .then(() => driver.sleep(4000))
       .then(() => driver.wait(findElementByTitle('100: Intro Asian American Studies'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
@@ -681,7 +675,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Asian American Studies'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(2000))
+      .then(() => driver.sleep(4000))
       .then(() => driver.wait(findElementByTitle('100: Intro Asian American Studies'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
@@ -914,7 +908,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Accountancy'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(2000))
+      .then(() => driver.sleep(4000))
       .then(() => driver.wait(findElementByTitle('201: Accounting and Accountancy I'), 2000))
       .then(element => element.click())
       .then(() => driver.sleep(1000))
