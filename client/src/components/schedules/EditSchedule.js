@@ -46,21 +46,25 @@ class EditSchedule extends React.Component {
     const { semester, location } = this.props;
     const { scheduleId } = location.state;
     const { selectedRows } = this.state;
-    axios
-      .post(POST_EDIT_SCHEDULE, {
-        scheduleId,
-        sections: _.map(selectedRows, sec => ({
-          ...sec,
-          ...semester,
-        })),
-      })
-      .then(res => {
-        console.log('POST_EDIT_SCHEDULE', res.data);
-        message.success('Schedule edited successfully.');
-      })
-      .catch(e => {
-        console.error('POST_EDIT_SCHEDULE', e.response);
-      });
+    if (_.isEmpty(selectedRows)) {
+      message.error('The schedule cannot be empty!');
+    } else {
+      axios
+        .post(POST_EDIT_SCHEDULE, {
+          scheduleId,
+          sections: _.map(selectedRows, sec => ({
+            ...sec,
+            ...semester,
+          })),
+        })
+        .then(res => {
+          console.log('POST_EDIT_SCHEDULE', res.data);
+          message.success('Schedule edited successfully.');
+        })
+        .catch(e => {
+          console.error('POST_EDIT_SCHEDULE', e.response);
+        });
+    }
   };
 
   _fillSelectedSections = () => {
@@ -194,23 +198,23 @@ class EditSchedule extends React.Component {
     axios
       .all(promises)
       .then(
-      axios.spread((...results) => {
-        console.log('detailed sections', results);
-        this.setState({
-          sectionList: _.map(results, res => {
-            const {
+        axios.spread((...results) => {
+          console.log('detailed sections', results);
+          this.setState({
+            sectionList: _.map(results, res => {
+              const {
                 subjectId,
-              courseId,
-              sectionNumber,
-              sectionId,
+                courseId,
+                sectionNumber,
+                sectionId,
               } = res.data;
-            return {
-              ...res.data,
-              key: `${subjectId}${courseId} ${sectionNumber} ${sectionId}`,
-            };
-          }),
-        });
-      })
+              return {
+                ...res.data,
+                key: `${subjectId}${courseId} ${sectionNumber} ${sectionId}`,
+              };
+            }),
+          });
+        })
       )
       .then(res => {
         this.setState({
