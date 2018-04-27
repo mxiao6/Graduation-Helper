@@ -532,7 +532,7 @@ class GenerateSchedule extends React.Component {
       start: slotInfo.start.getHours(),
       end: slotInfo.end.getHours(),
     };
-    if (newTime.start === newTime.end) return;
+    if (newTime.start === newTime.end || !newTime.day) return;
     let newNoTimeList = this.state.noTimeList.slice();
     newNoTimeList.push(newTime);
     newNoTimeList = _.uniqWith(newNoTimeList, _.isEqual);

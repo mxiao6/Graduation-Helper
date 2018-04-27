@@ -76,7 +76,7 @@ class Header extends Component {
           {loggedIn ? (
             <div className="buttonContainer">
               <Dropdown overlay={this.menu} trigger={['hover']}>
-                <a className="ant-dropdown-link" href="#">
+                <a className="ant-dropdown-link">
                   {user.username} <Icon type="down" />
                 </a>
               </Dropdown>
