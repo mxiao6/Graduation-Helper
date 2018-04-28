@@ -49,12 +49,6 @@ function findUserDropdown () {
   });
 }
 
-function findMySchedulesItem () {
-  return driver.findElements(webdriver.By.css('.ant-dropdown-menu-item')).then(function (result) {
-    return result[0];
-  });
-}
-
 function findLogoutItem () {
   return driver.findElements(webdriver.By.css('.ant-dropdown-menu-item')).then(function (result) {
     return result[1];
@@ -145,7 +139,14 @@ function goToLoginPage () {
     .then(button => button.click());
 }
 
+/*
+ * These front-end tests cover registration, logging in, logging out, and resetting
+ * your password.
+ */
 describe('Home and Login Tests', function () {
+  /*
+   * Goes to the home page and tests that the title equals 'Graduation Helper'.
+   */
   it('Page Title', function (done) {
     this.timeout(10000);
     driver.get('http://localhost:3000/')
@@ -157,6 +158,9 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Tests that the login button on the home page correctly takes you to the Login page.
+   */
   it('Login Button on Home Page', function (done) {
     this.timeout(10000);
     goToLoginPage()
@@ -166,6 +170,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Tests that the register button on the home page correctly takes you to the
+   * Signup page.
+   */
   it('Register Button on Home Page', function (done) {
     this.timeout(10000);
     driver.get('http://localhost:3000/')
@@ -177,6 +185,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the login page, then tests that the register button on that page correctly
+   * takes you to the Signup page.
+   */
   it('Register Button on Login Page', function (done) {
     this.timeout(10000);
     goToLoginPage()
@@ -188,6 +200,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the login page, then tests that leaving your email and password empty
+   * and trying to log in shows the proper error message for each.
+   */
   it('Empty Login', function (done) {
     this.timeout(20000);
     goToLoginPage()
@@ -203,6 +219,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the registration page, types in a proper email and password, and registers.
+   * Tests that this redirects you to the home page.
+   */
   it('Successful Registration', function (done) {
     this.timeout(20000);
     goToLoginPage()
@@ -228,6 +248,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Tests that trying to register with an already registered email displays a proper
+   * error message.
+   */
   it('Register with Same Email', function (done) {
     this.timeout(20000);
     goToLoginPage()
@@ -253,6 +277,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Tests that trying to register with a non-illinois.edu email displays the proper
+   * error message.
+   */
   it('Register with Bad Email', function (done) {
     this.timeout(20000);
     goToLoginPage()
@@ -278,6 +306,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Tests that trying to register with a password that is too short dislays the proper
+   * error message.
+   */
   it('Register with Short Password', function (done) {
     this.timeout(20000);
     goToLoginPage()
@@ -303,6 +335,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Tries to register with the confirmation password not matching the origin password.
+   * Tests that the proper error message is displayed.
+   */
   it('Register with Non Matching Passwords', function (done) {
     this.timeout(20000);
     goToLoginPage()
@@ -328,6 +364,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Tests that logging in takes you to the home page and properly displays your username
+   * on the page.
+   */
   it('Successful Login', function (done) {
     this.timeout(20000);
     goToLoginPage()
@@ -347,6 +387,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Tests that logging out from the home page keeps you on the home page and no longer
+   * displays your username on the page.
+   */
   it('Successful Logout', function (done) {
     this.timeout(20000);
     driver.get('http://localhost:3000/')
@@ -366,6 +410,11 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the login page and then clicks on the reset password button. Types in the
+   * proper email, authentication code, and new password. Tests that this redirects you
+   * to the home page and properly displays your username. Logs out after.
+   */
   it('Reset Password', function (done) {
     this.timeout(20000);
     goToLoginPage()
@@ -401,6 +450,10 @@ describe('Home and Login Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Tests that you can properly log in with the new password, which was set while
+   * resetting the password.
+   */
   it('Successful Login After Reset', function (done) {
     this.timeout(20000);
     goToLoginPage()
@@ -519,6 +572,12 @@ function findNoClassTimeTag (index) {
   });
 }
 
+function findMySchedulesItem () {
+  return driver.findElements(webdriver.By.css('.ant-dropdown-menu-item')).then(function (result) {
+    return result[0];
+  });
+}
+
 function selectSemester () {
   return driver.get('http://localhost:3000/')
     .then(() => driver.wait(findGenerateScheduleButton, 2000))
@@ -538,7 +597,15 @@ function selectSemester () {
     .then(() => driver.sleep(2000));
 }
 
+/*
+ * These front-end tests cover schedule generation, saving the schedule, going to the
+ * My Schedule page, editing a schedule, and deleting a schedule.
+ */
 describe('Schedule Generation Tests', function () {
+  /*
+   * Goes to the Generate Schedules page and tests that you can select the Fall 2018
+   * semester.
+   */
   it('Select Semester', function (done) {
     this.timeout(20000);
     selectSemester()
@@ -551,6 +618,10 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the Generate Schedules page again and tests that the Fall 201i semester
+   * shows up as already selected.
+   */
   it('Semester Already Selected', function (done) {
     this.timeout(20000);
     driver.get('http://localhost:3000/')
@@ -566,6 +637,11 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the Generate Schedules page. Adds AAS100 and ABE 100 as classes. Clicks the
+   * Generate button. Chooses the first schedule that was generated. Tests that the
+   * generated schedule has the correct sections. Saves the schedule.
+   */
   it('Generate and Save Schedule, No Preferences', function (done) {
     this.timeout(35000);
     driver.get('http://localhost:3000/')
@@ -612,6 +688,12 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the Generate Schedules page. Adds AAS100 and ABE 100 as classes. Sets a
+   * preference to avoid morning classes. Clicks the Generate button. Chooses the
+   * first schedule that was generated. Tests that the generated schedule has the
+   * correct sections. Saves the schedule.
+   */
   it('Generate and Save Schedule, No Morning Classes', function (done) {
     this.timeout(35000);
     driver.get('http://localhost:3000/')
@@ -664,6 +746,12 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the Generate Schedules page. Adds AAS100 and ABE 100 as classes. Sets a
+   * preference to avoid clases on Fridays between 8am and 12pm. Clicks the Generate
+   * button. Chooses the first schedule that was generated. Tests that the generated
+   * schedule has the correct sections. Saves the schedule.
+   */
   it('Generate and Save Schedule with No Class Time Selected', function (done) {
     this.timeout(35000);
     var data = {};
@@ -728,6 +816,10 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Test that logging out from the Generate Schedules page redirects you to the home page,
+   * no longer displaying your username.
+   */
   it('Log Out From Generate Schedules Page', function (done) {
     this.timeout(30000);
     driver.get('http://localhost:3000/')
@@ -752,6 +844,10 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Opens the user dropdown and goes to the My Schedules page. Tests that the URL and
+   * title text are correct.
+   */
   it('My Schedules Page', function (done) {
     this.timeout(30000);
     goToLoginPage()
@@ -777,6 +873,10 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Test that logging out from the My Schedules page redirects you to the home page,
+   * no longer displaying your username.
+   */
   it('Log Out From My Schedules Page', function (done) {
     this.timeout(30000);
     driver.get('http://localhost:3000/')
@@ -804,6 +904,10 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the My Schedules page. Opens the third saved schedule. Clicks on the delete
+   * button. Tests that there are now only two schedules being displayed.
+   */
   it('Delete Schedule', function (done) {
     this.timeout(30000);
     goToLoginPage()
@@ -832,6 +936,10 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the My Schedules page. Opens the second saved schedule. Clicks the edit button.
+   * Tests that this takes you to the Edit Schedule page.
+   */
   it('Edit Button', function (done) {
     this.timeout(30000);
     driver.get('http://localhost:3000/')
@@ -853,6 +961,11 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the My Schedules page. Opens the first saved schedule. Clicks the edit button.
+   * Removes all of the classes from the schedule. Tries to save the schedule. Tests
+   * that the proper error message is displayed.
+   */
   it('Save Empty Schedule', function (done) {
     this.timeout(30000);
     driver.get('http://localhost:3000/')
@@ -886,6 +999,11 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Goes to the My Schedules page. Opens the first saved schedule. Clicks the edit button.
+   * Removes a section of AAS100 from the schedule. Adds two sections of ACCY201 to the
+   * schedule. Saves the schedule and tests that the schedule was saved successfully.
+   */
   it('Edit and Save Schedule', function (done) {
     this.timeout(30000);
     driver.get('http://localhost:3000/')
@@ -934,6 +1052,10 @@ describe('Schedule Generation Tests', function () {
       .catch(error => done(error));
   });
 
+  /*
+   * Test that logging out from the Edit Schedule page redirects you to the home page,
+   * no longer displaying your username.
+   */
   it('Log Out From Edit Schedule Page', function (done) {
     this.timeout(30000);
     driver.get('http://localhost:3000/')
