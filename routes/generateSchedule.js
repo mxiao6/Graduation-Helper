@@ -189,38 +189,25 @@ function occursOnSameDays (currSection, newSection) {
 }
 
 // Given current sections check if the new sections Overlaps
-// If the new section overlaps then it inserts it into current sections in order and returns false
-// If the new section overlaps then it returns false and new sections is not added to current
-function insertAndSortIfNotOverlapped (currSections, newSections) {
+function checkIfSectionsOverlap (currSections, newSections) {
   if (currSections.length === 0) {
-    currSections.push(...newSections);
     return false;
   }
 
   for (let j = 0; j < newSections.length; j++) {
     let newSection = newSections[j];
-    let happensLatest = true;
-
     for (let i = 0; i < currSections.length; i++) {
-      if (occursOnSameDays(currSections[i], newSection)) {
-        let startA = new Date('January 1, 2000 ' + currSections[i].startTime);
-        let endA = new Date('January 1, 2000 ' + currSections[i].endTime);
+      let currSection = currSections[i];
+      if (occursOnSameDays(currSection, newSection)) {
+        let startA = new Date('January 1, 2000 ' + currSection.startTime);
+        let endA = new Date('January 1, 2000 ' + currSection.endTime);
         let startB = new Date('January 1, 2000 ' + newSection.startTime);
         let endB = new Date('January 1, 2000 ' + newSection.endTime);
 
         if (startA <= endB && endA >= startB) {
           return true;
         }
-        // New section happens before current Section
-        if (startB < startA) {
-          currSections.splice(i, 0, newSection);
-          happensLatest = false;
-          break;
-        }
       }
-    }
-    if (happensLatest) {
-      currSections.push(newSection);
     }
   }
   return false;
@@ -240,8 +227,10 @@ function cartesianProduct (data) {
       let baseArray = current[c];
       for (let a = 0; a < arr.length; a++) {
         let clone = baseArray.slice();
-        let isOverlapped = insertAndSortIfNotOverlapped(clone, [arr[a]]);
+        let newSections = [arr[a]];
+        let isOverlapped = checkIfSectionsOverlap(clone, newSections);
         if (!isOverlapped) {
+          clone.push(...newSections);
           newCurrent.push(clone);
         }
       }
@@ -264,23 +253,30 @@ function flattenSectionLetters (sectionList) {
 
 // For some classes, each section letter represents a type of section in combination with other section letters
 // i.e. PHYS211 A is for lectures, D is for discussion
+// i.e BTW250 every section is a lecture but they have different sectionNumbers
 // It will check if processed list for a class needs to be flatten
 function shouldFlatten (processedDict) {
-  let sectionAExists = false;
+  let shouldFlatten = false;
+  let uniqueSectionTypes = new Set();
   for (let sectionLetter in processedDict) {
     if (sectionLetter === 'A') {
-      sectionAExists = true;
+      shouldFlatten = true;
     }
 
-    if (sectionLetter === '0' || sectionLetter === 'O') {
+    let sectionTypes = Object.keys(processedDict[sectionLetter]);
+    if (sectionLetter === '0' || sectionLetter === 'O' || sectionTypes.length >= 2) {
       return false;
     }
 
-    if (Object.keys(processedDict[sectionLetter]).length >= 2) {
-      return false;
-    }
+    sectionTypes.forEach(function (type) {
+      uniqueSectionTypes.add(type);
+    });
   }
-  return sectionAExists;
+
+  if (uniqueSectionTypes.size <= 1) {
+    shouldFlatten = false;
+  }
+  return shouldFlatten;
 }
 
 // Helper method to get All section permutations for a given class course
@@ -304,7 +300,6 @@ function getCourseSectionPermutations (classSectionList) {
 // Gets section permutations for every class's course
 // returns an array of arrays of section permutaion arrays
 function getPermutationsForAllClasses (classes) {
-  // console.log('Calculating permuations for every class');
   let allPermutations = [];
   for (let i = 0; i < classes.length; i++) {
     allPermutations.push(getCourseSectionPermutations(classes[i]));
@@ -406,8 +401,9 @@ function generateIterative (listOfPermutationsForEveryClass, preferences) {
           ...schedules[j]
         };
         base.sections = base.sections.slice();
-        let isOverlapped = insertAndSortIfNotOverlapped(base.sections, classPermutations[k]);
+        let isOverlapped = checkIfSectionsOverlap(base.sections, classPermutations[k]);
         if (!isOverlapped) {
+          base.sections.push(...classPermutations[k]);
           if (preferences && i === listOfPermutationsForEveryClass.length - 1) {
             base.score = calculateScheduleScore(base.sections, preferences);
             if (base.score === 100) {
