@@ -9,8 +9,7 @@ require('chai').should();
  * Tests to test basic user functionalities like registering, login, bad password, reseting password
  */
 describe('User tests', function () {
-  // Cannot register an account that already exist. Frontend created a user called admin with email admin@illinois.edu
-    //we should not be able to create another user with the same username and email
+  // Cannot register an account that already exist. Frontend created a user called admin with email admin@illinois.edu we should not be able to create another user with the same username and email
   it('it should not register since email already exists', function (done) {
     chai.request(server).post('/register').send({ 'username': 'admin', 'email': 'admin@illinois.edu', 'password': 'cs428' }).end(function (err, res) {
       res.should.have.status(422);
@@ -152,8 +151,7 @@ describe('schedule test', function () {
      * Tests the preferences constraints upon schedule generation
      */
   describe('Schedule preferences tests', function () {
-    // We state that we should want the class time to start from 12pm to 2 pm. There does exist a course at that time so
-      // a schedule should be generated
+    // We state that we should want the class time to start from 12pm to 2 pm. There does exist a course at that time so a schedule should be genreated
     it('should give us a schedule that does not meet preferences for start and end time', function (done) {
       this.timeout(10000);
       chai.request(server).post('/schedule/generate').send({
@@ -209,7 +207,7 @@ describe('schedule test', function () {
         done();
       });
     });
-    //We cannot have lunch because the class starts from 12-2pm
+    // We cannot have lunch because the class starts from 12-2pm
     it('should give us a schedule that does not meet preferences for class option', function (done) {
       this.timeout(10000);
       chai.request(server).post('/schedule/generate').send({
@@ -335,7 +333,7 @@ describe('schedule test', function () {
             done();
           });
       });
-      //class starts and ends from 8-9 am
+      // Class starts and ends from 8-9 am
       it('should give us a schedule that meets preferences for start and end time', function (done) {
         this.timeout(10000);
         chai
@@ -571,7 +569,7 @@ describe('schedule test', function () {
               done();
             });
         });
-        //Class exists during lunch but does meet on Tuesday and Thursday
+        // Class exists during lunch but does meet on Tuesday and Thursday
         it('should give us a schedule that does not meet a few preferences 1', function (done) {
           this.timeout(10000);
           chai
@@ -598,7 +596,7 @@ describe('schedule test', function () {
               done();
             });
         });
-        //class does not meet from 11am -2pm
+        // class does not meet from 11am -2pm
         it('should give us a schedule that does not meet a few preferences 2', function (done) {
           this.timeout(10000);
           chai
@@ -765,7 +763,7 @@ describe('schedule test', function () {
             done();
           });
         });
-        //Class does not meet on tuesday
+        // Class does not meet on tuesday
         it('should give us a schedule that does not meet all preferences 1', function (done) {
           this.timeout(10000);
           chai.request(server).post('/schedule/generate').send({
@@ -793,7 +791,7 @@ describe('schedule test', function () {
             done();
           });
         });
-        //Class does not meet on tuesday and classtime and lunch preference conflict
+        // Class does not meet on tuesday and classtime and lunch preference conflict
         it('should give us a schedule that does not meet all preferences 2', function (done) {
           this.timeout(10000);
           chai.request(server).post('/schedule/generate').send({
@@ -824,7 +822,7 @@ describe('schedule test', function () {
             done();
           });
         });
-        //Classes do not start from 12pm-2pm
+        // Classes do not start from 12pm-2pm
         it('should give us a schedule that does not meet all preferences 3', function (done) {
           this.timeout(10000);
           chai.request(server).post('/schedule/generate').send({
