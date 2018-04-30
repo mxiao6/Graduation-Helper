@@ -161,6 +161,10 @@ class GenerateSchedule extends React.Component {
           noClassOptions: noOptionsList,
           noClassTime: noTimeList,
         },
+        range: {
+          offset: 0,
+          limit: 16,
+        },
       })
       .then(res => {
         console.log('raw data', res.data);
