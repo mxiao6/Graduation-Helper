@@ -17,12 +17,11 @@ class SemesterSelection extends React.Component {
   };
 
   componentWillMount() {
-    const { selected, history, location } = this.props;
-    console.log('semester selected', selected);
-    console.log('history', history);
-    console.log('location', location, !location.state);
+    const { user, selected, history, location } = this.props;
 
-    if (!location.state) {
+    if (!user) {
+      history.push('/');
+    } else if (!location.state) {
       history.goBack();
     } else if (selected) {
       history.push(location.state.next);
@@ -43,6 +42,10 @@ class SemesterSelection extends React.Component {
           console.error(e.response);
         });
     }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.user) this.props.history.push('/');
   }
 
   onChange = (value, selectedOptions) => {
@@ -124,9 +127,10 @@ class SemesterSelection extends React.Component {
   }
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps({ auth, classes }) {
   return {
-    selected: state.classes.semester !== undefined,
+    user: auth.user,
+    selected: classes.semester !== undefined,
   };
 }
 
