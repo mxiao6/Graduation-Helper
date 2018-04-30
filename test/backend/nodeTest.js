@@ -6,10 +6,11 @@ chai.use(chaiHttp);
 require('chai').should();
 
 /**
- * tests to test basic user functionalities like registering, login, bad password, reseting password
+ * Tests to test basic user functionalities like registering, login, bad password, reseting password
  */
 describe('User tests', function () {
-  // cannot register an account that already exist
+  // Cannot register an account that already exist. Frontend created a user called admin with email admin@illinois.edu
+    //we should not be able to create another user with the same username and email
   it('it should not register since email already exists', function (done) {
     chai.request(server).post('/register').send({ 'username': 'admin', 'email': 'admin@illinois.edu', 'password': 'cs428' }).end(function (err, res) {
       res.should.have.status(422);
@@ -20,7 +21,7 @@ describe('User tests', function () {
       done();
     });
   });
-  // basic login sucessfully test
+  // Login with the user created by frontend test
   it('it should login successfully', function (done) {
     chai.request(server).post('/login').send({ 'email': 'admin@illinois.edu', 'password': 'test2test2test2' }).end((err, res) => {
       res.should.have.status(250);
@@ -28,7 +29,7 @@ describe('User tests', function () {
       done();
     });
   });
-  // wrong password test
+  // The password is test2test2test2 and we should not be able to loging with another password
   it('it should not login wrong password', function (done) {
     chai.request(server).post('/login').send({ 'email': 'admin@illinois.edu', 'password': 'wrong_pass' }).end((err, res) => {
       res.should.have.status(422);
@@ -39,7 +40,7 @@ describe('User tests', function () {
       done();
     });
   });
-  // bad login because username and password are invalid
+  // Both the username and password are invalid here, we first check if an email exists
   it('it should not login no existing email', function (done) {
     chai.request(server).post('/login').send({ 'email': 'NOEMAIL@illinois.edu', 'password': 'NOEMAIL' }).end((err, res) => {
       res.should.have.status(422);
@@ -50,7 +51,7 @@ describe('User tests', function () {
       done();
     });
   });
-  // tests to send mail for resting password
+  //  Send an email to admin@gmail.com and see if it actually got sent
   var aucode = 'ABCDEFGHIJ';
   it('resetpass', function (done) {
     chai.request(server).post('/sendemail').send({ 'email': 'admin@illinois.edu' }).end((err, res) => {
@@ -62,7 +63,7 @@ describe('User tests', function () {
       }
     });
   });
-  // testing to see if new password is set
+  // Resetting the password of admin@illinois.edu. The reset password does not matter
   it('resetpass', function (done) {
     chai.request(server).post('/resetpassword').send({ 'email': 'admin@illinois.edu', 'password': 'test2test2test2', 'aucode': aucode }).end((err, res) => {
       res.should.have.status(250);
@@ -72,7 +73,7 @@ describe('User tests', function () {
       }
     });
   });
-  // the reset password should fail if the email is invalid or does not exist in the database
+  // We should not be able to send an email to something that does not exist in the database
   it('badResetpass', function (done) {
     chai.request(server).post('/sendemail').send({ 'email': 'NOEMAIL@illinois.edu' }).end((err, res) => {
       res.should.have.status(422);
@@ -86,14 +87,14 @@ describe('User tests', function () {
 });
 
 /**
- * this group of tests are to test whether schedule funcionalities are woring
+ * This group of tests are to test whether schedule funcionalities are woring
  */
 describe('schedule test', function () {
   /**
-     * the following describe tests schedule generation
+     * The following describe tests schedule generation
      */
   describe('General schedule tests', function () {
-    // random schedule based on year, semester and classes
+    // These classes CS125 and CS173 do not conflict and both are offered in spring 2018 and should give us a schedule
     it('should give us a schedule', function (done) {
       this.timeout(20000);
       chai
@@ -113,7 +114,7 @@ describe('schedule test', function () {
           done();
         });
     });
-    // want a specifc course in schedule
+    // We want only ANSC250 in our schedule
     it('should give us a schedule animal science', function (done) {
       this.timeout(20000);
       chai.request(server).post('/schedule/generate').send({ 'year': '2018', 'semester': 'Spring', 'courses': ['ANSC250'] }).end((err, res) => {
@@ -125,7 +126,7 @@ describe('schedule test', function () {
         done();
       });
     });
-    // bad schedule test
+    // The year and semester are invalid here and so we should not get a schedule
     it('should not give us a schedule', function (done) {
       chai.request(server).post('/schedule/generate').send({ 'year': '-1', 'semester': 'blah', 'courses': ['CS125'] }).end((err, res) => {
         res.should.have.status(500);
@@ -135,7 +136,7 @@ describe('schedule test', function () {
         done();
       });
     });
-    // bad parameter test
+    // We do not specify a year thus a schedule cannot be genretead
     it('should not give us a schedule because of incorrect Parameters', function (done) {
       chai.request(server).post('/schedule/generate').send({ 'semester': 'blah', 'courses': ['ANSC250'] }).end((err, res) => {
         res.should.have.status(422);
@@ -148,10 +149,11 @@ describe('schedule test', function () {
     });
   });
   /**
-     * tests the preferences constraints upon schedule generation
+     * Tests the preferences constraints upon schedule generation
      */
   describe('Schedule preferences tests', function () {
-    // incomplete satisfication for preferences test
+    // We state that we should want the class time to start from 12pm to 2 pm. There does exist a course at that time so
+      // a schedule should be generated
     it('should give us a schedule that does not meet preferences for start and end time', function (done) {
       this.timeout(10000);
       chai.request(server).post('/schedule/generate').send({
@@ -179,7 +181,7 @@ describe('schedule test', function () {
         done();
       });
     });
-    // generate a schedule that fits all requreiments
+    // generate a schedule where our class starts at 8am to 9am
     it('should give us a schedule that meets preferences for start and end time', function (done) {
       this.timeout(10000);
       chai.request(server).post('/schedule/generate').send({
@@ -207,7 +209,7 @@ describe('schedule test', function () {
         done();
       });
     });
-    // class option preference not met
+    //We cannot have lunch because the class starts from 12-2pm
     it('should give us a schedule that does not meet preferences for class option', function (done) {
       this.timeout(10000);
       chai.request(server).post('/schedule/generate').send({
@@ -230,7 +232,7 @@ describe('schedule test', function () {
         done();
       });
     });
-    // class option met for schedule
+    // The latest this class goes is until 2pm and thus we are free for the evening
     it('should give us a schedule that meets preferences for class option', function (done) {
       this.timeout(10000);
       chai.request(server).post('/schedule/generate').send({
@@ -253,7 +255,7 @@ describe('schedule test', function () {
         done();
       });
     });
-    // class days preference not met
+    // The classes do not meet on Tuesday and Thursday
     it('should give us a schedule that does not meet preferences for class days', function (done) {
       this.timeout(10000);
       chai.request(server).post('/schedule/generate').send({
@@ -278,7 +280,7 @@ describe('schedule test', function () {
         done();
       });
     });
-    // class day preferences met
+    // This class meets on monday, wednesday and friday
     it('should give us a schedule that meets preferences for class days', function (done) {
       this.timeout(10000);
       chai.request(server).post('/schedule/generate').send({
@@ -303,7 +305,7 @@ describe('schedule test', function () {
         done();
       });
     });
-    // testing with only very few prefernces
+    // This class meets on Friday
     describe('Few preferences test', function () {
       it('should give us a schedule that meets a few preferences 1', function (done) {
         this.timeout(10000);
@@ -333,7 +335,7 @@ describe('schedule test', function () {
             done();
           });
       });
-
+      //class starts and ends from 8-9 am
       it('should give us a schedule that meets preferences for start and end time', function (done) {
         this.timeout(10000);
         chai
@@ -473,7 +475,7 @@ describe('schedule test', function () {
             done();
           });
       });
-      // prefernce 1 satisfied paritally
+      // The class does meet friday but not from 7-9am or 9-10am
       describe('Few preferences test', function () {
         it('should give us a schedule that meets a few preferences 1', function (done) {
           this.timeout(10000);
@@ -510,7 +512,7 @@ describe('schedule test', function () {
               done();
             });
         });
-        // prefernce 2 satisfied paritally
+        // Class does not meet on mondays but does meet in morning but does not meet from 6-8pm
         it('should give us a schedule that meets a few preferences 2', function (done) {
           this.timeout(10000);
           chai
@@ -542,7 +544,7 @@ describe('schedule test', function () {
               done();
             });
         });
-        // prefernce 3 satisfied paritally
+        // Class does not meet on monday
         it('should give us a schedule that meets a few preferences 3', function (done) {
           this.timeout(10000);
           chai
@@ -569,7 +571,7 @@ describe('schedule test', function () {
               done();
             });
         });
-
+        //Class exists during lunch but does meet on Tuesday and Thursday
         it('should give us a schedule that does not meet a few preferences 1', function (done) {
           this.timeout(10000);
           chai
@@ -596,7 +598,7 @@ describe('schedule test', function () {
               done();
             });
         });
-
+        //class does not meet from 11am -2pm
         it('should give us a schedule that does not meet a few preferences 2', function (done) {
           this.timeout(10000);
           chai
@@ -628,7 +630,7 @@ describe('schedule test', function () {
               done();
             });
         });
-
+        //No class on monday
         it('should give us a schedule that does not meet a few preferences 3', function (done) {
           this.timeout(10000);
           chai
@@ -662,10 +664,10 @@ describe('schedule test', function () {
         });
       });
       /**
-         * test if given a possible preference would they be all satisfeid
+         * Test if given a possible preference would they be all satisfeid
          */
       describe('All preferences test', function () {
-        // preference 1 all satisifed
+        // Classes meet on Monday, Wednesday, starts form 7am to 8am and does not have class in evening
         it('should give us a schedule that meets all preferences 1', function (done) {
           this.timeout(10000);
           chai.request(server).post('/schedule/generate').send({
@@ -695,7 +697,7 @@ describe('schedule test', function () {
             done();
           });
         });
-        // preference 2 all satisifed
+        // Same as last test but class can also start from 8am-9am
         it('should give us a schedule that meets all preferences 2', function (done) {
           this.timeout(10000);
           chai.request(server).post('/schedule/generate').send({
@@ -728,7 +730,7 @@ describe('schedule test', function () {
             done();
           });
         });
-        // preference 3 all satisifed
+        // Same as last test but class can also exist on Friday
         it('should give us a schedule that meets all preferences 3', function (done) {
           this.timeout(10000);
           chai.request(server).post('/schedule/generate').send({
@@ -763,7 +765,7 @@ describe('schedule test', function () {
             done();
           });
         });
-
+        //Class does not meet on tuesday
         it('should give us a schedule that does not meet all preferences 1', function (done) {
           this.timeout(10000);
           chai.request(server).post('/schedule/generate').send({
@@ -791,7 +793,7 @@ describe('schedule test', function () {
             done();
           });
         });
-
+        //Class does not meet on tuesday and classtime and lunch preference conflict
         it('should give us a schedule that does not meet all preferences 2', function (done) {
           this.timeout(10000);
           chai.request(server).post('/schedule/generate').send({
@@ -822,7 +824,7 @@ describe('schedule test', function () {
             done();
           });
         });
-
+        //Classes do not start from 12pm-2pm
         it('should give us a schedule that does not meet all preferences 3', function (done) {
           this.timeout(10000);
           chai.request(server).post('/schedule/generate').send({
@@ -859,29 +861,29 @@ describe('schedule test', function () {
     });
   });
   /**
-     * advanced parameterized tests
+     * Advanced parameterized tests
      */
   describe('parameterized tests', function () {
     var data = [
-      // invalid year
+      // Invalid year and semester but valid classes
       {
         year: '-1',
         semester: 'blah',
         courses: ['CS125', 'CS173']
       },
-      // year out of bounnd
+      // Year is too old even though semester and courses are valid
       {
         year: '1950',
         semester: 'Spring',
         courses: ['CS125', 'CS173']
       },
-      // class number out of bound
+      // Year and sesmter valid but classes are not
       {
         year: '2010',
         semester: 'Summer',
         courses: ['CS999', 'CS2232']
       },
-      // semester invalid
+      // Semester is invalid
       {
         year: '0',
         semester: 'blah',
@@ -904,10 +906,10 @@ describe('schedule test', function () {
     });
   });
   /**
-     * general tests for saving and getting a schedule
+     * General tests for saving and getting a schedule
      */
   describe('schedule tests', function () {
-    // saving a basic CS schedule
+    // We save a scheduel for user 1 where they are taking CS425 from 9:30am to 10:45am on tuesday and thursday
     it('saving a schedule', function (done) {
       this.timeout(10000);
       chai.request(server).post('/saveschedule').send({
@@ -936,7 +938,7 @@ describe('schedule test', function () {
         }
       });
     });
-    // getting the schedule that we just saved
+    // Checking the schedule for user 1 that we generated in the last test. We see if the schedule can be read properly
     it('getting an existing schedule', function (done) {
       this.timeout(10000);
       chai.request(server).get('/getschedule').query({
@@ -960,7 +962,7 @@ describe('schedule test', function () {
  */
 describe('API tests', function () {
   this.timeout(10000);
-  // checks getting years
+  // Check getting all the years for classes that exist, lower bound of about 1980 and an upper bound on current year
   it('it should get all years', function (done) {
     chai
       .request(server)
@@ -973,7 +975,7 @@ describe('API tests', function () {
         done();
       });
   });
-  // checks getting semester in a year
+  // See if we are able to obtain all the semesters for 2018, spring, summer, fall, winter
   it('it should get all semester for given year', function (done) {
     chai.request(server).get('/api/semester').query({ year: '2018' }).end((err, res) => {
       res.body.should.be.a('array');
@@ -982,7 +984,7 @@ describe('API tests', function () {
       done();
     });
   });
-  // checks if a given combo of year and semester gives semesters
+  // Get all majors for 2018 Spring
   it('it should get all major for given year and semester', function (done) {
     chai.request(server).get('/api/subject').query({ year: '2018', semester: 'spring' }).end((err, res) => {
       res.body.should.be.a('array');
@@ -991,7 +993,7 @@ describe('API tests', function () {
       done();
     });
   });
-  // checks for courses in a year, semester and study area
+  // Get all courses for 2018, spring in the AAS department
   it('it should get all course for given year, semester, major', function (done) {
     chai.request(server).get('/api/course').query({ year: '2018', semester: 'spring', course: 'AAS' }).end((err, res) => {
       res.body.should.be.a('array');
@@ -1000,7 +1002,7 @@ describe('API tests', function () {
       done();
     });
   });
-  // gets class selection for a specific course
+  // See all AAS100 sections for Spring 2018
   it('it should get class section for given year, semester, major, course, courseNumber', function (done) {
     chai.request(server).get('/api/section').query({ year: '2018', semester: 'spring', course: 'AAS', courseId: '100' }).end((err, res) => {
       res.body.should.be.a('array');
