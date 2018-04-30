@@ -3,7 +3,6 @@ import { createLogger } from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import promiseMiddleware from 'redux-promise-middleware';
 import rootReducer from './reducer';
 
 const persistConfig = {
@@ -13,7 +12,6 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// let middleware = [thunkMiddleware, promiseMiddleware];
 let middleware = [thunkMiddleware];
 if (process.env.NODE_ENV !== 'production') {
   middleware = [...middleware, createLogger()];
