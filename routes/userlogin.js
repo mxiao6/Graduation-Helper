@@ -395,13 +395,19 @@ exports.sendemail = function (req, res) {
       "Reset successfully"
     }
 *
+*@apiErrorExample authentication code noexist:
+*   HTTP/1.1 422
+*   {
+*     "Code has not been sent!"
+*   }
+*
 *@apiErrorExample authentication code exipried:
 *   HTTP/1.1 422
 *   {
 *     "aucode expired!"
 *   }
 *
-*@apiErrorExample authentication code exipried:
+*@apiErrorExample authentication code unmatched:
 *   HTTP/1.1 422
 *   {
 *     "aucode unmatched!"
@@ -429,7 +435,7 @@ exports.resetpassword = function (req, res) {
           aucode = results[0].aucode;
           sendtime = results[0].timesaved;
         } else {
-          res.status(422).send('Email does not exist.');
+          res.status(422).send('Code has not been sent');
         }
       }
       var now = moment();
@@ -451,7 +457,13 @@ exports.resetpassword = function (req, res) {
             if (error) {
               res.status(500).send('Database query error occurred.');
             } else {
-              res.status(250).send('Password has been reset successfully.');
+              connection.query('DELETE FROM authentication WHERE email = ?', [email], function (error, results) {
+                if (error) {
+                  res.status(500).send('Database query error occurred.');
+                } else {
+                  res.status(250).send('Password has been reset successfully.');
+                }
+              });
             }
           });
         });

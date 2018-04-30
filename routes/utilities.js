@@ -7,8 +7,9 @@ function getParsedRequest (query) {
   return request(query).then(parseStringAsync);
 }
 
+// Get section type and time info
 function getSectionTimeInfo (jsonInfo) {
-  let type = jsonInfo['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['$']['code'];
+  let type = jsonInfo['ns2:section']['meetings'][0]['meeting'][0]['type'][0]['_'].trim();
 
   let startTime = jsonInfo['ns2:section']['meetings'][0]['meeting'][0]['start'];
   if (startTime != null) {
@@ -26,6 +27,7 @@ function getSectionTimeInfo (jsonInfo) {
   return {type: type, startTime: startTime, endTime: endTime, daysOfWeek: daysOfWeek};
 }
 
+// Get the parent info in section xml
 function getSectionParentInfo (jsonInfo) {
   let sectionId = jsonInfo['ns2:section']['$'].id;
   let subjectId = jsonInfo['ns2:section']['parents'][0]['subject'][0]['$'].id;
@@ -33,6 +35,7 @@ function getSectionParentInfo (jsonInfo) {
   return {sectionId: sectionId, subjectId: subjectId, courseId: courseId};
 }
 
+// get other section info in section xml
 function getSectionOtherInfo (jsonInfo) {
   let sectionTitle = jsonInfo['ns2:section']['sectionTitle'];
   if (sectionTitle != null) {
@@ -58,6 +61,7 @@ function getSectionOtherInfo (jsonInfo) {
   return {sectionTitle: sectionTitle, sectionNumber: sectionNumber, enrollmentStatus: enrollmentStatus};
 }
 
+// Parses section xml and get all relevant info for section
 function parseSectionPageJson (jsonInfo) {
   let {sectionTitle, sectionNumber, enrollmentStatus} = getSectionOtherInfo(jsonInfo);
   let {type, startTime, endTime, daysOfWeek} = getSectionTimeInfo(jsonInfo);
@@ -81,8 +85,6 @@ function parseSectionPageJson (jsonInfo) {
 
 // Creates a code to uniquely identify a special topic
 function getTopicCode (sectionTitle) {
-  // let code = sectionTitle.match(/\b(\w)/g).join('');
-
   let charArr = sectionTitle.split('').map(c => { return c.charCodeAt(0); });
   let code = '' + charArr.reduce((total, val) => total + val) % 999;
   return code;
@@ -161,7 +163,7 @@ function getSectionDetails (coursesSectionUrlsItems) {
 }
 
 // Given course list get all sections for those courses
-// input ['CS425','CS429']
+// selectedCourses ['CS425','CS429']
 function getAllDetails (year, semester, selectedCourses) {
   let courseUrlItems = selectedCourses.map(function (course) {
     let courseTags = course.split('-');

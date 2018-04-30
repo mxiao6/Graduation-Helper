@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import * as classActions from 'containers/Classes';
 
 import { Cascader, Spin, Button, message } from 'antd';
-import 'styles/ClassSelection.css';
+import '../../styles/Schedules.css';
 
 class SemesterSelection extends React.Component {
   state = {

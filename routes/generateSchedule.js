@@ -49,7 +49,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *             "sectionId": "48199",
 *             "sectionNumber": "AL4",
 *             "enrollmentStatus": "CrossListOpen",
-*             "type": "LCD",
+*             "type": "Lecture",
 *             "startTime": "12:30 PM",
 *             "endTime": "01:45 PM",
 *             "daysOfWeek": "MW"
@@ -60,7 +60,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *             "sectionId": "31384 56315",
 *             "sectionNumber": "T3 T4",
 *             "enrollmentStatus": "CrossListOpen",
-*             "type": "LCD",
+*             "type": "Lecture",
 *             "startTime": "09:30 AM",
 *             "endTime": "10:45 AM",
 *             "daysOfWeek": "TR"
@@ -71,7 +71,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *             "sectionId": "63508",
 *             "sectionNumber": "AY2",
 *             "enrollmentStatus": "CrossListOpen",
-*             "type": "DIS",
+*             "type": "Discussion",
 *             "startTime": "11:00 AM",
 *             "endTime": "11:50 AM",
 *             "daysOfWeek": "R"
@@ -82,7 +82,7 @@ const getAllDetails = require('./utilities.js').getAllDetails;
 *             "sectionId": "65894 57812",
 *             "sectionNumber": "ON ONL",
 *             "enrollmentStatus": "Closed",
-*             "type": "ONL",
+*             "type": "Online",
 *             "startTime": "ARRANGED"
 *           }
 *         ]
@@ -108,8 +108,6 @@ router.post('/generate', function (req, res) {
   let preferences = req.body.preferences;
   let range = req.body.range;
   getAllDetails(year, semester, selectedClasses).then(function (result) {
-    // console.log();
-    // console.log(result);
     let generatedSchedules = generateSchedules(result, preferences);
 
     if (range != null) {
@@ -125,6 +123,7 @@ router.post('/generate', function (req, res) {
   });
 });
 
+// Checks that the api call has necessary parameters
 function hasProperties (req) {
   if (!req.body.hasOwnProperty('year') || !req.body.hasOwnProperty('semester') || !req.body.hasOwnProperty('courses')) {
     return false;
@@ -132,6 +131,8 @@ function hasProperties (req) {
   return true;
 }
 
+// Checks that two sections are similar in cases where
+// certain sections are the same thing but simply in different rooms
 function isSectionsSimilar (sectionA, sectionB) {
   if (sectionA.daysOfWeek === sectionB.daysOfWeek) {
     if (sectionA.startTime === sectionB.startTime && sectionA.endTime === sectionB.endTime) {
@@ -148,7 +149,7 @@ function preProcessSections (sectionList) {
   for (let i = 0; i < sectionList.length; i++) {
     let section = sectionList[i];
     let sectionLetter = section.sectionNumber.charAt(0);
-    let sectionType = section.type;
+    let sectionType = section.type.split(/[^A-Za-z]/)[0];
     if (processedList.hasOwnProperty(sectionLetter)) {
       if (processedList[sectionLetter].hasOwnProperty(sectionType)) {
         let listOfSectionsWithLetterAndType = processedList[sectionLetter][sectionType];
@@ -188,38 +189,25 @@ function occursOnSameDays (currSection, newSection) {
 }
 
 // Given current sections check if the new sections Overlaps
-// If the new section overlaps then it inserts it into current sections in order and returns false
-// If the new section overlaps then it returns false and new sections is not added to current
-function insertAndSortIfNotOverlapped (currSections, newSections) {
+function checkIfSectionsOverlap (currSections, newSections) {
   if (currSections.length === 0) {
-    currSections.push(...newSections);
     return false;
   }
 
   for (let j = 0; j < newSections.length; j++) {
     let newSection = newSections[j];
-    let happensLatest = true;
-
     for (let i = 0; i < currSections.length; i++) {
-      if (occursOnSameDays(currSections[i], newSection)) {
-        let startA = new Date('January 1, 2000 ' + currSections[i].startTime);
-        let endA = new Date('January 1, 2000 ' + currSections[i].endTime);
+      let currSection = currSections[i];
+      if (occursOnSameDays(currSection, newSection)) {
+        let startA = new Date('January 1, 2000 ' + currSection.startTime);
+        let endA = new Date('January 1, 2000 ' + currSection.endTime);
         let startB = new Date('January 1, 2000 ' + newSection.startTime);
         let endB = new Date('January 1, 2000 ' + newSection.endTime);
 
         if (startA <= endB && endA >= startB) {
           return true;
         }
-        // New section happens before current Section
-        if (startB < startA) {
-          currSections.splice(i, 0, newSection);
-          happensLatest = false;
-          break;
-        }
       }
-    }
-    if (happensLatest) {
-      currSections.push(newSection);
     }
   }
   return false;
@@ -239,8 +227,10 @@ function cartesianProduct (data) {
       let baseArray = current[c];
       for (let a = 0; a < arr.length; a++) {
         let clone = baseArray.slice();
-        let isOverlapped = insertAndSortIfNotOverlapped(clone, [arr[a]]);
+        let newSections = [arr[a]];
+        let isOverlapped = checkIfSectionsOverlap(clone, newSections);
         if (!isOverlapped) {
+          clone.push(...newSections);
           newCurrent.push(clone);
         }
       }
@@ -250,7 +240,9 @@ function cartesianProduct (data) {
   return current;
 }
 
-// For some classes each section letter represents a type of class
+// Flattens the section list
+// returns a flatten list of sections
+// {A: {LEC:[]}, B: {DIS:[]}} -> {A: [], B:[]}
 function flattenSectionLetters (sectionList) {
   let flatten = {};
   for (let letter in sectionList) {
@@ -261,25 +253,30 @@ function flattenSectionLetters (sectionList) {
 
 // For some classes, each section letter represents a type of section in combination with other section letters
 // i.e. PHYS211 A is for lectures, D is for discussion
+// i.e BTW250 every section is a lecture but they have different sectionNumbers
 // It will check if processed list for a class needs to be flatten
-// returns a flatten list of sections
-// {A: {LEC:[]}, B: {DIS:[]}} -> {A: [], B:[]}
 function shouldFlatten (processedDict) {
-  let sectionAExists = false;
+  let shouldFlatten = false;
+  let uniqueSectionTypes = new Set();
   for (let sectionLetter in processedDict) {
     if (sectionLetter === 'A') {
-      sectionAExists = true;
+      shouldFlatten = true;
     }
 
-    if (sectionLetter === '0' || sectionLetter === 'O') {
+    let sectionTypes = Object.keys(processedDict[sectionLetter]);
+    if (sectionLetter === '0' || sectionLetter === 'O' || sectionTypes.length >= 2) {
       return false;
     }
 
-    if (Object.keys(processedDict[sectionLetter]).length >= 2) {
-      return false;
-    }
+    sectionTypes.forEach(function (type) {
+      uniqueSectionTypes.add(type);
+    });
   }
-  return sectionAExists;
+
+  if (uniqueSectionTypes.size <= 1) {
+    shouldFlatten = false;
+  }
+  return shouldFlatten;
 }
 
 // Helper method to get All section permutations for a given class course
@@ -303,7 +300,6 @@ function getCourseSectionPermutations (classSectionList) {
 // Gets section permutations for every class's course
 // returns an array of arrays of section permutaion arrays
 function getPermutationsForAllClasses (classes) {
-  // console.log('Calculating permuations for every class');
   let allPermutations = [];
   for (let i = 0; i < classes.length; i++) {
     allPermutations.push(getCourseSectionPermutations(classes[i]));
@@ -405,8 +401,9 @@ function generateIterative (listOfPermutationsForEveryClass, preferences) {
           ...schedules[j]
         };
         base.sections = base.sections.slice();
-        let isOverlapped = insertAndSortIfNotOverlapped(base.sections, classPermutations[k]);
+        let isOverlapped = checkIfSectionsOverlap(base.sections, classPermutations[k]);
         if (!isOverlapped) {
+          base.sections.push(...classPermutations[k]);
           if (preferences && i === listOfPermutationsForEveryClass.length - 1) {
             base.score = calculateScheduleScore(base.sections, preferences);
             if (base.score === 100) {
