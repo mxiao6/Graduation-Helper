@@ -628,7 +628,7 @@ describe('schedule test', function () {
               done();
             });
         });
-        //No class on monday
+        // No class on monday
         it('should give us a schedule that does not meet a few preferences 3', function (done) {
           this.timeout(10000);
           chai
