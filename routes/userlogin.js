@@ -24,7 +24,7 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
   });
 }
 /**
-*@api{register}/userlogin Register a new user
+*@api{post}/register Register a new user
 *@apiName Register
 *@apiGroup User
 *@apiVersion 0.3.0
@@ -115,7 +115,7 @@ exports.register = function (req, res) {
 };
 
 /**
-*@api{activate}/act account activate
+*@api{get}/act account activate
 *@apiName act
 *@apiGroup User
 *@apiVersion 0.2.0
@@ -156,7 +156,7 @@ exports.activate = function (req, res) {
 };
 
 /**
-*@api{login}/userlogin User login
+*@api{post}/login User login
 *@apiName Login
 *@apiGroup User
 *@apiVersion 0.3.0
@@ -261,7 +261,7 @@ exports.login = function (req, res) {
 };
 
 /**
-*@api{sendemail}/userlogin Send reset information and record verification information
+*@api{post}/sendemail Send reset information and record verification information
 *@apiName Sendemail
 *@apiGroup User
 *@apiVersion 0.3.0
@@ -373,7 +373,7 @@ exports.sendemail = function (req, res) {
 };
 
 /**
-*@api{resetpassword}/userlogin Update password after verificating
+*@api{post}/resetpassword Update password after verificating
 *@apiName Resetpassword
 *@apiGroup User
 *@apiVersion 0.3.0
@@ -473,7 +473,7 @@ exports.resetpassword = function (req, res) {
 };
 
 /**
-*@api{getUserInfo}/userlogin return the user information given the userid
+*@api{post}/getUserInfo return the user information given the userid
 *@apiName GetUserInfo
 *@apiGroup User
 *@apiVersion 0.3.0
