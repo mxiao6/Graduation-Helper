@@ -578,37 +578,68 @@ function findMySchedulesItem () {
   });
 }
 
-function selectSemester () {
-  return driver.get('http://localhost:3000/')
-    .then(() => driver.wait(findGenerateScheduleButton, 2000))
-    .then(button => button.click())
-    .then(() => driver.getCurrentUrl())
-    .then(url => url.should.contain('SemesterSelection'))
-    .then(() => driver.sleep(4000))
-    .then(() => driver.wait(findSemesterDropdown(), 2000))
-    .then(dropdown => dropdown.click())
-    .then(() => driver.wait(findElementByTitle('2018'), 2000))
-    .then(element => element.click())
-    .then(() => driver.sleep(4000))
-    .then(() => driver.wait(findElementByTitle('Fall 2018'), 2000))
-    .then(element => element.click())
-    .then(() => driver.wait(findNextButton(), 2000))
-    .then(button => button.click())
-    .then(() => driver.sleep(2000));
-}
-
 /*
  * These front-end tests cover schedule generation, saving the schedule, going to the
  * My Schedule page, editing a schedule, and deleting a schedule.
  */
 describe('Schedule Generation Tests', function () {
   /*
+   * Test that logging out from the Select Semester page redirects you to the home page,
+   * no longer displaying your username.
+   */
+  it('Log Out From Select Semester Page', function (done) {
+    this.timeout(20000);
+    driver.get('http://localhost:3000/')
+      .then(() => driver.wait(findGenerateScheduleButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findUserDropdown(), 2000))
+      .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findLogoutItem(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(1000))
+      .then(() => driver.wait(findDangerButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.equal('http://localhost:3000/#/'))
+      .then(() => driver.wait(findTitleText(), 2000))
+      .then(textElem => textElem.getAttribute('innerText'))
+      .then(titleText => titleText.should.equal('The calendar \nreinvented for students.'))
+      .then(() => done())
+      .catch(error => done(error));
+  });
+
+  /*
    * Goes to the Generate Schedules page and tests that you can select the Fall 2018
    * semester.
    */
   it('Select Semester', function (done) {
     this.timeout(20000);
-    selectSemester()
+    goToLoginPage()
+      .then(() => driver.wait(findEmailEntry(), 2000))
+      .then(input => input.sendKeys('admin@illinois.edu'))
+      .then(() => driver.wait(findPasswordEntry(), 2000))
+      .then(input => input.sendKeys('test2test2test2'))
+      .then(() => driver.wait(findLoginButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
+      .then(() => driver.wait(findGenerateScheduleButton, 2000))
+      .then(button => button.click())
+      .then(() => driver.getCurrentUrl())
+      .then(url => url.should.contain('SemesterSelection'))
+      .then(() => driver.sleep(4000))
+      .then(() => driver.wait(findSemesterDropdown(), 2000))
+      .then(dropdown => dropdown.click())
+      .then(() => driver.wait(findElementByTitle('2018'), 2000))
+      .then(element => element.click())
+      .then(() => driver.sleep(4000))
+      .then(() => driver.wait(findElementByTitle('Fall 2018'), 2000))
+      .then(element => element.click())
+      .then(() => driver.wait(findNextButton(), 2000))
+      .then(button => button.click())
+      .then(() => driver.sleep(2000))
       .then(() => driver.getCurrentUrl())
       .then(url => url.should.contain('GenerateSchedule'))
       .then(() => driver.wait(findSelectedSemester(), 2000))
