@@ -4,9 +4,14 @@ https://wiki.illinois.edu/wiki/display/cs428sp18/Graduation+Helper
 
 ## Instruction
 
+* Production
+  ```bash
+  npm install && npm start
+  ```
+
 * Install
   ```bash
-  npm install && cd client && npm install
+  npm run ins
   ```
 
 * Run
