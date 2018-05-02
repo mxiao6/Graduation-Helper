@@ -674,7 +674,7 @@ describe('Schedule Generation Tests', function () {
    * generated schedule has the correct sections. Saves the schedule.
    */
   it('Generate and Save Schedule, No Preferences', function (done) {
-    this.timeout(35000);
+    this.timeout(45000);
     driver.get('http://localhost:3000/')
       .then(() => driver.wait(findGenerateScheduleButton(), 2000))
       .then(button => button.click())
@@ -683,7 +683,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Asian American Studies'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(4000))
+      .then(() => driver.sleep(8000))
       .then(() => driver.wait(findElementByTitle('100: Intro Asian American Studies'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
@@ -692,7 +692,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Agricultural and Biological Engineering'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(4000))
+      .then(() => driver.sleep(8000))
       .then(() => driver.wait(findElementByTitle('100: Intro Agric & Biological Engrg'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
@@ -726,7 +726,7 @@ describe('Schedule Generation Tests', function () {
    * correct sections. Saves the schedule.
    */
   it('Generate and Save Schedule, No Morning Classes', function (done) {
-    this.timeout(35000);
+    this.timeout(45000);
     driver.get('http://localhost:3000/')
       .then(() => driver.wait(findGenerateScheduleButton(), 2000))
       .then(button => button.click())
@@ -735,7 +735,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Asian American Studies'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(4000))
+      .then(() => driver.sleep(8000))
       .then(() => driver.wait(findElementByTitle('100: Intro Asian American Studies'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
@@ -744,7 +744,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Agricultural and Biological Engineering'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(4000))
+      .then(() => driver.sleep(8000))
       .then(() => driver.wait(findElementByTitle('100: Intro Agric & Biological Engrg'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
@@ -784,7 +784,7 @@ describe('Schedule Generation Tests', function () {
    * schedule has the correct sections. Saves the schedule.
    */
   it('Generate and Save Schedule with No Class Time Selected', function (done) {
-    this.timeout(35000);
+    this.timeout(45000);
     var data = {};
     driver.get('http://localhost:3000/')
       .then(() => driver.wait(findGenerateScheduleButton(), 2000))
@@ -794,7 +794,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Asian American Studies'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(4000))
+      .then(() => driver.sleep(8000))
       .then(() => driver.wait(findElementByTitle('100: Intro Asian American Studies'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
@@ -803,7 +803,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Agricultural and Biological Engineering'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(4000))
+      .then(() => driver.sleep(8000))
       .then(() => driver.wait(findElementByTitle('100: Intro Agric & Biological Engrg'), 2000))
       .then(element => element.click())
       .then(() => driver.wait(findAddOrGenerateButton(0), 2000))
@@ -1036,7 +1036,7 @@ describe('Schedule Generation Tests', function () {
    * schedule. Saves the schedule and tests that the schedule was saved successfully.
    */
   it('Edit and Save Schedule', function (done) {
-    this.timeout(30000);
+    this.timeout(40000);
     driver.get('http://localhost:3000/')
       .then(() => driver.wait(findUserDropdown(), 2000))
       .then(dropdown => driver.actions({ bridge: true }).move({ origin: dropdown }).perform())
@@ -1057,7 +1057,7 @@ describe('Schedule Generation Tests', function () {
       .then(dropdown => dropdown.click())
       .then(() => driver.wait(findElementByTitle('Accountancy'), 2000))
       .then(element => element.click())
-      .then(() => driver.sleep(4000))
+      .then(() => driver.sleep(8000))
       .then(() => driver.wait(findElementByTitle('201: Accounting and Accountancy I'), 2000))
       .then(element => element.click())
       .then(() => driver.sleep(1000))
