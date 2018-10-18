@@ -2,6 +2,9 @@
 
 https://wiki.illinois.edu/wiki/display/cs428sp18/Graduation+Helper
 
+## Demo
+https://youtu.be/W7hi1gJm-6E
+
 ## Instruction
 
 * Production
